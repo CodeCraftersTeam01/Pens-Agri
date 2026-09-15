@@ -1,0 +1,144 @@
+<%- include('../../partials/_head_admin.ejs') %>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    #map {
+        height: 550px;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #2d2d2d;
+    }
+    /* Menyesuaikan pop-up Leaflet dengan tema gelap dashboard */
+    .leaflet-popup-content-wrapper {
+        background: #1e1e1e !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #333;
+        font-family: 'Inter', sans-serif;
+    }
+    .leaflet-popup-tip {
+        background: #1e1e1e !important;
+    }
+    /* Sembunyikan tombol layer bawaan Leaflet agar tidak dobel karena sudah diganti dropdown kustom */
+    .leaflet-control-layers {
+        display: none !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('../../partials/_nav_admin.ejs') %>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-0">
+            <%- include('../../partials/_top_nav_admin.ejs') %>
+
+            <div class="p-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3">
+                    <h1 class="h2 fw-bold text-navy">Data Pemetaan Lapangan</h1>
+                    <button class="btn btn-sm btn-navy shadow-sm" onclick="window.location.reload();">
+                        <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+                    </button>
+                </div>
+                
+
+                <div class="card card-custom p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 fw-semibold text-white">
+                            <i class="fa-solid fa-map-location-dot text-teal me-2"></i>Sebaran Geografis Lahan Pertanian Presisi
+                        </h5>
+                        <div class="d-flex align-items-center" style="max-width: 250px;">
+                            <label for="layerSelect" class="text-secondary small me-2 text-nowrap"><i class="fa-solid fa-layer-group me-1"></i>Tampilan:</label>
+                            <select id="layerSelect" class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="standart">Standar (Peta Jalan)</option>
+                                <option value="satelit">Satelit (Foto Udara)</option>
+                                <option value="dark">Dark Mode (Minimalis)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="map"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // 1. Parsing data dari EJS Array ke JavaScript Client-Side secara aman
+    const lahanData = JSON.parse('<%- JSON.stringify(data || []) %>');
+
+    // 2. Inisialisasi titik fokus awal peta
+    const defaultLat = lahanData.length > 0 ? lahanData[0].latitude : -7.0105855;
+    const defaultLon = lahanData.length > 0 ? lahanData[0].longitude : 113.8347767;
+    
+    const map = L.map('map').setView([defaultLat, defaultLon], 11);
+
+    // 3. Definisi Berbagai Jenis Layer Peta (Tile Layers)
+    const layerStandart = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+
+    const layerSatelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    });
+
+    const layerDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    });
+
+    // Masukkan layer default saat pertama kali dimuat (Standar)
+    layerStandart.addTo(map);
+
+    // Daftarkan base maps ke kontrol layer Leaflet
+    const baseMaps = {
+        "standart": layerStandart,
+        "satelit": layerSatelit,
+        "dark": layerDark
+    };
+
+    // 4. Logika Aksi untuk Dropdown HTML Kustom di Kanan Atas
+    document.getElementById('layerSelect').addEventListener('change', function(e) {
+        const selectedValue = e.target.value;
+        
+        // Hapus semua base layer yang sedang aktif terlebih dahulu
+        for (let key in baseMaps) {
+            map.removeLayer(baseMaps[key]);
+        }
+        
+        // Aktifkan layer yang dipilih oleh pengguna
+        if (baseMaps[selectedValue]) {
+            baseMaps[selectedValue].addTo(map);
+        }
+    });
+
+    // 5. Proses Looping Marker menggunakan JavaScript Client-Side
+    if (lahanData.length > 0) {
+        lahanData.forEach(function(lahan) {
+            if (lahan.latitude && lahan.longitude) {
+                const marker = L.marker([lahan.latitude, lahan.longitude]).addTo(map);
+                
+                const popupContent = `
+                    <div style="min-width: 200px;">
+                        <h6 style="color: #00bfff; font-weight: bold; margin-bottom: 5px;">Desa ${lahan.nama_desa}</h6>
+                        <table style="width: 100%; font-size: 12px; color: #b0b0b0;">
+                            <tr><td><b>Komoditas</b></td><td>: <span style="color: #198754; font-weight: bold;">${lahan.komoditas}</span></td></tr>
+                            <tr><td><b>Luas Lahan</b></td><td>: ${lahan.luas_lahan} (${lahan.status_lahan})</td></tr>
+                            <tr><td><b>Irigasi</b></td><td>: ${lahan.irigasi.toUpperCase()}</td></tr>
+                            <tr><td colspan="2"><hr style="margin: 5px 0; border-color: #444;"></td></tr>
+                            <tr><td><b>Kadar pH</b></td><td>: <b>${lahan.ph}</b></td></tr>
+                            <tr><td><b>NPK Tanah</b></td><td>: N:${lahan.nitrogen} | P:${lahan.phosphorus} | K:${lahan.potassium}</td></tr>
+                            <tr><td><b>Kelembapan</b></td><td>: ${lahan.moisture}%</td></tr>
+                        </table>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+            }
+        });
+    }
+</script>
+
+<%- include('../../partials/_foot_admin.ejs') %>

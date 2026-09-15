@@ -1,0 +1,122 @@
+<%- include('../partials/_head.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    body {
+        background-color: #f4f6f9; /* Latar belakang cerah senada dashboard */
+        color: #333333;
+        font-family: 'Inter', sans-serif;
+    }
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-login {
+        background-color: #ffffff; /* Card Putih Bersih */
+        border: 1px solid #e3e6f0;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08); /* Shadow halus warna navy */
+        width: 100%;
+        max-width: 420px;
+        padding: 2.5rem 2rem;
+    }
+    .brand-logo {
+        color: #ffcc00; /* Menggunakan aksen Kuning Emas */
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        /* Efek glow kuning lembut pada ikon daun */
+        filter: drop-shadow(0 4px 6px rgba(255, 204, 0, 0.4)); 
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0px); }
+    }
+    .text-navy {
+        color: #0a2540; /* Warna utama Biru Navy */
+    }
+    .form-control-custom {
+        background-color: #ffffff !important;
+        border: 1px solid #d1d3e2 !important;
+        color: #333333 !important;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+    }
+    .form-control-custom:focus {
+        border-color: #0a2540 !important; /* Focus ke warna Biru Navy */
+        box-shadow: 0 0 0 0.25rem rgba(10, 37, 64, 0.15) !important;
+    }
+    .input-group-text-custom {
+        background-color: #f8f9fc !important;
+        border: 1px solid #d1d3e2 !important;
+        color: #4e73df !important; /* Warna ikon input group ke arah biru murni */
+    }
+    .btn-navy {
+        background-color: #0a2540; /* Tombol utama Biru Navy */
+        border: none;
+        color: #ffffff;
+        padding: 0.75rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+    }
+    .btn-navy:hover {
+        background-color: #061729;
+        color: #ffffff;
+    }
+</style>
+
+<div class="container">
+    <div class="row login-container">
+        <div class="card-login">
+            
+            <div class="text-center mb-4">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-leaf"></i> 
+                </div>
+                <h4 class="fw-bold text-navy mb-1">PENS AGRI PRESISI</h4>
+                <p class="text-muted small">Smart Agriculture & Soil Monitoring System</p>
+            </div>
+
+            <% if (typeof messages !== 'undefined' && messages.error) { %>
+                <div class="alert alert-danger bg-danger bg-opacity-10 text-danger border-danger small py-2 px-3 rounded-3 mb-3" role="alert">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i><%= messages.error %>
+                </div>
+            <% } %>
+
+            <form action="/register" method="post">
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-semibold">Alamat Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text input-group-text-custom"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control form-control-custom" placeholder="nama@email.com" required autocomplete="username">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small text-muted fw-semibold mb-0">Kata Sandi</label>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text input-group-text-custom"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" name="password" class="form-control form-control-custom" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-navy w-100 mb-3 shadow-sm">
+                    Register <i class="fa-solid fa-arrow-right-to-bracket ms-1"></i>
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="small text-muted mb-0">&copy; 2026 Politeknik Elektronika Negeri Surabaya</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/_foot.ejs') %>

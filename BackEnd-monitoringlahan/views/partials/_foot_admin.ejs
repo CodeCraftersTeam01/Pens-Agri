@@ -1,0 +1,58 @@
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // 1. Inisialisasi Chart Line - Tren Unsur Hara NPK
+    const npkCtx = document.getElementById('npkTrendChart').getContext('2d');
+    new Chart(npkCtx, {
+        type: 'line',
+        data: {
+            labels: ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4', 'Lahan 5', 'Lahan 6'],
+            datasets: [
+                { label: 'Nitrogen (N)', data: [42, 45, 38, 50, 40, 47], borderColor: '#198754', tension: 0.3 },
+                { label: 'Fosfor (P)', data: [30, 32, 29, 41, 35, 38], borderColor: '#dc3545', tension: 0.3 },
+                { label: 'Kalium (K)', data: [55, 58, 62, 49, 52, 60], borderColor: '#0dcaf0', tension: 0.3 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { grid: { color: '#2d2d2d' }, ticks: { color: '#a0a0a0' } },
+                x: { grid: { color: '#2d2d2d' }, ticks: { color: '#a0a0a0' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#e0e0e0' } }
+            }
+        }
+    });
+
+    // 2. Inisialisasi Chart Pie - Distribusi Komoditas
+    const commodityCtx = document.getElementById('commodityPieChart').getContext('2d');
+    new Chart(commodityCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Jagung', 'Padi', 'Tembakau', 'Lainnya'],
+            datasets: [{
+                data: [45, 35, 15, 5],
+                backgroundColor: ['#198754', '#0d6efd', '#ffc107', '#6c757d'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    position: 'bottom',
+                    labels: { color: '#e0e0e0', padding: 15 } 
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
+
