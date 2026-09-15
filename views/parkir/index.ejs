@@ -1,0 +1,369 @@
+<%- include('../partials/_head_admin.ejs') %>
+
+<div class="container">
+    <div class="row">
+        <h2>Parkir Kendaaraan Page</h2>
+        <hr>
+        <div class="col-md-5 bg-light mx-4">
+            <h2>Parkir Masuk</h2>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
+        
+            <form action="/parkir/masuk" method="post" enctype="multipart/form-data">
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+                <label class="form-check-label" for="switchCheckDefault">Rekam Citra Pengunjung</label>
+            </div>
+
+            <div class="mb-3">
+                <label for="">Nopol</label>
+                <input type="text" name="nopol" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="">Jenis</label>
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" value="Motor" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">Motor</label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" value="Mobil" id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">Mobil</label>
+                </div>
+            </div>
+
+            <!-- bagian kamera, default disembunyikan -->
+            <div id="camera-section" style="display:none;">
+                <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                    <label>Foto Wajah</label><br>
+                    <video id="camera" autoplay playsinline width="250"></video><br>
+                    <button type="button" onclick="takePhoto('wajah')">Ambil Gambar</button>
+                    <canvas id="canvas-wajah" style="display:none;"></canvas>
+                    <!-- <input type="file" name="wajah" id="input-wajah"> -->
+                    <input type="file" name="wajah" id="file-wajah" style="display:none;">
+                    <br>
+                    <img id="preview-wajah" width="250" style="display:none; margin-top:10px; border:1px solid #ccc;">
+                    
+                    <p id="gender-result" style="margin-top:10px; font-weight:bold;"></p>
+                    <input type="text" name="jenis_kelamin" value="" hidden>
+    
+                </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3">
+                    <label>Foto Pakaian</label><br>
+                    <video id="camera2" autoplay playsinline width="250"></video><br>
+                    <button type="button" onclick="takePhoto('pakaian')">Ambil Gambar</button>
+                    <canvas id="canvas-pakaian" style="display:none;"></canvas>
+                    <!-- <input type="file" name="pakaian" id="input-pakaian"> -->
+                     <input type="file" name="pakaian" id="file-pakaian" style="display:none;">
+                    <br>
+                    <img id="preview-pakaian" width="250" style="display:none; margin-top:10px; border:1px solid #ccc;">
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+
+
+
+        </div>
+        <div class="col-md-5 bg-light">
+            <h2>Parkir Keluar</h2>
+            <form action="/parkir/cek" method="post">
+                <div class="mb-3">
+                    <label for="">Kode Parkir</label>
+                    <input type="text" name="kode_parkir" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">CeK</button>
+            </form>
+
+                <% if (typeof kendaraan !== 'undefined' && kendaraan) { %>
+                <div class="alert alert-success mt-3">
+                    <h5>Data Kendaraan Ditemukan</h5>
+                    <ul class="list-group">
+                    <li class="list-group-item">Kode Parkir: <%= kendaraan.id %></li>
+                    <li class="list-group-item">Jenis: <%= kendaraan.type %></li>
+                    <li class="list-group-item">Plat Nomor: <%= kendaraan.nopol %></li>
+                    <li class="list-group-item">Status: <%= kendaraan.status %></li>
+                    <li class="list-group-item">Tanggal - waktu Masuk: <%= kendaraan.tanggal_masuk %> - <%= kendaraan.jam_masuk %></li>
+                    <li class="list-group-item">Durasi Parkir: <%= durasiJam %> jam</li>
+                    <li class="list-group-item">Tarif Dasar (1 jam): Rp <%= tarifDasar.toLocaleString('id-ID') %></li>
+                    <% if (biayaTambahan > 0) { %>
+                        <li class="list-group-item">Biaya Tambahan: Rp <%= biayaTambahan.toLocaleString('id-ID') %></li>
+                    <% } %>
+                    <li class="list-group-item">Total Tarif: <strong>Rp <%= totalTarif.toLocaleString('id-ID') %></strong></li>
+
+                    </ul>
+                    <!-- form untuk update out  -->
+                    <form action="/parkir/keluar/<%= kendaraan.id %>" method="post" enctype="multipart/form-data">
+                    <input type="text" name="total_biaya" value="<%= totalTarif %>" hidden>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchupdateparkirout">
+                        <label class="form-check-label" for="switchupdateparkirout">Rekam Citra Pengunjung</label>
+                    </div>
+
+                    <div id="camera-section-parkir-out" style="display:none;">
+                        <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                            <label>Foto Wajah</label><br>
+                            <video id="camera3" autoplay playsinline width="250"></video><br>
+                            <button type="button" onclick="takePhotoOut('wajah-out')">Ambil Gambar</button>
+                            <canvas id="canvas-wajah-out" style="display:none;"></canvas>
+                            <!-- <input type="file" name="wajah" id="input-wajah"> -->
+                            <input type="file" name="wajah-out" id="file-wajah-out" style="display:none;">
+                            <br>
+                            <img id="preview-wajah-out" width="250" style="display:none; margin-top:10px; border:1px solid #ccc;">
+                        <p id="gender-result-out" style="margin-top:10px; font-weight:bold;"></p>
+                        <input type="text" name="jenis_kelamin_out" value="" hidden>    
+                        </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                            <label>Foto Pakaian</label><br>
+                            <video id="camera4" autoplay playsinline width="250"></video><br>
+                            <button type="button" onclick="takePhotoOut('pakaian-out')">Ambil Gambar</button>
+                            <canvas id="canvas-pakaian-out" style="display:none;"></canvas>
+                            <!-- <input type="file" name="pakaian" id="input-pakaian"> -->
+                            <input type="file" name="pakaian-out" id="file-pakaian-out" style="display:none;">
+                            <br>
+                            <img id="preview-pakaian-out" width="250" style="display:none; margin-top:10px; border:1px solid #ccc;">
+                            
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning">Save</button>
+                    </form>
+                    
+                    <!-- form untuk update out  -->
+                </div>
+                <% } else if (typeof error !== 'undefined') { %>
+                <div class="alert alert-danger mt-3">
+                    <%= error %>
+                </div>
+                <% } %>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row mt-5">
+        <div class="col-md-5 bg-primary mx-4">
+            <h2>Kendaaraan Masuk</h2>
+            <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col"></th>
+                <th scope="col">gender</th>
+                <th scope="col">Nopol</th>
+                <th scope="col">Type</th>
+                <th scope="col">Jam Masuk</th>
+                <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < parkirIn.length; i++){ %>
+                    <tr>
+                        <th scope="row"><%= (i+1) %></th>
+                        <td><img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=<%= encodeURIComponent(parkirIn[i].id) %>&scale=3&includetext=true" width="100" height="50"></td>
+                        <td><%= parkirIn[i].jenis_kelamin %></td>
+                        <td><%= parkirIn[i].nopol %></td>
+                        <td><%= parkirIn[i].type %></td>
+                        <td><%= parkirIn[i].jam_masuk %></td>
+                        <td>
+                            <a href="/parkir/deleteparkirin/<%= parkirIn[i].id %>">Delete</a>
+                        </td>
+                    </tr> 
+                <% } %>
+             
+            </tbody>
+            </table>
+        </div>
+        <div class="col-md-5 bg-info">
+            <h2>Kendaaraan Keluar</h2>
+             <table class="table">
+             <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nopol</th>
+                <th scope="col">Type</th>
+                <th scope="col">Jam Masuk</th>
+                <th scope="col">Biaya</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0; i < ParkirOut.length; i++){ %>
+                    <tr>
+                        <th scope="row"><%= (i+1) %></th>
+                        <td><%= ParkirOut[i].nopol %></td>
+                        <td><%= ParkirOut[i].type %></td>
+                        <td><%= ParkirOut[i].jam_keluar %></td>
+                        <td><%= ParkirOut[i].total_biaya %></td>
+                    </tr> 
+                <% } %>             
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script defer src="/javascripts/script.js"></script>
+
+<script>
+
+  // toggle kamera berdasarkan switch
+  document.getElementById("switchCheckDefault").addEventListener("change", function() {
+    let camSection = document.getElementById("camera-section");
+
+    if (this.checked) {
+      camSection.style.display = "block";
+      // akses kamera ketika switch diaktifkan
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          document.getElementById("camera").srcObject = stream;
+          document.getElementById("camera2").srcObject = stream;
+        })
+        .catch(err => {
+          alert("Tidak bisa akses kamera: " + err);
+        });
+    } else {
+      camSection.style.display = "none";
+      // kosongkan input supaya tidak terkirim
+
+        document.getElementById("file-wajah").value = "";
+        document.getElementById("file-pakaian").value = "";
+
+    }
+  });
+
+
+    function takePhoto(type) {
+    let video = (type === "wajah") ? document.getElementById("camera") : document.getElementById("camera2");
+    let canvas = document.getElementById("canvas-" + type);
+    let preview = document.getElementById("preview-" + type);
+    let fileInput = document.getElementById("file-" + type); 
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+
+    canvas.toBlob(async function(blob) {
+    let file = new File([blob], `${type}-${Date.now()}.png`, { type: "image/png" });
+    let dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+
+    // preview
+    let url = URL.createObjectURL(file);
+    preview.src = url;
+    preview.style.display = "block";
+
+     if (type === "wajah") {
+      try {
+        const detection = await faceapi
+          .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
+          .withAgeAndGender();
+
+        if (detection) {
+          let genderText = detection.gender === "male" ? "Laki-laki" : "Perempuan";
+          document.getElementById("gender-result").innerText =
+            `Hasil Deteksi: ${genderText} (confidence: ${detection.genderProbability.toFixed(2)})`;
+
+        document.querySelector("input[name='jenis_kelamin']").value = genderText;
+        } else {
+          document.getElementById("gender-result").innerText = "Wajah tidak terdeteksi.";
+          document.querySelector("input[name='jenis_kelamin']").value = "";
+        }
+      } catch (err) {
+        console.error("Error saat deteksi wajah:", err);
+      }
+    }
+   
+  }, "image/png");
+
+    }
+
+
+    document.getElementById("switchupdateparkirout").addEventListener("change", function() {
+    let camSection = document.getElementById("camera-section-parkir-out");
+
+    if (this.checked) {
+      camSection.style.display = "block";
+
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          document.getElementById("camera3").srcObject = stream;
+          document.getElementById("camera4").srcObject = stream;
+        })
+        .catch(err => {
+          alert("Tidak bisa akses kamera: " + err);
+        });
+    } else {
+      camSection.style.display = "none";
+
+        document.getElementById("file-wajah-out").value = "";
+        document.getElementById("file-pakaian-out").value = "";
+
+    }
+  });
+
+    function takePhotoOut(type) {
+        let video = (type === "wajah-out") ? document.getElementById("camera3") : document.getElementById("camera4");
+        let canvas = document.getElementById("canvas-" + type);
+        let preview = document.getElementById("preview-" + type);
+        let fileInput = document.getElementById("file-" + type); 
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+
+        canvas.toBlob(async function(blob) {
+            let file = new File([blob], `${type}-${Date.now()}.png`, { type: "image/png" });
+
+            let dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            let url = URL.createObjectURL(file);
+            preview.src = url;
+            preview.style.display = "block";
+            if (type === "wajah-out") {
+            try {
+                const detection = await faceapi
+                .detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions())
+                .withAgeAndGender();
+
+                if (detection) {
+                let genderText = detection.gender === "male" ? "Laki-laki" : "Perempuan";
+                document.getElementById("gender-result-out").innerText =
+                    `Hasil Deteksi: ${genderText} (confidence: ${detection.genderProbability.toFixed(2)})`;
+
+                document.querySelector("input[name='jenis_kelamin_out']").value = genderText;
+                } else {
+                document.getElementById("gender-result-out").innerText = "Wajah tidak terdeteksi.";
+                document.querySelector("input[name='jenis_kelamin_out']").value = "";
+                }
+            } catch (err) {
+                console.error("Error saat deteksi wajah:", err);
+            }
+            }
+            
+        }, "image/png");
+    }
+
+
+</script>
+
+<%- include('../partials/_foot_admin.ejs') %>

@@ -1,0 +1,86 @@
+var express = require('express');
+var router = express.Router();
+const bcrypt = require('bcryptjs');
+
+var Model_Users = require('../model/Model_Users');
+/* GET home page & login page. */
+router.get('/', function(req, res, next) {
+  res.render('auth/login');
+});
+
+router.get('/login', function(req, res, next) {
+  res.render('auth/login');
+});
+
+router.get('/register', function(req, res, next) {
+  res.render('auth/register');
+});
+
+router.post('/register', async (req, res) => {
+  let {email, password} = req.body;
+  let enkripsi = await bcrypt.hash(password, 10);
+  let Data = {
+    email,
+    password: enkripsi,
+    role: 1,
+  };
+  await Model_Users.Store(Data);
+  req.flash('success','Registrasi Berhasil');
+  res.redirect('/');
+})
+
+router.post('/login', async (req, res) => {
+    let { email, password } = req.body;
+
+    try {
+        let Data = await Model_Users.Login(email);
+
+        if (Data.length > 0) {
+            let enkripsi = Data[0].password;
+            let cek = await bcrypt.compare(password, enkripsi);
+
+            if (cek) {
+                req.session.userId = Data[0].id;
+                req.session.level = Data[0].role; // simpan level di session
+
+                // pengecekan level
+                if (Data[0].role == 1) {
+                    req.flash('success', 'Berhasil login sebagai Super User');
+                    return res.redirect('/superusers');
+                } else if (Data[0].role == 2) {
+                    req.flash('success', 'Berhasil login sebagai User');
+                    return res.redirect('/users');
+                } else {
+                    req.flash('error', 'Level user tidak dikenali');
+                    return res.redirect('/');
+                }
+
+            } else {
+                req.flash('error', 'Email atau password salah');
+                return res.redirect('/');
+            }
+
+        } else {
+            req.flash('error', 'Akun tidak ditemukan');
+            return res.redirect('/');
+        }
+
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Terjadi kesalahan pada sistem');
+        return res.redirect('/');
+    }
+});
+
+
+router.get('/logout', function(req, res){
+  req.session.destroy(function(err){
+    if(err){
+      console.error(err);
+    }else{
+      res.redirect('/');
+    }
+  });
+});
+
+module.exports = router;
