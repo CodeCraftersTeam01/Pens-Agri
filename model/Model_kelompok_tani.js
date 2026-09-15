@@ -1,24 +1,29 @@
 const connection = require('../config/db');
+const { getOrSet, invalidatePrefix } = require('../utils/cache');
 
 class Model_kelompok_tani {
 
     static async getAll(){
-        return new Promise((resolve, reject) => {
-            connection.query('select * from kelompok_tani order by id desc', (err, rows) => {
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(rows);
-                }
+        return getOrSet('poktan_all', () => {
+            return new Promise((resolve, reject) => {
+                connection.query('SELECT * FROM kelompok_tani ORDER BY id DESC', (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
             });
-        });
+        }, 180); // Cache 3 menit
     }
+
     static async Store(Data){
         return new Promise((resolve, reject) => {
-            connection.query('insert into kelompok_tani set ?', Data, function(err, result) {
-                if(err){
+            connection.query('INSERT INTO kelompok_tani SET ?', Data, function(err, result) {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
+                    invalidatePrefix('poktan_');
                     resolve(result);
                 }
             });
@@ -27,32 +32,37 @@ class Model_kelompok_tani {
 
     static async Login(email){
         return new Promise((resolve, reject) => {
-            connection.query('select * from kelompok_tani where email = ?', [email], (err, result) => {
-                if(err){
+            connection.query('SELECT * FROM kelompok_tani WHERE email = ?', [email], (err, result) => {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
                     resolve(result);
                 }
             });
         });
     }
+
     static async getId(id){
         return new Promise((resolve, reject) => {
-            connection.query('select * from kelompok_tani where id = ' + id , (err, result) => {
-                if(err){
+            if (!id) return resolve([]);
+            connection.query('SELECT * FROM kelompok_tani WHERE id = ?', [id], (err, result) => {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
                     resolve(result);
                 }
             });
         });
     }
+
     static async Update(id, Data){
         return new Promise((resolve, reject) => {
-            connection.query('update kelompok_tani set ? where id =' + id, Data, (err, result) => {
-                if(err){
+            if (!id) return resolve(null);
+            connection.query('UPDATE kelompok_tani SET ? WHERE id = ?', [Data, id], (err, result) => {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
+                    invalidatePrefix('poktan_');
                     resolve(result);
                 }
             });
@@ -61,10 +71,12 @@ class Model_kelompok_tani {
 
     static async Delete(id){
         return new Promise((resolve, reject) => {
-            connection.query('delete from kelompok_tani where id =' + id , (err, result) => {
-                if(err){
+            if (!id) return resolve(null);
+            connection.query('DELETE FROM kelompok_tani WHERE id = ?', [id], (err, result) => {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
+                    invalidatePrefix('poktan_');
                     resolve(result);
                 }
             });

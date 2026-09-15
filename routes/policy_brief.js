@@ -62,7 +62,7 @@ Tugas Anda adalah membuat dokumen rekomendasi kebijakan strategis (Policy Brief)
 [PILAR 1: DATA STATISTIK MAKRO PERKEBUNAN BPS SUMENEP (Tahun ${tahun_bps || 'Terbaru'})]
 ${JSON.stringify(data_makro_bps || [])}
 
-[PILAR 2 & 3: HASIL ANALISIS STATISTIK BIG DATA SENSOR IOT LAPANGAN & SEBARAN KOMODITAS (Total Data: ${statsSummary.ringkasan_umum.total_titik} Titik Lahan)]
+[PILAR 2 & 3: HASIL ANALISIS STATISTIK BIG DATA SENSOR TANAH LAPANGAN (USB DONGLE) & SEBARAN KOMODITAS (Total Data: ${statsSummary.ringkasan_umum.total_titik} Titik Lahan)]
 - Ringkasan Metrik Makro-Mikro:
   * Total Titik Lahan Terdata: ${statsSummary.ringkasan_umum.total_titik}
   * Rata-rata pH Tanah: ${statsSummary.ringkasan_umum.avg_ph} (Rentang: ${statsSummary.ringkasan_umum.min_ph} s/d ${statsSummary.ringkasan_umum.max_ph})
@@ -82,12 +82,12 @@ Sajikan analisis dalam Bahasa Indonesia yang formal, berbobot, berbasis data, da
 # POLICY BRIEF: STRATEGI PERTANIAN PRESISI & TATA KELOLA LAHAN KABUPATEN SUMENEP
 
 ## 1. Ringkasan Eksekutif (Executive Summary)
-Garis besar temuan konvergensi data makro BPS dan big data sensor IoT.
+Garis besar temuan konvergensi data makro BPS dan uji tanah sensor presisi lapangan.
 
 ## 2. Analisis Lahan Kritis & Anomali Sensor
 Mendeteksi anomali pH tanah, defisit/kelebihan NPK, serta risiko gagal panen lintas komoditas.
 
-## 3. Strategi Alokasi Pupuk Bersubsidi & Tata Kelola Air Berbasis IoT Spasial
+## 3. Strategi Alokasi Pupuk Bersubsidi & Tata Kelola Air Berbasis Data Uji Tanah Presisi
 Rekomendasi takaran pupuk dan intervensi pompa/irigasi.
 
 ## 4. Rencana Aksi Strategis (Action Plan)

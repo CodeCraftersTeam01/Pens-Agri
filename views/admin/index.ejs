@@ -1,147 +1,458 @@
 <%- include('../partials/_head_admin.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="container-fluid">
-    <div class="row">
-        <%- include('../partials/_nav_admin.ejs') %>
+<div style="display: flex; min-height: 100vh;">
+    <%- include('../partials/_nav_admin.ejs') %>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-0">
-            <%- include('../partials/_top_nav_admin.ejs') %>
+    <div class="main-content">
+        <%- include('../partials/_top_nav_admin.ejs') %>
 
-            <div class="p-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3">
-                    <h1 class="h2 fw-bold text-navy">Ringkasan Analisis</h1>
-                    <button class="btn btn-sm btn-navy shadow-sm" onclick="window.location.reload();">
-                        <i class="fa-solid fa-rotate me-1"></i> Refresh Data
-                    </button>
+        <!-- Page Header -->
+        <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="page-header-eyebrow">
+                    <span class="live-dot"></span>
+                    Log Data Sensor Tanah & Precision Farming
                 </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-sm-6 col-xl-3">
-                        <div class="card card-custom p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-muted small fw-semibold mb-1">Total Lahan Terdata</h6>
-                                    <h3 class="mb-0 fw-bold text-navy">124</h3>
-                                </div>
-                                <div class="p-3 rounded-3 bg-light text-navy"><i class="fa-solid fa-map-marked-alt fs-4"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-6 col-xl-3">
-                        <div class="card card-custom p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-muted small fw-semibold mb-1">Rata-rata pH Tanah</h6>
-                                    <h3 class="mb-0 fw-bold text-yellow">6.4</h3>
-                                </div>
-                                <div class="p-3 rounded-3 bg-light text-yellow"><i class="fa-solid fa-flask fs-4"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-6 col-xl-3">
-                        <div class="card card-custom p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-muted small fw-semibold mb-1">Rata-rata Nitrogen</h6>
-                                    <h3 class="mb-0 fw-bold text-success">42 <span class="fs-6 fw-normal text-muted">mg/kg</span></h3>
-                                </div>
-                                <div class="p-3 rounded-3 bg-light text-success"><i class="fa-solid fa-leaf fs-4"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-sm-6 col-xl-3">
-                        <div class="card card-custom p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-muted small fw-semibold mb-1">Ketersediaan Irigasi</h6>
-                                    <h3 class="mb-0 fw-bold text-info">85%</h3>
-                                </div>
-                                <div class="p-3 rounded-3 bg-light text-info"><i class="fa-solid fa-droplet fs-4"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-lg-8">
-                        <div class="card card-custom p-3">
-                            <h5 class="card-title mb-3 fw-bold text-navy">Identiifikasi Tren Unsur Hara (NPK)</h5>
-                            <div style="height: 300px; position: relative;">
-                                <canvas id="npkTrendChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-4">
-                        <div class="card card-custom p-3">
-                            <h5 class="card-title mb-3 fw-bold text-navy">Distribusi Komoditas Lahan</h5>
-                            <div style="height: 300px; position: relative;">
-                                <canvas id="commodityPieChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-custom p-3">
-                    <h5 class="card-title mb-3 fw-bold text-navy">Log Monitoring Lahan Terbaru</h5>
-                    <div class="table-responsive">
-                        <table class="table table-custom table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nama Desa</th>
-                                    <th>Koordinat (Lat, Lon)</th>
-                                    <th>Komoditas</th>
-                                    <th>pH</th>
-                                    <th>N (mg/kg)</th>
-                                    <th>P (mg/kg)</th>
-                                    <th>K (mg/kg)</th>
-                                    <th>Irigasi</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#1024</td>
-                                    <td class="fw-semibold text-navy">Aeng Tong-Tong</td>
-                                    <td><small class="font-monospace text-muted">-7.0124, 113.8543</small></td>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success border border-success">Jagung</span></td>
-                                    <td class="fw-bold text-yellow">6.5</td>
-                                    <td>45</td>
-                                    <td>32</td>
-                                    <td>58</td>
-                                    <td><span class="badge bg-success">Ya</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-eye"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#1023</td>
-                                    <td class="fw-semibold text-navy">Bluto</td>
-                                    <td><small class="font-monospace text-muted">-7.0432, 113.8765</small></td>
-                                    <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Padi</span></td>
-                                    <td class="fw-bold text-yellow">6.1</td>
-                                    <td>38</td>
-                                    <td>29</td>
-                                    <td>62</td>
-                                    <td><span class="badge bg-success">Ya</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-navy"><i class="fa-solid fa-eye"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+                <h1 class="page-header-title">Ringkasan Lahan Presisi</h1>
+                <p class="page-header-sub">Integrasi data uji tanah portable (USB Dongle), analitik lahan dan kecerdasan buatan · Kabupaten Sumenep</p>
             </div>
-        </main>
+
+            <!-- Action Bar -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="/policy_brief" class="btn-primary-accent">
+                    <i class="fa-solid fa-brain"></i>
+                    AI Policy Brief
+                </a>
+                <button class="btn-secondary" onclick="window.location.reload()">
+                    <i class="fa-solid fa-rotate"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="page-content-wrapper">
+
+            <!-- Stat Cards Row (4 Metric Cards) -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="stat-label">Total Titik Lahan</div>
+                            <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="stat-value">641</div>
+                            <span class="stat-badge green"><i class="fa-solid fa-check" style="font-size:10px;"></i> Terpetakan 100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="stat-label">Rata-Rata pH Tanah</div>
+                            <div class="stat-icon" style="background: #fffbeb; color: #d97706;">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="stat-value">7.04</div>
+                            <span class="stat-badge amber">Netral · Optimal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="stat-label">Unsur Nitrogen (N)</div>
+                            <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="stat-value">6.39 <span style="font-size:14px; font-weight:500; color: var(--color-text-secondary);">mg/kg</span></div>
+                            <span class="stat-badge blue">Evaluasi Pemupukan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="stat-label">Penggunaan Pompa</div>
+                            <div class="stat-icon" style="background: #ecfeff; color: #0891b2;">
+                                <i class="fa-solid fa-droplet"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="stat-value">85.0%</div>
+                            <span class="stat-badge green">545 Titik Pompa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Charts & Income Metric -->
+            <div class="row g-4 mb-4">
+                <!-- Dual Bar Chart: Aktivitas Lapangan & Produksi -->
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card h-100 p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <div>
+                                <div class="section-title">Statistik Aktivitas & Tren Hara NPK</div>
+                                <div class="section-sub">Data pemantauan sensor dan produksi hara per lahan sampel</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3" style="font-size: 12.5px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #2563eb;"></span>
+                                    <span class="text-secondary fw-medium">Aktivitas Lahan</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                                    <span class="text-secondary fw-medium">Produksi (kg)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="dashboardActivityChart"></canvas>
+                        </div>
+
+                        <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span class="text-muted" style="font-size: 13px;">Rata-rata aktivitas operasional: <strong class="text-dark">6.8 jam/hari</strong></span>
+                            <span class="stat-badge green">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +8.4% efisiensi musim ini
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Income & Commodity Doughnut -->
+                <div class="col-xl-4 col-lg-5 d-flex flex-column gap-4">
+                    <!-- Income Stat Card -->
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-label mb-1">Estimasi Pendapatan Panen</div>
+                                <div class="fw-bold" style="font-size: 24px; color: #0b1c33; letter-spacing: -0.02em;">Rp 398.000.000</div>
+                                <div class="d-flex align-items-center gap-1.5 mt-1">
+                                    <span class="text-success fw-bold" style="font-size: 12.5px;">
+                                        <i class="fa-solid fa-arrow-trend-up"></i> +16%
+                                    </span>
+                                    <span class="text-muted" style="font-size: 12px;">vs musim sebelumnya</span>
+                                </div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px;">
+                                <i class="fa-solid fa-wheat-awn text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Commodity Distribution Doughnut -->
+                    <div class="card p-3 flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="section-title">Distribusi Komoditas</div>
+                            <span class="pill gray">Proporsi Wilayah</span>
+                        </div>
+                        <div style="height: 160px; position: relative;">
+                            <canvas id="commodityPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Agronomy AI Insights & Schedule/Calendar Agenda -->
+            <div class="row g-4 mb-4">
+                <!-- Catatan & Rekomendasi Agronomi AI -->
+                <div class="col-xl-6 col-lg-12">
+                    <div class="card h-100 p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="section-title">Catatan & Rekomendasi Agronomi AI</div>
+                                <div class="section-sub">Analisis presisi berdasarkan telemetri sensor tanah</div>
+                            </div>
+                            <a href="/policy_brief" class="btn-primary-accent py-1 px-3" style="font-size: 12px;">
+                                <i class="fa-solid fa-brain"></i> AI Policy
+                            </a>
+                        </div>
+
+                        <!-- Pill Switch -->
+                        <div class="mb-3">
+                            <div class="glass-pill-switch w-100 justify-content-around">
+                                <button class="active flex-grow-1" id="btn-rekom-ai">Rekomendasi AI</button>
+                                <button class="flex-grow-1" id="btn-catatan-umum">Catatan Lapangan</button>
+                            </div>
+                        </div>
+
+                        <!-- Note Item 1 -->
+                        <div class="glass-note-item">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold mb-0" style="font-size: 13.5px; color: #0b1c33;">Optimalisasi Pemupukan NPK Fase Generatif</h6>
+                                <span class="pill green py-0.5 px-2" style="font-size: 11px;">Prioritas Tinggi</span>
+                            </div>
+                            <p class="text-muted mb-2" style="font-size: 12.5px; line-height: 1.5;">
+                                Berdasarkan telemetri tanah lahan Sumenep, penyesuaian rasio Kalium pada fase generatif meningkatkan bobot panen hingga 14%.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #e2e8f0 !important; font-size: 12px;">
+                                <span class="text-muted"><i class="fa-solid fa-seedling text-success me-1"></i> Rekomendasi Pupuk KCL</span>
+                                <a href="/policy_brief" class="text-decoration-none text-primary fw-semibold d-flex align-items-center gap-1">
+                                    <i class="fa-solid fa-book-open"></i> Baca Lengkap
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Note Item 2 -->
+                        <div class="glass-note-item mb-0">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold mb-0" style="font-size: 13.5px; color: #0b1c33;">Strategi Otomasi Irigasi Tetes Berkelanjutan</h6>
+                                <span class="pill blue py-0.5 px-2" style="font-size: 11px;">Efisiensi Air</span>
+                            </div>
+                            <p class="text-muted mb-2" style="font-size: 12.5px; line-height: 1.5;">
+                                Efisiensi debit air tanah sumur bor dapat ditingkatkan melalui otomasi valve berbasis moisture threshold 45% pada titik kering Saronggi.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #e2e8f0 !important; font-size: 12px;">
+                                <span class="text-muted"><i class="fa-solid fa-droplet text-primary me-1"></i> Jadwal Pagi 06:00 WIB</span>
+                                <a href="/policy_brief" class="text-decoration-none text-primary fw-semibold d-flex align-items-center gap-1">
+                                    <i class="fa-solid fa-book-open"></i> Baca Lengkap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agenda & Jadwal Lapangan -->
+                <div class="col-xl-6 col-lg-12">
+                    <div class="card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <div class="section-title">Agenda Pemantauan Lapangan</div>
+                                    <div class="section-sub">Jadwal inspeksi sensor & koordinasi poktan</div>
+                                </div>
+                                <span class="pill amber"><i class="fa-regular fa-calendar-check me-1"></i> Hari Ini</span>
+                            </div>
+
+                            <!-- Dark Date Slider Bar -->
+                            <div class="glass-dark-date-bar mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2.5">
+                                    <h6 class="fw-bold mb-0 text-white" style="font-size: 13.5px;">Maret 2026</h6>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-light border-0 p-1" style="opacity: 0.8;"><i class="fa-solid fa-chevron-left" style="font-size: 10px;"></i></button>
+                                        <button class="btn btn-sm btn-outline-light border-0 p-1" style="opacity: 0.8;"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></button>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center" style="overflow-x: auto; padding-bottom: 2px;">
+                                    <div class="dark-date-pill"><span>Sen</span><span class="fw-bold mt-1">23</span></div>
+                                    <div class="dark-date-pill"><span>Sel</span><span class="fw-bold mt-1">24</span></div>
+                                    <div class="dark-date-pill active"><span>Rab</span><span class="fw-bold mt-1">25</span></div>
+                                    <div class="dark-date-pill"><span>Kam</span><span class="fw-bold mt-1">26</span></div>
+                                    <div class="dark-date-pill"><span>Jum</span><span class="fw-bold mt-1">27</span></div>
+                                    <div class="dark-date-pill"><span>Sab</span><span class="fw-bold mt-1">28</span></div>
+                                    <div class="dark-date-pill"><span>Min</span><span class="fw-bold mt-1">29</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Items -->
+                            <div class="d-flex flex-column gap-2">
+                                <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <div style="width: 34px; height: 34px; border-radius: 8px; background: #dbeafe; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                                            <i class="fa-solid fa-microchip"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark" style="font-size: 12.5px;">Audit & Kalibrasi Sensor USB</div>
+                                            <div class="text-muted" style="font-size: 11px;">Blok Saronggi A · Sensor NPK/pH</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-white text-secondary border px-2.5 py-1.5" style="font-size: 11px; font-weight: 600;">08:30 - 09:30</span>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <div style="width: 34px; height: 34px; border-radius: 8px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark" style="font-size: 12.5px;">Rapat Koordinasi Kelompok Tani</div>
+                                            <div class="text-muted" style="font-size: 11px;">Poktan Tani Maju · Evaluasi Irigasi</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-white text-secondary border px-2.5 py-1.5" style="font-size: 11px; font-weight: 600;">10:00 - 11:30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Avatar & Team Stack -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top">
+                            <div class="glass-avatar-stack">
+                                <div class="glass-avatar-stack-item" style="background: #2563eb;">AR</div>
+                                <div class="glass-avatar-stack-item" style="background: #16a34a;">LC</div>
+                                <div class="glass-avatar-stack-item" style="background: #f59e0b;">RF</div>
+                                <div class="glass-avatar-stack-item" style="background: #0b1c33; font-size: 10px;">+3</div>
+                            </div>
+                            <span class="stat-badge green" style="font-size: 11px;">
+                                <span class="status-dot"></span> Tim Lapangan Siaga
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Sensor Log Table -->
+            <div class="card">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <div class="section-title">Log Monitoring Sensor Lapangan Realtime</div>
+                        <div class="section-sub">Ringkasan titik koordinat dan parameter hara terbaru</div>
+                    </div>
+                    <a href="/sensor" class="btn-secondary">
+                        Lihat Semua Log Sensor <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">#</th>
+                                <th>Desa</th>
+                                <th>Komoditas</th>
+                                <th>pH Tanah</th>
+                                <th>Kelembaban</th>
+                                <th>Status Irigasi</th>
+                                <th style="text-align: right; width: 100px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-secondary fw-semibold">1</td>
+                                <td class="fw-bold">Beraji</td>
+                                <td><span class="pill green">Padi · 0.3 Ha</span></td>
+                                <td class="fw-bold text-dark">7.9</td>
+                                <td class="fw-medium">20.8%</td>
+                                <td><span class="pill green"><span class="status-dot me-1"></span> Aktif</span></td>
+                                <td style="text-align: right;"><a href="/sensor" class="btn-icon" title="Detail"><i class="fa-solid fa-eye"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary fw-semibold">2</td>
+                                <td class="fw-bold">Gapura Tengah</td>
+                                <td><span class="pill red">Cabai · 0.2 Ha</span></td>
+                                <td class="fw-bold text-dark">6.8</td>
+                                <td class="fw-medium">8.5%</td>
+                                <td><span class="pill gray">Tadahan</span></td>
+                                <td style="text-align: right;"><a href="/sensor" class="btn-icon" title="Detail"><i class="fa-solid fa-eye"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary fw-semibold">3</td>
+                                <td class="fw-bold">Lenteng Barat</td>
+                                <td><span class="pill amber">Jagung · 0.5 Ha</span></td>
+                                <td class="fw-bold text-dark">7.1</td>
+                                <td class="fw-medium">12.4%</td>
+                                <td><span class="pill green"><span class="status-dot me-1"></span> Aktif</span></td>
+                                <td style="text-align: right;"><a href="/sensor" class="btn-icon" title="Detail"><i class="fa-solid fa-eye"></i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </div>
 
-
 <%- include('../partials/_foot_admin.ejs') %>
 
+<!-- Chart Initialization Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dual Bar Chart: Dashboard Activity & Production
+        const actCtx = document.getElementById('dashboardActivityChart');
+        if (actCtx) {
+            new Chart(actCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sab', 'Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum'],
+                    datasets: [
+                        {
+                            label: 'Aktivitas Lahan (Jam)',
+                            data: [18, 14, 22, 16, 24, 12, 20],
+                            backgroundColor: '#2563eb',
+                            borderRadius: 6,
+                            barThickness: 12,
+                        },
+                        {
+                            label: 'Produksi (kg)',
+                            data: [12, 18, 15, 20, 18, 22, 14],
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 6,
+                            barThickness: 12,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0b1c33',
+                            titleFont: { size: 12, weight: 'bold' },
+                            bodyFont: { size: 11 },
+                            cornerRadius: 8,
+                            padding: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11, weight: '500' } }
+                        },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-
-
-
+        // Commodity Doughnut Chart
+        const pieCtx = document.getElementById('commodityPieChart');
+        if (pieCtx) {
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Padi', 'Cabai', 'Jagung', 'Tembakau'],
+                    datasets: [{
+                        data: [45, 25, 18, 12],
+                        backgroundColor: ['#16a34a', '#ef4444', '#f59e0b', '#2563eb'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 10,
+                                font: { size: 11 }
+                            }
+                        }
+                    },
+                    cutout: '68%'
+                }
+            });
+        }
+    });
+</script>

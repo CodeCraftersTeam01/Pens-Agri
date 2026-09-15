@@ -1,18 +1,41 @@
-<nav class="navbar navbar-expand-lg navbar-custom px-3 py-2">
-                <div class="container-fluid">
-                    <span class="navbar-brand text-navy fw-bold fs-5">Sistem Monitoring Lahan Pertanian Presisi</span>
-                    <div class="d-flex align-items-center">
-                        <span class="text-muted me-3 small"><i class="fa-solid fa-circle text-success fs-6 me-1"></i> Server Online</span>
-                        <div class="dropdown">
-                            <a class="btn btn-outline-navy dropdown-toggle btn-sm fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-user-gear me-1"></i> Administrator
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="/logout">Keluar</a></li>
-                            </ul>
-                        </div>
-                    </div>
+<header class="topnav">
+    <div class="topnav-left">
+        <button class="btn-sidebar-toggle d-lg-none me-2" id="sidebarToggle" aria-label="Toggle Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+            <div class="topnav-title">Sistem Monitoring Lahan Pertanian Presisi</div>
+            <div class="topnav-sub">Kabupaten Sumenep · Sensor USB & Precision Farming</div>
+        </div>
+    </div>
+
+    <div class="topnav-right">
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span>Server aktif</span>
+        </div>
+
+        <div class="dropdown">
+            <button class="btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                style="gap: 8px; font-size: 13.5px; padding: 7px 14px; border-radius: 10px;">
+                <div class="avatar" style="width:28px; height:28px; font-size:12px; background: #0b1c33;">
+                    <i class="fa-solid fa-user" style="font-size:12px;"></i>
                 </div>
-            </nav>
+                <span class="fw-semibold d-none d-sm-inline"><%= typeof email !== 'undefined' ? email.split('@')[0] : 'Administrator' %></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="min-width: 220px; padding: 10px; border-radius: 14px;">
+                <li class="px-2 py-1.5">
+                    <div style="font-size:11px; color: var(--color-text-secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">Masuk sebagai</div>
+                    <div style="font-size:13.5px; font-weight:700; color: var(--color-text-primary); margin-top: 2px;">
+                        <%= typeof email !== 'undefined' ? email : 'admin@pens-agri.ac.id' %>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item py-2" href="/users"><i class="fa-solid fa-gauge me-2 text-primary"></i> Dashboard</a></li>
+                <li><a class="dropdown-item py-2" href="/policy_brief"><i class="fa-solid fa-brain me-2 text-warning"></i> AI Policy Brief</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item text-danger py-2" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Keluar</a></li>
+            </ul>
+        </div>
+    </div>
+</header>

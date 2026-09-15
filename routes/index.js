@@ -83,4 +83,11 @@ router.get('/logout', function(req, res){
   });
 });
 
+router.get('/components', function(req, res, next) {
+  res.render('admin/components', {
+    currentRoute: '/components',
+    email: (req.session && req.session.userId) ? 'admin@pens-agri.ac.id' : 'guest@pens-agri.ac.id'
+  });
+});
+
 module.exports = router;

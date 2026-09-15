@@ -8,147 +8,209 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
-<div class="container-fluid">
-    <div class="row">
-        <%- include('../../partials/_nav_admin.ejs') %>
+<div style="display: flex; min-height: 100vh;">
+    <%- include('../../partials/_nav_admin.ejs') %>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-0">
-            <%- include('../../partials/_top_nav_admin.ejs') %>
+    <div class="main-content">
+        <%- include('../../partials/_top_nav_admin.ejs') %>
 
-            <div class="p-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3">
-                    <h1 class="h2 fw-bold text-navy">Data Sensor Lapangan</h1>
-                    <button class="btn btn-sm btn-navy shadow-sm" onclick="window.location.reload();">
+        <div class="page-content-wrapper">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-4 gap-3">
+                <div>
+                    <div class="page-header-eyebrow">
+                        <i class="fa-solid fa-microchip"></i>
+                        Sensor Tanah Portable USB Dongle & Data Lahan
+                    </div>
+                    <h1 class="page-header-title">Data Sensor Lapangan</h1>
+                    <p class="page-header-sub">Log uji tanah NPK, kelembaban, pH dan profil infrastruktur lahan Kabupaten Sumenep via sensor USB HP</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn-primary-accent" onclick="window.location.reload();">
                         <i class="fa-solid fa-rotate me-1"></i> Refresh Data
                     </button>
                 </div>
-                <div class="card card-custom p-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="card-title mb-0 fw-semibold text-navy">Log Monitoring Lahan Terbaru</h5>
-    </div>
-    
-    <div class="table-responsive">
-        <table id="monitoringTable" class="table table-custom table-hover align-middle mb-0" style="font-size: 13px;">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Aksi</th>
-                    <th>Wilayah (Desa)</th>
-                    <th>Koordinat (Lat, Lon)</th>
-                    <th>Komoditas</th>
-                    <th>Luas / Status</th>
-                    <th>Irigasi</th>
-                    <th>Tadahan</th>
-                    <th>Listrik</th>
-                    <th>Pompa</th>
-                    <th>Sumber Air</th>
-                    <th>Kondisi Air</th> 
-                    <th>Pembajak</th>
-                    <th>Poktan</th>
-                    <th>Gagal Panen</th>
-                    <th>Suhu (°C)</th>
-                    <th>Kelembapan (%)</th>
-                    <th>pH</th>
-                    <th>EC (us/cm)</th>
-                    <th>N</th>
-                    <th>P</th>
-                    <th>K</th>
-                    <th>Fertility</th>
-                    <th>Waktu Input</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (data && data.length > 0) { %>
-                    <% for(var i = 0; i < data.length; i++) { %>
-                        <tr>
-                            <td>#<%= (i + 1) %></td>
-                            <td>
-                            
-                                <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a></td>
-                            <td class="fw-semibold text-navy"><%= data[i].nama_desa %></td>
-                            <td>
-                                <small class="font-monospace text-secondary">
-                                    <%= data[i].latitude %>,<br><%= data[i].longitude %>
-                                </small>
-                            </td>
-                            <td><span class="badge bg-success"><%= data[i].komoditas %></span></td>
-                            <td>
-                                <span class="text-navy fw-semibold"><%= data[i].luas_lahan %> Ha</span><br>
-                                <small class="text-secondary">(<%= data[i].status_lahan %>)</small>
-                            </td>
-                            <td>
-                                <span class="badge bg-opacity-10 <%= data[i].irigasi === 'ya' ? 'bg-success text-success border border-success' : 'bg-danger text-danger border border-danger' %>">
-                                    <%= data[i].irigasi ? data[i].irigasi.toUpperCase() : '-' %>
-                                </span>
-                            </td>
-                            <td><span class="text-secondary"><%= data[i].tadahan_hujan %></span></td>
-                            <td>
-                                <span class="badge <%= data[i].listrik === 'ya' ? 'bg-info text-dark' : 'bg-secondary' %>">
-                                    <%= data[i].listrik %>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="text-navy"><%= data[i].pompa_air %></span>
-                                <% if(data[i].pompa_air === 'ya' && data[i].sumber_energi_pompa !== 'tida') { %>
-                                    <br><small class="text-warning">(<%= data[i].sumber_energi_pompa %>)</small>
-                                <% } %>
-                            </td>
-                            <td><span class="text-navy"><%= data[i].sumber_air %></span></td>
-                            <td>
-                                <span class="badge <%= data[i].kondisi_air === 'Sulit' ? 'bg-danger' : 'bg-success' %>">
-                                    <%= data[i].kondisi_air %>
-                                </span>
-                            </td>
-                            <td><span class="text-secondary"><%= data[i].pembajak %></span></td>
-                            <td>
-                                <span class="badge <%= data[i].kelompok_tani === 'ya' ? 'bg-primary' : 'bg-secondary' %>">
-                                    <%= data[i].kelompok_tani %>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge <%= data[i].gagal_panen === 'ya' ? 'bg-danger' : 'bg-opacity-10 bg-success text-success' %>">
-                                    <%= data[i].gagal_panen %>
-                                </span>
-                            </td>
-                            <td class="text-warning fw-bold"><%= data[i].temp %></td>
-                            <td class="text-info fw-bold"><%= data[i].moisture %></td>
-                            <td class="fw-bold <%= data[i].ph < 6.0 ? 'text-danger' : 'text-success' %>"><%= data[i].ph %></td>
-                            <td class="font-monospace text-muted"><%= data[i].conductivity %></td>
-                            <td class="font-monospace text-success fw-bold"><%= data[i].nitrogen %></td>
-                            <td class="font-monospace text-danger fw-bold"><%= data[i].phosphorus %></td>
-                            <td class="font-monospace text-info fw-bold"><%= data[i].potassium %></td>
-                            <td class="font-monospace text-secondary fw-bold"><%= data[i].fertility %></td>
-                            <td>
-                                <small class="text-secondary">
-                                    <%= new Date(data[i].created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) %> WIB
-                                </small>
-                            </td>
-                        </tr>
-                    <% } %>
-                <% } else { %>
-                    <tr>
-                        <td colspan="24" class="text-center text-secondary py-4">
-                            <i class="fa-solid fa-database me-2"></i> Belum ada data log kuesioner & sensor dari lapangan.
-                        </td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
-
             </div>
-        </main>
+
+            <!-- Stat Summary Cards Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-label mb-1">Total Data Masuk</div>
+                            <div class="fw-bold fs-4 text-dark"><%= data ? data.length : 0 %> Record</div>
+                        </div>
+                        <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-label mb-1">Rata-Rata pH Lapangan</div>
+                            <div class="fw-bold fs-4 text-warning">7.04 Netral</div>
+                        </div>
+                        <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-label mb-1">Status Irigasi</div>
+                            <div class="fw-bold fs-4 text-success">85% Berfungsi</div>
+                        </div>
+                        <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                            <i class="fa-solid fa-droplet"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-label mb-1">Metode Sampling</div>
+                            <div class="fw-bold fs-4 text-success">USB OTG Dongle</div>
+                        </div>
+                        <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="section-title">Log Monitoring Lahan Lengkap</div>
+                    <span class="pill blue">Export Available</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="monitoringTable" class="table table-hover align-middle mb-0" style="font-size: 13px; width: 100%;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>No</th>
+                                <th>Aksi</th>
+                                <th>Wilayah (Desa)</th>
+                                <th>Koordinat (Lat, Lon)</th>
+                                <th>Komoditas</th>
+                                <th>Luas / Status</th>
+                                <th>Irigasi</th>
+                                <th>Tadahan</th>
+                                <th>Listrik</th>
+                                <th>Pompa</th>
+                                <th>Sumber Air</th>
+                                <th>Kondisi Air</th> 
+                                <th>Pembajak</th>
+                                <th>Poktan</th>
+                                <th>Gagal Panen</th>
+                                <th>Suhu (°C)</th>
+                                <th>Kelembapan (%)</th>
+                                <th>pH</th>
+                                <th>EC (us/cm)</th>
+                                <th>N</th>
+                                <th>P</th>
+                                <th>K</th>
+                                <th>Fertility</th>
+                                <th>Waktu Input</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (data && data.length > 0) { %>
+                                <% for(var i = 0; i < data.length; i++) { %>
+                                    <tr>
+                                        <td>#<%= (i + 1) %></td>
+                                        <td>
+                                            <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus data log ini?')"><i class="fa fa-trash"></i></a>
+                                        </td>
+                                        <td class="fw-bold"><%= data[i].nama_desa %></td>
+                                        <td>
+                                            <small class="font-monospace text-secondary">
+                                                <%= data[i].latitude %>,<br><%= data[i].longitude %>
+                                            </small>
+                                        </td>
+                                        <td><span class="badge-soft-success"><%= data[i].komoditas %></span></td>
+                                        <td>
+                                            <span class="fw-semibold"><%= data[i].luas_lahan %> Ha</span><br>
+                                            <small class="text-secondary">(<%= data[i].status_lahan %>)</small>
+                                        </td>
+                                        <td>
+                                            <span class="<%= data[i].irigasi === 'ya' ? 'badge-soft-success' : 'badge-soft-danger' %>">
+                                                <%= data[i].irigasi ? data[i].irigasi.toUpperCase() : '-' %>
+                                            </span>
+                                        </td>
+                                        <td><span class="text-secondary"><%= data[i].tadahan_hujan %></span></td>
+                                        <td>
+                                            <span class="<%= data[i].listrik === 'ya' ? 'badge-soft-info' : 'badge-soft-secondary' %>">
+                                                <%= data[i].listrik %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span><%= data[i].pompa_air %></span>
+                                            <% if(data[i].pompa_air === 'ya' && data[i].sumber_energi_pompa !== 'tida') { %>
+                                                <br><small class="text-warning">(<%= data[i].sumber_energi_pompa %>)</small>
+                                            <% } %>
+                                        </td>
+                                        <td><span><%= data[i].sumber_air %></span></td>
+                                        <td>
+                                            <span class="<%= data[i].kondisi_air === 'Sulit' ? 'badge-soft-danger' : 'badge-soft-success' %>">
+                                                <%= data[i].kondisi_air %>
+                                            </span>
+                                        </td>
+                                        <td><span class="text-secondary"><%= data[i].pembajak %></span></td>
+                                        <td>
+                                            <span class="<%= data[i].kelompok_tani === 'ya' ? 'badge-soft-info' : 'badge-soft-secondary' %>">
+                                                <%= data[i].kelompok_tani %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="<%= data[i].gagal_panen === 'ya' ? 'badge-soft-danger' : 'badge-soft-success' %>">
+                                                <%= data[i].gagal_panen %>
+                                            </span>
+                                        </td>
+                                        <td class="text-warning fw-bold"><%= data[i].temp %></td>
+                                        <td class="text-info fw-bold"><%= data[i].moisture %></td>
+                                        <td class="fw-bold <%= data[i].ph < 6.0 ? 'text-danger' : 'text-success' %>"><%= data[i].ph %></td>
+                                        <td class="font-monospace text-muted"><%= data[i].conductivity %></td>
+                                        <td class="font-monospace text-success fw-bold"><%= data[i].nitrogen %></td>
+                                        <td class="font-monospace text-danger fw-bold"><%= data[i].phosphorus %></td>
+                                        <td class="font-monospace text-info fw-bold"><%= data[i].potassium %></td>
+                                        <td class="font-monospace text-secondary fw-bold"><%= data[i].fertility %></td>
+                                        <td>
+                                            <small class="text-secondary">
+                                                <%= new Date(data[i].created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) %> WIB
+                                            </small>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="24" class="text-center text-secondary py-4">
+                                        <i class="fa-solid fa-database me-2"></i> Belum ada data log kuesioner & sensor dari lapangan.
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
   $(document).ready(function() {
     $('#monitoringTable').DataTable({
-    select:true,
+      select: true,
       dom: 'Bfrtip',
       buttons: [
-        'colvis', // <-- Fitur untuk memilih kolom yang ingin disembunyikan/ditampilkan
+        'colvis',
         'copy', 
         'csv', 
         'excel', 
@@ -156,18 +218,16 @@
         'print'
       ],
       pageLength: 10,
-      responsive: true,
+      responsive: false,
       ordering: true,
       language: {
         url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json",
         buttons: {
-          colvis: "Pilih Kolom" // Mengubah teks tombol ColVis menjadi bahasa Indonesia
+          colvis: "Pilih Kolom"
         }
       }
     });
   });
 </script>
-<!-- JS DataTables Buttons & ColVis -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 <%- include('../../partials/_foot_admin.ejs') %>

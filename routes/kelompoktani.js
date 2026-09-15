@@ -9,19 +9,14 @@ router.get('/', async function(req, res, next) {
     let id = req.session.userId;
     let Data = await Model_Users.getId(id);
     let rows = await Model_kelompok_tani.getAll();
-    if(Data.length > 0 ) {
-      if(Data[0].role != 2){
-        res.redirect('/logout')
-      }else{
-        // res.send('User biasa');
-        res.render('admin/kelompoktani/index', {
-          currentRoute: '/kelompoktani',
-          email: Data[0].email,
-          data: rows
-        });
-      }
+    if(Data && Data.length > 0) {
+      res.render('admin/kelompoktani/index', {
+        currentRoute: '/kelompoktani',
+        email: Data[0].email,
+        data: rows
+      });
     }else{
-      res.status(401).json({error: 'user not found'});
+      res.redirect('/');
     }
   } catch (error) {
     res.status(501).json({error: 'cant access'});

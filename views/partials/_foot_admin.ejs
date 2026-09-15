@@ -3,56 +3,181 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // 1. Inisialisasi Chart Line - Tren Unsur Hara NPK
-    const npkCtx = document.getElementById('npkTrendChart').getContext('2d');
-    new Chart(npkCtx, {
-        type: 'line',
-        data: {
-            labels: ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4', 'Lahan 5', 'Lahan 6'],
-            datasets: [
-                { label: 'Nitrogen (N)', data: [42, 45, 38, 50, 40, 47], borderColor: '#198754', tension: 0.3 },
-                { label: 'Fosfor (P)', data: [30, 32, 29, 41, 35, 38], borderColor: '#dc3545', tension: 0.3 },
-                { label: 'Kalium (K)', data: [55, 58, 62, 49, 52, 60], borderColor: '#0dcaf0', tension: 0.3 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { grid: { color: '#2d2d2d' }, ticks: { color: '#a0a0a0' } },
-                x: { grid: { color: '#2d2d2d' }, ticks: { color: '#a0a0a0' } }
-            },
-            plugins: {
-                legend: { labels: { color: '#e0e0e0' } }
-            }
+    // Global Responsive Sidebar Drawer Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('mainSidebar') || document.querySelector('.sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const closeBtn = document.getElementById('sidebarCloseBtn');
+        const backdrop = document.getElementById('sidebarBackdrop');
+
+        function openSidebar() {
+            if (sidebar) sidebar.classList.add('show');
+            if (backdrop) backdrop.classList.add('show');
+            document.body.style.overflow = 'hidden';
         }
+
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove('show');
+            if (backdrop) backdrop.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (sidebar && sidebar.classList.contains('show')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeSidebar();
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function() {
+                closeSidebar();
+            });
+        }
+
+        // Close sidebar on link navigation on mobile
+        const navLinks = document.querySelectorAll('.sidebar-link:not([data-bs-toggle="collapse"]), .sidebar-sublink');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 992) {
+                    closeSidebar();
+                }
+            });
+        });
     });
 
-    // 2. Inisialisasi Chart Pie - Distribusi Komoditas
-    const commodityCtx = document.getElementById('commodityPieChart').getContext('2d');
-    new Chart(commodityCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Jagung', 'Padi', 'Tembakau', 'Lainnya'],
-            datasets: [{
-                data: [45, 35, 15, 5],
-                backgroundColor: ['#198754', '#0d6efd', '#ffc107', '#6c757d'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    position: 'bottom',
-                    labels: { color: '#e0e0e0', padding: 15 } 
+    // Shared Chart defaults — light mode
+    Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#6b7280';
+
+    // NPK Trend Chart
+    const npkCtx = document.getElementById('npkTrendChart');
+    if (npkCtx) {
+        new Chart(npkCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4', 'Lahan 5', 'Lahan 6'],
+                datasets: [
+                    {
+                        label: 'Nitrogen (N)',
+                        data: [42, 45, 38, 50, 40, 47],
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22,163,74,0.06)',
+                        tension: 0.35,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#16a34a',
+                        fill: true
+                    },
+                    {
+                        label: 'Fosfor (P)',
+                        data: [30, 32, 29, 41, 35, 38],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.04)',
+                        tension: 0.35,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#ef4444',
+                        fill: true
+                    },
+                    {
+                        label: 'Kalium (K)',
+                        data: [55, 58, 62, 49, 52, 60],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.04)',
+                        tension: 0.35,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#3b82f6',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                scales: {
+                    x: {
+                        grid: { color: '#f3f4f6', drawBorder: false },
+                        ticks: { color: '#9ca3af' },
+                        border: { display: false }
+                    },
+                    y: {
+                        grid: { color: '#f3f4f6', drawBorder: false },
+                        ticks: { color: '#9ca3af' },
+                        border: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#6b7280', boxWidth: 12, padding: 16, usePointStyle: true }
+                    },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        titleColor: '#111827',
+                        bodyColor: '#6b7280',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.07)',
+                        cornerRadius: 8,
+                        padding: 10
+                    }
                 }
             }
-        }
-    });
+        });
+    }
+
+    // Commodity Pie Chart
+    const commodityCtx = document.getElementById('commodityPieChart');
+    if (commodityCtx) {
+        new Chart(commodityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Jagung', 'Padi', 'Tembakau', 'Lainnya'],
+                datasets: [{
+                    data: [45, 35, 15, 5],
+                    backgroundColor: ['#16a34a', '#3b82f6', '#f59e0b', '#e5e7eb'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#6b7280', boxWidth: 10, padding: 14, usePointStyle: true }
+                    },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        titleColor: '#111827',
+                        bodyColor: '#6b7280',
+                        cornerRadius: 8,
+                        padding: 10
+                    }
+                }
+            }
+        });
+    }
 </script>
 
 </body>
 </html>
-

@@ -1,123 +1,83 @@
-<style>
-    /* Style untuk link sub-menu */
-.sidebar .sub-nav-link {
-    color: #b3c6d8;
-    padding: 8px 15px;
-    margin: 2px 10px;
-    font-size: 13.5px;
-    font-weight: 400;
-    border-radius: 6px;
-}
-
-.sidebar .sub-nav-link:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Kategori sub-menu saat aktif */
-.sidebar .sub-nav-link.sub-active {
-    color: #ffcc00 !important; /* Teks sub-menu menjadi kuning emas */
-    font-weight: 600;
-    background-color: transparent; /* Tetap transparan agar tidak nabrak menu utama */
-}
-
-/* Animasi putar ikon panah dropdown */
-.dropdown-arrow {
-    transition: transform 0.2s ease;
-}
-.sidebar .nav-link[aria-expanded="true"] .dropdown-arrow {
-    transform: rotate(180deg);
-}
-</style>
-<nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-0">
-    <div class="position-sticky pt-3">
-        <div class="px-4 py-3 d-flex align-items-center">
-            <i class="fa-solid fa-leaf text-yellow fs-3 me-2"></i> 
-            <span class="fs-5 fw-bold text-white tracking-wide">PENS AGRI</span>
-        </div>
-        <hr class="text-secondary mx-3" style="opacity: 0.15;">
-        
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/users') ? 'active' : '' %>" href="/users">
-                    <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/policy_brief') ? 'active' : '' %>" href="/policy_brief">
-                    <i class="fa-solid fa-chart-pie me-2"></i> Rekomendasi Kebijakan
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/petalahan') ? 'active' : '' %>" href="/petalahan">
-                    <i class="fa-solid fa-map-location-dot me-2"></i> Pemetaan Lahan
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/sensor') ? 'active' : '' %>" href="/sensor">
-                    <i class="fa-solid fa-database me-2"></i> Data Sensor
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <% 
-                    // Logika pengecekan apakah salah satu sub-menu sedang diakses
-                    var isMasterActive = (typeof currentRoute !== 'undefined' && (currentRoute === '/kelompoktani' || currentRoute === '/masterlahan' || currentRoute === '/komoditas'));
-                %>
-                <a class="nav-link d-flex justify-content-between align-items-center <%= isMasterActive ? 'active' : '' %>" 
-                   data-bs-toggle="collapse" 
-                   href="#masterDataDropdown" 
-                   role="button" 
-                   aria-expanded="<%= isMasterActive ? 'true' : 'false' %>">
-                    <div>
-                        <i class="fa-solid fa-layer-group me-2"></i> Master Pertanian
-                    </div>
-                    <i class="fa-solid fa-chevron-down small dropdown-arrow <%= isMasterActive ? 'rotate' : '' %>"></i>
-                </a>
-                
-                <div class="collapse <%= isMasterActive ? 'show' : '' %>" id="masterDataDropdown">
-                    <ul class="nav flex-column ms-3 ps-2" style="border-left: 1px solid rgba(255, 255, 255, 0.1);">
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/kelompoktani') ? 'sub-active' : '' %>" href="/kelompoktani">
-                                <i class="fa-solid fa-users me-2 small"></i> Kelompok Tani
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/sayur_buah') ? 'sub-active' : '' %>" href="/sayur_buah">
-                                <i class="fa-solid fa-mountain-sun me-2 small"></i> Statistik Sayur & Buah
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/luas_panen_sayur_buah') ? 'sub-active' : '' %>" href="/sayur_buah/luas_panen">
-                                <i class="fa-solid fa-mountain-sun me-2 small"></i> Statistik Luas Panen Sayur & Buah
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/biofarmaka') ? 'sub-active' : '' %>" href="/biofarmaka">
-                                <i class="fa-solid fa-mountain-sun me-2 small"></i> Statistik Biofarmaka
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/luas_panen_biofarmaka') ? 'sub-active' : '' %>" href="/biofarmaka/luas_panen">
-                                <i class="fa-solid fa-mountain-sun me-2 small"></i> Statistik Luas Panen Biofarmaka
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link sub-nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/luas_tanam_perkebunan_rakyat') ? 'sub-active' : '' %>" href="/luas_tanam_perkebunan_rakyat">
-                                <i class="fa-solid fa-mountain-sun me-2 small"></i> Statistik Luas Tanam Perkebunan Rakyat
-                            </a>
-                        </li>
-                    </li>
-                </ul>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<nav class="sidebar" id="mainSidebar">
+    <!-- Brand -->
+    <div class="d-flex justify-content-between align-items-center w-100 pe-2">
+        <a href="/users" class="sidebar-brand flex-grow-1 border-0">
+            <div class="sidebar-brand-icon">
+                <i class="fa-solid fa-leaf"></i>
             </div>
-            
-            <li class="nav-item">
-                <a class="nav-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/pengaturan') ? 'active' : '' %>" href="/pengaturan">
-                    <i class="fa-solid fa-gears me-2"></i> Pengaturan
+            <div class="sidebar-brand-text">
+                <span class="sidebar-brand-name">PENS Agri</span>
+                <span class="sidebar-brand-sub">Precision System</span>
+            </div>
+        </a>
+        <button class="sidebar-close-btn d-lg-none" id="sidebarCloseBtn" aria-label="Tutup Menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <div class="sidebar-nav">
+        <div class="sidebar-section-label">Menu Utama</div>
+
+        <a class="sidebar-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/users') ? 'active' : '' %>" href="/users">
+            <i class="fa-solid fa-house link-icon"></i>
+            Dashboard
+        </a>
+
+        <a class="sidebar-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/policy_brief') ? 'active' : '' %>" href="/policy_brief">
+            <i class="fa-solid fa-brain link-icon"></i>
+            AI Policy Brief
+        </a>
+
+        <a class="sidebar-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/petalahan') ? 'active' : '' %>" href="/petalahan">
+            <i class="fa-solid fa-map link-icon"></i>
+            Peta Lahan
+        </a>
+
+        <a class="sidebar-link <%= (typeof currentRoute !== 'undefined' && currentRoute === '/sensor') ? 'active' : '' %>" href="/sensor">
+            <i class="fa-solid fa-microchip link-icon"></i>
+            Data Sensor
+        </a>
+
+        <div class="sidebar-section-label">Master Data</div>
+
+        <%
+            var isMasterActive = (typeof currentRoute !== 'undefined' && (
+                currentRoute === '/kelompoktani' ||
+                currentRoute === '/sayur_buah' ||
+                currentRoute === '/biofarmaka' ||
+                currentRoute === '/luas_tanam_perkebunan_rakyat'
+            ));
+        %>
+
+        <a class="sidebar-link d-flex justify-content-between align-items-center <%= isMasterActive ? 'active' : '' %>"
+           data-bs-toggle="collapse"
+           href="#masterCollapse"
+           role="button"
+           aria-expanded="<%= isMasterActive ? 'true' : 'false' %>">
+            <span class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-database link-icon"></i>
+                Pertanian
+            </span>
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+        </a>
+
+        <div class="collapse <%= isMasterActive ? 'show' : '' %>" id="masterCollapse">
+            <div class="sidebar-submenu">
+                <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/kelompoktani') ? 'active' : '' %>" href="/kelompoktani">
+                    Kelompok Tani
                 </a>
-            </li>
-        </ul>
+                <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/sayur_buah') ? 'active' : '' %>" href="/sayur_buah">
+                    Sayur & Buah
+                </a>
+                <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/biofarmaka') ? 'active' : '' %>" href="/biofarmaka">
+                    Biofarmaka
+                </a>
+                <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/luas_tanam_perkebunan_rakyat') ? 'active' : '' %>" href="/luas_tanam_perkebunan_rakyat">
+                    Luas Perkebunan
+                </a>
+            </div>
+        </div>
     </div>
 </nav>

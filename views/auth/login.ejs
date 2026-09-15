@@ -1,121 +1,334 @@
 <%- include('../partials/_head.ejs') %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 
 <style>
-    body {
-        background-color: #f4f6f9; /* Latar belakang cerah senada dashboard */
-        color: #333333;
-        font-family: 'Inter', sans-serif;
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+        --color-brand-navy: #0b1c33;
+        --color-brand-navy-hover: #162a45;
+        --color-brand-gold: #f59e0b;
+        --color-brand-gold-glow: rgba(245, 158, 11, 0.25);
+        --color-brand-blue: #2563eb;
+        --color-brand-green: #16a34a;
+        --color-border: #cbd5e1;
+        --color-input-bg: #ffffff;
+        --color-icon-box-bg: #f8fafc;
     }
-    .login-container {
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 0;
         min-height: 100vh;
+        background: #eef2f6;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(22, 163, 74, 0.05) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.03) 0px, transparent 50%);
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 24px;
+        -webkit-font-smoothing: antialiased;
+        color: #1e293b;
     }
-    .card-login {
-        background-color: #ffffff; /* Card Putih Bersih */
-        border: 1px solid #e3e6f0;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08); /* Shadow halus warna navy */
+
+    .auth-card {
         width: 100%;
-        max-width: 420px;
-        padding: 2.5rem 2rem;
+        max-width: 440px;
+        background: #ffffff;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 24px;
+        box-shadow: 
+            0 12px 36px -4px rgba(11, 28, 51, 0.08),
+            0 4px 12px -2px rgba(11, 28, 51, 0.04);
+        padding: 44px 38px 36px 38px;
+        text-align: center;
+        position: relative;
     }
-    .brand-logo {
-        color: #ffcc00; /* Menggunakan aksen Kuning Emas */
-        font-size: 3.5rem;
-        margin-bottom: 0.5rem;
-        /* Efek glow kuning lembut pada ikon daun */
-        filter: drop-shadow(0 4px 6px rgba(255, 204, 0, 0.4)); 
-        animation: float 3s ease-in-out infinite;
+
+    /* Golden Leaf Brand Logo */
+    .brand-logo-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        margin-bottom: 20px;
+        position: relative;
     }
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(0px); }
+
+    .brand-leaf-icon {
+        font-size: 48px;
+        color: var(--color-brand-gold);
+        filter: drop-shadow(0 4px 14px var(--color-brand-gold-glow));
+        transform: rotate(-10deg);
+        display: inline-block;
+        transition: transform 0.3s ease;
     }
-    .text-navy {
-        color: #0a2540; /* Warna utama Biru Navy */
+
+    .auth-card:hover .brand-leaf-icon {
+        transform: rotate(0deg) scale(1.05);
     }
+
+    /* Titles */
+    .auth-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--color-brand-navy);
+        letter-spacing: 0.02em;
+        margin: 0 0 6px 0;
+        text-transform: uppercase;
+    }
+
+    .auth-subtitle {
+        font-size: 13.5px;
+        color: #64748b;
+        font-weight: 450;
+        margin: 0 0 32px 0;
+        line-height: 1.4;
+    }
+
+    /* Form Fields */
+    .form-group {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    .input-group-custom {
+        display: flex;
+        align-items: stretch;
+        background: var(--color-input-bg);
+        border: 1.5px solid var(--color-border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .input-group-custom:focus-within {
+        border-color: var(--color-brand-blue);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .input-icon-box {
+        width: 48px;
+        background: var(--color-icon-box-bg);
+        border-right: 1.5px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-brand-blue);
+        font-size: 15px;
+        flex-shrink: 0;
+        transition: background 0.2s ease;
+    }
+
+    .input-group-custom:focus-within .input-icon-box {
+        background: #eff6ff;
+        border-right-color: var(--color-brand-blue);
+    }
+
     .form-control-custom {
-        background-color: #ffffff !important;
-        border: 1px solid #d1d3e2 !important;
-        color: #333333 !important;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-    }
-    .form-control-custom:focus {
-        border-color: #0a2540 !important; /* Focus ke warna Biru Navy */
-        box-shadow: 0 0 0 0.25rem rgba(10, 37, 64, 0.15) !important;
-    }
-    .input-group-text-custom {
-        background-color: #f8f9fc !important;
-        border: 1px solid #d1d3e2 !important;
-        color: #4e73df !important; /* Warna ikon input group ke arah biru murni */
-    }
-    .btn-navy {
-        background-color: #0a2540; /* Tombol utama Biru Navy */
+        flex: 1;
         border: none;
-        color: #ffffff;
-        padding: 0.75rem;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: background-color 0.2s;
+        padding: 13px 16px;
+        font-size: 14px;
+        color: #0f172a;
+        font-family: inherit;
+        outline: none;
+        background: transparent;
     }
-    .btn-navy:hover {
-        background-color: #061729;
+
+    .form-control-custom::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Submit Button */
+    .btn-login {
+        width: 100%;
+        padding: 14px 20px;
+        background: var(--color-brand-navy);
         color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        margin-top: 26px;
+        box-shadow: 0 4px 14px rgba(11, 28, 51, 0.2);
+    }
+
+    .btn-login:hover {
+        background: var(--color-brand-navy-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(11, 28, 51, 0.28);
+        color: #ffffff;
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    /* Alerts */
+    .alert-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 13px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+    }
+
+    .alert-success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #15803d;
+    }
+
+    /* Footer Copyright */
+    .auth-footer {
+        margin-top: 36px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .auth-register-link {
+        margin-top: 14px;
+        font-size: 12.5px;
+        color: #64748b;
+    }
+
+    .auth-register-link a {
+        color: var(--color-brand-blue);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-register-link a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding: 16px;
+        }
+        .auth-card {
+            padding: 32px 22px 28px 22px;
+            border-radius: 20px;
+        }
+        .brand-logo-container {
+            width: 58px;
+            height: 58px;
+            margin-bottom: 14px;
+        }
+        .brand-leaf-icon {
+            font-size: 38px;
+        }
+        .auth-title {
+            font-size: 20px;
+        }
+        .auth-subtitle {
+            font-size: 12.5px;
+            margin-bottom: 24px;
+        }
+        .btn-login {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
     }
 </style>
 
-<div class="container">
-    <div class="row login-container">
-        <div class="card-login">
-            
-            <div class="text-center mb-4">
-                <div class="brand-logo">
-                    <i class="fa-solid fa-leaf"></i> 
-                </div>
-                <h4 class="fw-bold text-navy mb-1">PENS AGRI PRESISI</h4>
-                <p class="text-muted small">Smart Agriculture & Soil Monitoring System</p>
-            </div>
+<div class="auth-card">
+    <!-- Golden Leaf Icon -->
+    <div class="brand-logo-container">
+        <i class="fa-solid fa-leaf brand-leaf-icon"></i>
+    </div>
 
-            <% if (typeof messages !== 'undefined' && messages.error) { %>
-                <div class="alert alert-danger bg-danger bg-opacity-10 text-danger border-danger small py-2 px-3 rounded-3 mb-3" role="alert">
-                    <i class="fa-solid fa-circle-exclamation me-2"></i><%= messages.error %>
-                </div>
-            <% } %>
+    <!-- Title & Subtitle -->
+    <h1 class="auth-title">PENS AGRI PRESISI</h1>
+    <p class="auth-subtitle">Smart Agriculture & Soil Monitoring System</p>
 
-            <form action="/login" method="post">
-                <div class="mb-3">
-                    <label class="form-label small text-muted fw-semibold">Alamat Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text input-group-text-custom"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="email" name="email" class="form-control form-control-custom" placeholder="nama@email.com" required autocomplete="username">
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <label class="form-label small text-muted fw-semibold mb-0">Kata Sandi</label>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text input-group-text-custom"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" name="password" class="form-control form-control-custom" placeholder="••••••••" required autocomplete="current-password">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-navy w-100 mb-3 shadow-sm">
-                    Login <i class="fa-solid fa-arrow-right-to-bracket ms-1"></i>
-                </button>
-            </form>
-
-            <div class="text-center mt-4">
-                <p class="small text-muted mb-0">&copy; 2026 Politeknik Elektronika Negeri Surabaya</p>
-            </div>
-
+    <!-- Error/Success Flash Messages -->
+    <% if (typeof messages !== 'undefined' && messages.error) { %>
+        <div class="alert-box alert-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span><%= messages.error %></span>
         </div>
+    <% } %>
+
+    <% if (typeof messages !== 'undefined' && messages.success) { %>
+        <div class="alert-box alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <span><%= messages.success %></span>
+        </div>
+    <% } %>
+
+    <!-- Login Form -->
+    <form action="/login" method="post">
+        <!-- Email Input -->
+        <div class="form-group">
+            <label class="form-label" for="email">Alamat Email</label>
+            <div class="input-group-custom">
+                <div class="input-icon-box">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <input type="email" id="email" name="email" class="form-control-custom"
+                    placeholder="nama@email.com" required autocomplete="username">
+            </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+            <label class="form-label" for="password">Kata Sandi</label>
+            <div class="input-group-custom">
+                <div class="input-icon-box">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <input type="password" id="password" name="password" class="form-control-custom"
+                    placeholder="••••••••" required autocomplete="current-password">
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-login">
+            Login
+            <i class="fa-solid fa-arrow-right-to-bracket" style="font-size: 16px;"></i>
+        </button>
+    </form>
+
+    <div class="auth-register-link">
+        Belum punya akun Super User? <a href="/register">Daftar di sini</a>
+    </div>
+
+    <!-- Footer Copyright -->
+    <div class="auth-footer">
+        © 2026 Politeknik Elektronika Negeri Surabaya
     </div>
 </div>
 

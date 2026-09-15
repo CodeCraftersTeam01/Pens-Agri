@@ -1,144 +1,470 @@
 <%- include('../../partials/_head_admin.ejs') %>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 
 <style>
-    #map {
-        height: 550px;
-        width: 100%;
-        border-radius: 8px;
-        border: 1px solid #2d2d2d;
+    /* Reset Leaflet Div Icon defaults */
+    .custom-div-icon {
+        background: transparent !important;
+        border: none !important;
     }
-    /* Menyesuaikan pop-up Leaflet dengan tema gelap dashboard */
+
+    /* Map Container */
+    #map {
+        height: 680px;
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid var(--color-border);
+        box-shadow: 0 4px 20px rgba(11, 28, 51, 0.06);
+        z-index: 10;
+        background: #f8fafc;
+    }
+    @media (max-width: 767.98px) {
+        #map {
+            height: 480px !important;
+        }
+    }
+
+    /* Popup Styling */
     .leaflet-popup-content-wrapper {
-        background: #1e1e1e !important;
-        color: #e0e0e0 !important;
-        border: 1px solid #333;
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border: 1px solid var(--color-border);
+        border-radius: 14px;
         font-family: 'Inter', sans-serif;
+        box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+        padding: 0 !important;
+        overflow: hidden;
+    }
+    .leaflet-popup-content {
+        margin: 0 !important;
+        line-height: 1.5;
     }
     .leaflet-popup-tip {
-        background: #1e1e1e !important;
+        background: #ffffff !important;
     }
-    /* Sembunyikan tombol layer bawaan Leaflet agar tidak dobel karena sudah diganti dropdown kustom */
-    .leaflet-control-layers {
-        display: none !important;
+
+    /* Modern Pin Marker Base */
+    .custom-marker-pin {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        border: 2px solid #ffffff;
+        transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+    }
+    .custom-marker-pin:hover {
+        transform: rotate(-45deg) scale(1.25);
+        z-index: 9999 !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    .custom-marker-pin .pin-inner-icon {
+        transform: rotate(45deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Default Blue Pin Style */
+    .pin-default-blue {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        width: 30px !important;
+        height: 30px !important;
+    }
+    .pin-default-blue .dot-center {
+        width: 9px;
+        height: 9px;
+        background: #ffffff;
+        border-radius: 50%;
+        transform: rotate(45deg);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* Filtered Category Specific Color Gradients */
+    .pin-padi { background: linear-gradient(135deg, #16a34a, #15803d) !important; }
+    .pin-jagung { background: linear-gradient(135deg, #eab308, #ca8a04) !important; }
+    .pin-cabai { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; }
+    .pin-tembakau { background: linear-gradient(135deg, #059669, #047857) !important; }
+    .pin-kacang { background: linear-gradient(135deg, #d97706, #b45309) !important; }
+    .pin-irigasi { background: linear-gradient(135deg, #0284c7, #0369a1) !important; }
+    .pin-pompa { background: linear-gradient(135deg, #0d9488, #0f766e) !important; }
+    .pin-listrik { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
+
+    /* Simplified Filter Toolbar */
+    .filter-chip-btn {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 15px;
+        border-radius: 99px;
+        border: 1px solid var(--color-border);
+        background: #ffffff;
+        color: var(--color-text-secondary);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+    }
+    .filter-chip-btn:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+        background: #eff6ff;
+        transform: translateY(-1px);
+    }
+    .filter-chip-btn.active {
+        background: #0b1c33 !important;
+        color: #ffffff !important;
+        border-color: #0b1c33 !important;
+        box-shadow: 0 4px 10px rgba(11, 28, 51, 0.2);
+    }
+    .dot-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
     }
 </style>
 
-<div class="container-fluid">
-    <div class="row">
-        <%- include('../../partials/_nav_admin.ejs') %>
+<div style="display: flex; min-height: 100vh;">
+    <%- include('../../partials/_nav_admin.ejs') %>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-0">
-            <%- include('../../partials/_top_nav_admin.ejs') %>
+    <div class="main-content">
+        <%- include('../../partials/_top_nav_admin.ejs') %>
 
-            <div class="p-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-3">
-                    <h1 class="h2 fw-bold text-navy">Data Pemetaan Lapangan</h1>
-                    <button class="btn btn-sm btn-navy shadow-sm" onclick="window.location.reload();">
-                        <i class="fa-solid fa-rotate me-1"></i> Refresh Data
-                    </button>
+        <div class="page-content-wrapper">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-3 gap-2">
+                <div>
+                    <h1 class="page-header-title mb-1" style="font-size: 22px;">Peta Lahan & Infrastruktur</h1>
+                    <p class="page-header-sub mb-0" style="font-size: 13px;">Filter cepat komoditas pertanian dan jaringan infrastruktur lapangan</p>
                 </div>
-                
-
-                <div class="card card-custom p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0 fw-semibold text-white">
-                            <i class="fa-solid fa-map-location-dot text-teal me-2"></i>Sebaran Geografis Lahan Pertanian Presisi
-                        </h5>
-                        <div class="d-flex align-items-center" style="max-width: 250px;">
-                            <label for="layerSelect" class="text-secondary small me-2 text-nowrap"><i class="fa-solid fa-layer-group me-1"></i>Tampilan:</label>
-                            <select id="layerSelect" class="form-select form-select-sm bg-dark text-white border-secondary">
-                                <option value="standart">Standar (Peta Jalan)</option>
-                                <option value="satelit">Satelit (Foto Udara)</option>
-                                <option value="dark">Dark Mode (Minimalis)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div id="map"></div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/sensor" class="btn-secondary py-1.5" style="font-size: 13px;">
+                        <i class="fa-solid fa-microchip me-1"></i> Data Sensor
+                    </a>
                 </div>
-
             </div>
-        </main>
+
+            <!-- Single Clean Filter & Controls Toolbar -->
+            <div class="card p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <!-- Left: Interactive Filter Pills -->
+                    <div class="d-flex align-items-center flex-wrap gap-2" id="filterButtonGroup">
+                        <span class="text-secondary small fw-bold me-1 d-none d-md-inline">
+                            <i class="fa-solid fa-filter me-1 text-primary"></i>Filter:
+                        </span>
+                        <button type="button" class="filter-chip-btn active" data-filter="all">
+                            <span class="dot-indicator bg-primary"></span> Semua Titik
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="padi">
+                            🌾 Padi
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="jagung">
+                            🌽 Jagung
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="cabai">
+                            🌶️ Cabai
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="tembakau">
+                            🍃 Tembakau
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="irigasi">
+                            💧 Irigasi
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="pompa">
+                            ⚙️ Pompa
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="listrik">
+                            ⚡ Listrik
+                        </button>
+                    </div>
+
+                    <!-- Right: Counter Badge & Map Layer Selector -->
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <span class="badge bg-light text-dark border px-2.5 py-2 fw-semibold" id="statFilteredTitik" style="font-size: 12.5px;">
+                            <%= data ? data.length : 0 %> Titik
+                        </span>
+                        <select id="layerSelect" class="form-select form-select-sm" style="border-radius: 8px; width: auto; font-size: 13px; font-weight: 500;">
+                            <option value="google_roadmap">Google Maps</option>
+                            <option value="google_hybrid">Google Satelit</option>
+                            <option value="esri_street">Esri Street</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-secondary" id="btnResetFilter" title="Reset ke Semua Titik" style="border-radius: 8px; padding: 6px 10px;">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Card -->
+            <div class="card p-3">
+                <div id="map"></div>
+            </div>
+
+        </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Raw Data JSON Safe Storage -->
+<script type="application/json" id="lahan-raw-data"><%- JSON.stringify(data || []) %></script>
+
+<!-- Leaflet JS Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 
 <script>
-    // 1. Parsing data dari EJS Array ke JavaScript Client-Side secara aman
-    const lahanData = JSON.parse('<%- JSON.stringify(data || []) %>');
+(function() {
+    // 1. Parsing data dari script JSON secara aman
+    let lahanData = [];
+    try {
+        const rawJson = document.getElementById('lahan-raw-data').textContent;
+        lahanData = JSON.parse(rawJson || '[]');
+    } catch (e) {
+        console.error("Gagal parsing lahan data:", e);
+        lahanData = [];
+    }
 
-    // 2. Inisialisasi titik fokus awal peta
-    const defaultLat = lahanData.length > 0 ? lahanData[0].latitude : -7.0105855;
-    const defaultLon = lahanData.length > 0 ? lahanData[0].longitude : 113.8347767;
+    // 2. Inisialisasi Peta Leaflet dengan Pengaturan Performa Tinggi
+    const defaultLat = (lahanData.length > 0 && lahanData[0].latitude) ? parseFloat(lahanData[0].latitude) : -7.0105855;
+    const defaultLon = (lahanData.length > 0 && lahanData[0].longitude) ? parseFloat(lahanData[0].longitude) : 113.8347767;
     
-    const map = L.map('map').setView([defaultLat, defaultLon], 11);
-
-    // 3. Definisi Berbagai Jenis Layer Peta (Tile Layers)
-    const layerStandart = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    const map = L.map('map', {
+        center: [defaultLat, defaultLon],
+        zoom: 12,
+        preferCanvas: true
     });
 
-    const layerSatelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    // 3. Tile Layers (Google Maps Putih Bersih)
+    const layerGoogleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
+    });
+    const layerGoogleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google Maps',
+        maxZoom: 20
+    });
+    const layerEsriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '&copy; Esri',
+        maxZoom: 19
     });
 
-    const layerDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    });
+    layerGoogleRoadmap.addTo(map);
 
-    // Masukkan layer default saat pertama kali dimuat (Standar)
-    layerStandart.addTo(map);
-
-    // Daftarkan base maps ke kontrol layer Leaflet
     const baseMaps = {
-        "standart": layerStandart,
-        "satelit": layerSatelit,
-        "dark": layerDark
+        "google_roadmap": layerGoogleRoadmap,
+        "google_hybrid": layerGoogleHybrid,
+        "esri_street": layerEsriStreet
     };
 
-    // 4. Logika Aksi untuk Dropdown HTML Kustom di Kanan Atas
-    document.getElementById('layerSelect').addEventListener('change', function(e) {
-        const selectedValue = e.target.value;
-        
-        // Hapus semua base layer yang sedang aktif terlebih dahulu
-        for (let key in baseMaps) {
-            map.removeLayer(baseMaps[key]);
-        }
-        
-        // Aktifkan layer yang dipilih oleh pengguna
-        if (baseMaps[selectedValue]) {
-            baseMaps[selectedValue].addTo(map);
-        }
-    });
-
-    // 5. Proses Looping Marker menggunakan JavaScript Client-Side
-    if (lahanData.length > 0) {
-        lahanData.forEach(function(lahan) {
-            if (lahan.latitude && lahan.longitude) {
-                const marker = L.marker([lahan.latitude, lahan.longitude]).addTo(map);
-                
-                const popupContent = `
-                    <div style="min-width: 200px;">
-                        <h6 style="color: #00bfff; font-weight: bold; margin-bottom: 5px;">Desa ${lahan.nama_desa}</h6>
-                        <table style="width: 100%; font-size: 12px; color: #b0b0b0;">
-                            <tr><td><b>Komoditas</b></td><td>: <span style="color: #198754; font-weight: bold;">${lahan.komoditas}</span></td></tr>
-                            <tr><td><b>Luas Lahan</b></td><td>: ${lahan.luas_lahan} (${lahan.status_lahan})</td></tr>
-                            <tr><td><b>Irigasi</b></td><td>: ${lahan.irigasi.toUpperCase()}</td></tr>
-                            <tr><td colspan="2"><hr style="margin: 5px 0; border-color: #444;"></td></tr>
-                            <tr><td><b>Kadar pH</b></td><td>: <b>${lahan.ph}</b></td></tr>
-                            <tr><td><b>NPK Tanah</b></td><td>: N:${lahan.nitrogen} | P:${lahan.phosphorus} | K:${lahan.potassium}</td></tr>
-                            <tr><td><b>Kelembapan</b></td><td>: ${lahan.moisture}%</td></tr>
-                        </table>
-                    </div>
-                `;
-                
-                marker.bindPopup(popupContent);
+    const layerSelectEl = document.getElementById('layerSelect');
+    if (layerSelectEl) {
+        layerSelectEl.addEventListener('change', function(e) {
+            const selectedValue = e.target.value;
+            for (let key in baseMaps) {
+                map.removeLayer(baseMaps[key]);
+            }
+            if (baseMaps[selectedValue]) {
+                baseMaps[selectedValue].addTo(map);
             }
         });
     }
+
+    // 4. Layer Group Marker
+    const markerLayerGroup = L.layerGroup().addTo(map);
+
+    // Filter Mode Global: Default 'all'
+    let activeFilterMode = 'all';
+
+    // SVG Icons Map (Sharp Vector Rendering)
+    const svgIcons = {
+        padi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 12 12"/><path d="M11.3 7.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M6.3 12.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M16.3 7.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M12.8 16.3a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/></svg>',
+        jagung: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v10a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4Z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h8"/><path d="M12 20v2"/></svg>',
+        cabai: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.5 2 2 3.5 2 5 0 5-4 11-7 13-1-3 0-8 2-13 1-2.5 2-4 3-5Z"/><path d="M14 4c2-1 4 0 5 2"/></svg>',
+        tembakau: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+        kacang: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><path d="M12 6v12"/></svg>',
+        irigasi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
+        pompa: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+        listrik: '<svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
+    };
+
+    /**
+     * Membuat Icon DivIcon
+     */
+    function buildMarkerIcon(type) {
+        if (type === 'all' || !type) {
+            return L.divIcon({
+                className: 'custom-div-icon',
+                html: '<div class="custom-marker-pin pin-default-blue"><div class="dot-center"></div></div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -26]
+            });
+        }
+
+        const iconSvg = svgIcons[type] || '<div class="dot-center"></div>';
+        return L.divIcon({
+            className: 'custom-div-icon',
+            html: '<div class="custom-marker-pin pin-' + type + '"><div class="pin-inner-icon">' + iconSvg + '</div></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+            popupAnchor: [0, -32]
+        });
+    }
+
+    /**
+     * Render Markers Berdasarkan Filter Aktif
+     */
+    function renderMarkers() {
+        markerLayerGroup.clearLayers();
+
+        let visibleCount = 0;
+        const bounds = [];
+
+        lahanData.forEach(function(lahan) {
+            if (!lahan.latitude || !lahan.longitude) return;
+
+            const kom = (lahan.komoditas || '').toLowerCase().trim();
+            const iri = (lahan.irigasi || '').toLowerCase().trim();
+            const pom = (lahan.pompa_air || '').toLowerCase().trim();
+            const lis = (lahan.listrik || '').toLowerCase().trim();
+
+            // Saring titik sesuai filter yang aktif
+            if (activeFilterMode === 'padi' && kom.indexOf('padi') === -1) return;
+            if (activeFilterMode === 'jagung' && kom.indexOf('jagung') === -1) return;
+            if (activeFilterMode === 'cabai' && (kom.indexOf('cabai') === -1 && kom.indexOf('caba') === -1 && kom.indexOf('cabe') === -1)) return;
+            if (activeFilterMode === 'tembakau' && kom.indexOf('tembakau') === -1) return;
+            if (activeFilterMode === 'irigasi' && iri !== 'ya') return;
+            if (activeFilterMode === 'pompa' && pom !== 'ya') return;
+            if (activeFilterMode === 'listrik' && lis !== 'ya') return;
+
+            const lat = parseFloat(lahan.latitude);
+            const lng = parseFloat(lahan.longitude);
+            if (isNaN(lat) || isNaN(lng)) return;
+
+            visibleCount++;
+            bounds.push([lat, lng]);
+
+            const pinIcon = buildMarkerIcon(activeFilterMode);
+            const marker = L.marker([lat, lng], { icon: pinIcon });
+
+            // Popup detail card
+            const popupContent = `
+                <div style="min-width: 260px; font-family: 'Inter', sans-serif;">
+                    <div style="background: #0b1c33; color: #ffffff; padding: 12px 16px; border-radius: 12px 12px 0 0;">
+                        <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em;">Lahan Pertanian Presisi</div>
+                        <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 2px;">Desa ${lahan.nama_desa || 'Tidak Terdata'}</div>
+                        <div style="font-size: 12px; color: #cbd5e1;">Poktan: ${lahan.kelompok_tani ? String(lahan.kelompok_tani).toUpperCase() : 'MANDIRI'}</div>
+                    </div>
+
+                    <div style="padding: 14px 16px;">
+                        <table style="width: 100%; font-size: 12.5px; color: #334155; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-seedling me-1.5 text-success"></i> Komoditas</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #166534; text-transform: capitalize;">${lahan.komoditas || '-'}</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-maximize me-1.5 text-primary"></i> Luas & Status</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 600;">${lahan.luas_lahan || '-'} Ha <small class="text-muted">(${lahan.status_lahan || '-'})</small></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-droplet me-1.5 text-info"></i> Irigasi Air</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.irigasi === 'ya' ? '#0284c7' : '#dc2626'}; text-transform: uppercase;">
+                                    ${lahan.irigasi === 'ya' ? '💧 YA (AKTIF)' : 'TIDAK'}
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-gears me-1.5" style="color:#0d9488;"></i> Pompa Air</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 600;">
+                                    ${lahan.pompa_air === 'ya' ? '⚙️ YA' : 'TIDAK'} <small class="text-muted">(${lahan.sumber_energi_pompa || '-'})</small>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-bolt me-1.5 text-warning"></i> Listrik</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.listrik === 'ya' ? '#d97706' : '#64748b'}; text-transform: uppercase;">
+                                    ${lahan.listrik === 'ya' ? '⚡ TERHUBUNG' : 'TIDAK ADA'}
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-flask me-1.5 text-secondary"></i> pH Tanah</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 700;">pH ${lahan.ph || '-'} · ${lahan.moisture || '-'}% Lembab</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-vial me-1.5 text-secondary"></i> NPK (mg/kg)</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: 600; font-family: monospace;">N:${lahan.nitrogen || 0} P:${lahan.phosphorus || 0} K:${lahan.potassium || 0}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+            markerLayerGroup.addLayer(marker);
+        });
+
+        // Update counter label
+        const statEl = document.getElementById('statFilteredTitik');
+        if (statEl) {
+            statEl.innerText = visibleCount + ' Titik';
+        }
+
+        // Fit map bounds jika ada titik yang tampil
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15, animate: true });
+        }
+    }
+
+    /**
+     * Set Active Filter
+     */
+    function setFilter(type) {
+        activeFilterMode = type;
+
+        // Update active class pada tombol pill
+        const buttons = document.querySelectorAll('#filterButtonGroup .filter-chip-btn');
+        buttons.forEach(function(btn) {
+            if (btn.getAttribute('data-filter') === type) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        renderMarkers();
+    }
+
+    // Event Listener untuk Tombol Filter Pills
+    const filterButtons = document.querySelectorAll('#filterButtonGroup .filter-chip-btn');
+    filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const filterType = this.getAttribute('data-filter');
+            setFilter(filterType);
+        });
+    });
+
+    // Event Listener Tombol Reset
+    const btnReset = document.getElementById('btnResetFilter');
+    if (btnReset) {
+        btnReset.addEventListener('click', function() {
+            setFilter('all');
+        });
+    }
+
+    // Inisialisasi peta dan render awal
+    setTimeout(function() {
+        map.invalidateSize();
+        renderMarkers();
+    }, 150);
+})();
 </script>
 
 <%- include('../../partials/_foot_admin.ejs') %>

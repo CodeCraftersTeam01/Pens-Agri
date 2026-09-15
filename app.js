@@ -5,6 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var flash = require('express-flash');
 var session = require('express-session');
+var compression = require('compression');
+var helmet = require('helmet');
+var rateLimit = require('express-rate-limit');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -23,26 +26,125 @@ var policybriefRouter = require('./routes/policy_brief');
 
 var app = express();
 
+// Keamanan: Sembunyikan identitas server Express dari fingerprinting hacker
+app.disable('x-powered-by');
 
-// view engine setup
+// Optimasi Performa: Kompresi Gzip/Deflate HTTP responses (mengecilkan ukuran payload hingga 80%)
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6 // Balanced compression level
+}));
+
+// Keamanan: HTTP Security Headers via Helmet & Content Security Policy (CSP)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com",
+        "https://unpkg.com",
+        "https://cdn.datatables.net",
+        "https://code.jquery.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com",
+        "https://unpkg.com",
+        "https://cdn.datatables.net",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://cdnjs.cloudflare.com",
+        "https://fonts.gstatic.com",
+        "data:"
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "blob:",
+        "https:",
+        "http:"
+      ],
+      connectSrc: [
+        "'self'",
+        "https:",
+        "http:",
+        "ws:",
+        "wss:"
+      ]
+    }
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" }
+}));
+
+// Keamanan: Rate Limiter Global untuk menangkal brute-force, scraping, dan DDoS
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 menit
+  max: 600, // Maksimal 600 request per 15 menit per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 429,
+    message: 'Terlalu banyak permintaan dari IP ini. Silakan coba kembali beberapa saat lagi.'
+  }
+});
+app.use(globalLimiter);
+
+// Keamanan: Auth Rate Limiter khusus untuk /login dan /register (Brute-Force & Credential Stuffing Protection)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 menit
+  max: 20, // Maksimal 20 percobaan login/registrasi per 15 menit
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Terlalu banyak percobaan autentikasi dari IP Anda. Demi keamanan, silakan tunggu 15 menit.'
+});
+app.use('/login', authLimiter);
+app.use('/register', authLimiter);
+
+// View engine setup & caching template EJS
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('view cache', true); // Cache EJS compiled templates untuk rendering super cepat
 
 app.use(logger('dev'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
+// Performa: Caching Static Assets (CSS, JS, Images, Icons) dengan Cache-Control 1 hari & ETag
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
+// Keamanan: Session Management dengan proteksi cookie (HttpOnly, SameSite, Secure maxAge)
 app.use(session({
   cookie: {
-    maxAge: 6000000000
+    httpOnly: true, // Mencegah akses cookie via JavaScript (Anti-XSS Session Hijacking)
+    sameSite: 'lax', // Proteksi CSRF
+    secure: process.env.NODE_ENV === 'production', // HTTPS only di production
+    maxAge: 24 * 60 * 60 * 1000 // 24 jam
   },
   store: new session.MemoryStore,
-  saveUninitialized: true,
-  resave: true,
-  secret: process.env.SESSION_SECRET || 'pens_agri_presisi_secret_key'
-}))
+  saveUninitialized: false,
+  resave: false,
+  secret: process.env.SESSION_SECRET || 'pens_agri_presisi_ultra_secure_key_2026'
+}));
 
 app.use(flash());
 

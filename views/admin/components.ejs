@@ -1,0 +1,1127 @@
+<%- include('../partials/_head_admin.ejs') %>
+
+<style>
+    /* =========================================================
+       PENS AGRI — Glassmorphic UI Component Showcase
+       Design: Liquid Glass / Translucent Rounded Cards (macOS / Modern UI)
+       Palette: Deep Navy (#0b1c33), Golden Amber (#f59e0b), Royal Blue (#2563eb), Agritech Green (#16a34a)
+       ========================================================= */
+
+    :root {
+        --comp-navy: #0b1c33;
+        --comp-navy-dark: #071324;
+        --comp-gold: #f59e0b;
+        --comp-gold-light: #fef3c7;
+        --comp-blue: #2563eb;
+        --comp-blue-light: #eff6ff;
+        --comp-blue-subtle: #dbeafe;
+        --comp-green: #16a34a;
+        --comp-green-light: #dcfce7;
+        --comp-green-subtle: #f0fdf4;
+        
+        /* Frosted Glass Tokens */
+        --glass-bg: rgba(255, 255, 255, 0.72);
+        --glass-bg-hover: rgba(255, 255, 255, 0.85);
+        --glass-bg-subtle: rgba(255, 255, 255, 0.55);
+        --glass-border: rgba(255, 255, 255, 0.85);
+        --glass-border-subtle: rgba(226, 232, 240, 0.6);
+        --glass-radius: 28px;
+        --glass-radius-sm: 18px;
+        --glass-blur: blur(24px) saturate(190%);
+        --glass-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+        --glass-shadow-hover: 0 24px 48px -10px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
+    }
+
+    /* Vibrant Ambient Background for Glassmorphism */
+    .glass-canvas {
+        background: #e9eef5;
+        background-image: 
+            radial-gradient(at 10% 10%, rgba(37, 99, 235, 0.12) 0px, transparent 45%),
+            radial-gradient(at 90% 15%, rgba(245, 158, 11, 0.10) 0px, transparent 45%),
+            radial-gradient(at 30% 60%, rgba(22, 163, 74, 0.10) 0px, transparent 50%),
+            radial-gradient(at 85% 85%, rgba(37, 99, 235, 0.14) 0px, transparent 50%),
+            radial-gradient(at 50% 100%, rgba(11, 28, 51, 0.08) 0px, transparent 50%);
+        min-height: 100vh;
+        padding: 32px 36px 60px 36px;
+    }
+
+    /* Translucent Glass Card */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--glass-radius);
+        box-shadow: var(--glass-shadow);
+        padding: 26px 28px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+    }
+
+    .glass-card:hover {
+        background: var(--glass-bg-hover);
+        transform: translateY(-3px);
+        box-shadow: var(--glass-shadow-hover);
+        border-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .glass-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .glass-title {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: var(--comp-navy);
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    .glass-subtitle {
+        font-size: 12.5px;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    /* Floating Pill Navigation */
+    .glass-floating-pill {
+        background: #0b1c33;
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 9999px;
+        padding: 8px 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 14px 30px -4px rgba(11, 28, 51, 0.35);
+    }
+
+    .glass-floating-pill .pill-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 15px;
+        text-decoration: none;
+    }
+
+    .glass-floating-pill .pill-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .glass-floating-pill .pill-btn.active {
+        background: var(--comp-blue);
+        color: #ffffff;
+        box-shadow: 0 0 16px rgba(37, 99, 235, 0.7);
+    }
+
+    /* Segmented Pill Switch */
+    .glass-pill-switch {
+        display: inline-flex;
+        background: rgba(241, 245, 249, 0.75);
+        backdrop-filter: blur(10px);
+        padding: 4px;
+        border-radius: 9999px;
+        border: 1px solid rgba(226, 232, 240, 0.7);
+        gap: 4px;
+    }
+
+    .glass-pill-switch button {
+        padding: 7px 18px;
+        border-radius: 9999px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+
+    .glass-pill-switch button.active {
+        background: #ffffff;
+        color: var(--comp-blue);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        font-weight: 700;
+    }
+
+    /* Inner Glass Note Items */
+    .glass-note-item {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(241, 245, 249, 0.9);
+        border-radius: 20px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .glass-note-item:hover {
+        background: #ffffff;
+        border-color: rgba(203, 213, 225, 0.8);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+        transform: translateY(-1px);
+    }
+
+    /* Underline Tab Navigation */
+    .glass-tabs-nav {
+        display: flex;
+        gap: 22px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+        margin-bottom: 16px;
+        overflow-x: auto;
+    }
+
+    .glass-tab-link {
+        padding: 8px 0 12px 0;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #64748b;
+        text-decoration: none;
+        position: relative;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .glass-tab-link.active {
+        color: var(--comp-blue);
+        font-weight: 700;
+    }
+
+    .glass-tab-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--comp-blue);
+        border-radius: 3px;
+    }
+
+    /* Article List Item */
+    .glass-article-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 11px 12px;
+        border-radius: 16px;
+        transition: all 0.15s ease;
+    }
+
+    .glass-article-row:hover {
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .glass-article-badge {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13.5px;
+        flex-shrink: 0;
+        background: rgba(241, 245, 249, 0.8);
+        color: #475569;
+    }
+
+    .glass-article-badge.blue {
+        background: var(--comp-blue-subtle);
+        color: var(--comp-blue);
+    }
+
+    .glass-article-badge.gold {
+        background: var(--comp-gold-light);
+        color: var(--comp-gold);
+    }
+
+    .glass-article-badge.green {
+        background: var(--comp-green-light);
+        color: var(--comp-green);
+    }
+
+    /* Calendar Grid */
+    .glass-cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        text-align: center;
+    }
+
+    .glass-cal-header {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        padding: 4px 0;
+    }
+
+    .glass-cal-date {
+        height: 36px;
+        width: 36px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 500;
+        color: #334155;
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.15s ease;
+    }
+
+    .glass-cal-date:hover {
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .glass-cal-date.active {
+        background: var(--comp-blue);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .glass-cal-date.has-dot::after {
+        content: '';
+        position: absolute;
+        bottom: 3px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--comp-gold);
+    }
+
+    .glass-cal-date.active.has-dot::after {
+        background: #ffffff;
+    }
+
+    /* Dark Horizontal Date Slider (Indigo/Navy Glass) */
+    .glass-dark-date-bar {
+        background: linear-gradient(135deg, #071324 0%, #0b1c33 60%, #172554 100%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: var(--glass-radius);
+        padding: 22px 24px;
+        color: #ffffff;
+        box-shadow: 0 16px 36px -8px rgba(7, 19, 36, 0.4);
+    }
+
+    .glass-dark-date-bar .dark-date-pill {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 14px;
+        font-size: 12px;
+        color: #93c5fd;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .glass-dark-date-bar .dark-date-pill:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+    }
+
+    .glass-dark-date-bar .dark-date-pill.active {
+        background: #ffffff;
+        color: #0b1c33;
+        font-weight: 800;
+        box-shadow: 0 4px 14px rgba(255, 255, 255, 0.35);
+    }
+
+    /* Custom Toggle Switch */
+    .glass-switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 25px;
+        flex-shrink: 0;
+    }
+
+    .glass-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .glass-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #cbd5e1;
+        transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 34px;
+    }
+
+    .glass-slider:before {
+        position: absolute;
+        content: "";
+        height: 19px;
+        width: 19px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .glass-slider {
+        background-color: var(--comp-blue);
+    }
+
+    input:checked + .glass-slider.green {
+        background-color: var(--comp-green);
+    }
+
+    input:checked + .glass-slider.gold {
+        background-color: var(--comp-gold);
+    }
+
+    input:checked + .glass-slider:before {
+        transform: translateX(21px);
+    }
+
+    /* Avatar Stack */
+    .glass-avatar-stack {
+        display: flex;
+        align-items: center;
+    }
+
+    .glass-avatar-stack-item {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2.5px solid #ffffff;
+        margin-left: -9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .glass-avatar-stack-item:first-child {
+        margin-left: 0;
+    }
+
+    /* Peak Tooltip Marker */
+    .glass-peak-marker {
+        background: #0b1c33;
+        color: #ffffff;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(11, 28, 51, 0.25);
+    }
+</style>
+
+<div style="display: flex; min-height: 100vh;">
+    <%- include('../partials/_nav_admin.ejs') %>
+
+    <div class="main-content">
+        <%- include('../partials/_top_nav_admin.ejs') %>
+
+        <div class="glass-canvas">
+            <!-- Header with Top Floating Island -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); font-size: 12px; font-weight: 600; color: #b45309;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Translucent Glassmorphism UI
+                    </div>
+                    <h1 class="page-header-title" style="font-size: 26px; font-weight: 800; color: #0b1c33; margin: 0;">UI Component Showcase</h1>
+                    <p class="page-header-sub" style="font-size: 13.5px; color: #64748b; margin-top: 4px;">
+                        Implementasi desain kartu transparan melengkung (rounded glass) dengan palet Navy (#0b1c33), Golden (#f59e0b), Biru (#2563eb), dan Hijau Pertanian (#16a34a).
+                    </p>
+                </div>
+
+                <!-- Top Floating Pill Island -->
+                <div class="glass-floating-pill">
+                    <a href="/users" class="pill-btn" title="Dashboard"><i class="fa-solid fa-house"></i></a>
+                    <a href="/components" class="pill-btn active" title="Komponen"><i class="fa-solid fa-layer-group"></i></a>
+                    <a href="/petalahan" class="pill-btn" title="Peta Lahan"><i class="fa-solid fa-map-location-dot"></i></a>
+                    <a href="/policy_brief" class="pill-btn" title="AI Policy"><i class="fa-solid fa-brain"></i></a>
+                    <a href="/sensor" class="pill-btn" title="Data Sensor"><i class="fa-solid fa-microchip"></i></a>
+                    <a href="/kelompoktani" class="pill-btn" title="Kelompok Tani"><i class="fa-solid fa-users"></i></a>
+                </div>
+            </div>
+
+            <!-- Main Layout Grid (3 Columns matching reference photo) -->
+            <div class="row g-4">
+
+                <!-- ================= COLUMN 1: Activity Stats, Articles / Media Playlist, Mini Date Bar ================= -->
+                <div class="col-xl-4 col-lg-6 col-md-12 d-flex flex-column gap-4">
+
+                    <!-- Card 1: Activity Statistics (Bar Chart) -->
+                    <div class="glass-card">
+                        <div class="glass-card-header">
+                            <div>
+                                <h5 class="glass-title">Statistik Aktivitas</h5>
+                                <div class="glass-subtitle">Data terkini: 28 Feb - 5 Mar 2026</div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light border py-1.5 px-3 rounded-pill d-flex align-items-center gap-2" style="font-size: 12px; font-weight: 600; background: rgba(255,255,255,0.8);" type="button" data-bs-toggle="dropdown">
+                                    Mingguan <i class="fa-solid fa-chevron-down" style="font-size: 9px;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li><a class="dropdown-item" href="#">Harian</a></li>
+                                    <li><a class="dropdown-item" href="#">Mingguan</a></li>
+                                    <li><a class="dropdown-item" href="#">Bulanan</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Legends -->
+                        <div class="d-flex align-items-center gap-3 mb-3" style="font-size: 12.5px;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--comp-blue);"></span>
+                                <span class="text-secondary fw-medium">Aktivitas Lahan</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--comp-gold);"></span>
+                                <span class="text-secondary fw-medium">Produksi (kg)</span>
+                            </div>
+                        </div>
+
+                        <!-- Bar Chart -->
+                        <div style="height: 220px; position: relative;">
+                            <canvas id="compActivityChart"></canvas>
+                        </div>
+
+                        <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-color: rgba(226, 232, 240, 0.7) !important;">
+                            <span class="text-muted" style="font-size: 12.5px;">Rata-rata: <strong>6.8 jam/hari</strong></span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 11.5px; font-weight: 600;">
+                                <i class="fa-solid fa-arrow-up me-1"></i> +8.4%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Articles / Media Playlist Card -->
+                    <div class="glass-card">
+                        <!-- Navigation Tabs -->
+                        <div class="glass-tabs-nav">
+                            <span class="glass-tab-link">Tentang</span>
+                            <span class="glass-tab-link">Layanan</span>
+                            <span class="glass-tab-link active">Artikel Lahan</span>
+                            <span class="glass-tab-link">Jadwal</span>
+                        </div>
+
+                        <!-- List Items -->
+                        <div class="d-flex flex-column gap-1.5">
+                            <!-- Item 1 (Highlighted with Video) -->
+                            <div class="glass-article-row" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(226, 232, 240, 0.8);">
+                                <div class="glass-article-badge blue">
+                                    <i class="fa-solid fa-play" style="font-size: 12px;"></i>
+                                </div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-bold text-truncate" style="font-size: 13px; color: #0b1c33;">SOP Kalibrasi Sensor pH & NPK</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px;">Panduan teknisi lapangan IoT</div>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px; font-weight: 700;">68%</span>
+                                <i class="fa-solid fa-ellipsis-vertical text-muted" style="font-size: 12px; cursor: pointer;"></i>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="glass-article-row">
+                                <div class="glass-article-badge">02</div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13px; color: #0b1c33;">Tren Pertanian Presisi Madura 2026</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px;">Adopsi teknologi sensor tanah</div>
+                                </div>
+                                <i class="fa-solid fa-ellipsis-vertical text-muted" style="font-size: 12px; cursor: pointer;"></i>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="glass-article-row">
+                                <div class="glass-article-badge gold">03</div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13px; color: #0b1c33;">Analisis Kadar Air Tanah & Cuaca</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px;">Data telemetri realtime BMKG</div>
+                                </div>
+                                <i class="fa-solid fa-ellipsis-vertical text-muted" style="font-size: 12px; cursor: pointer;"></i>
+                            </div>
+
+                            <!-- Item 4 -->
+                            <div class="glass-article-row">
+                                <div class="glass-article-badge green">04</div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13px; color: #0b1c33;">Manajemen Pupuk Organik Cair</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px;">Fermentasi limbah pertanian</div>
+                                </div>
+                                <i class="fa-solid fa-ellipsis-vertical text-muted" style="font-size: 12px; cursor: pointer;"></i>
+                            </div>
+
+                            <!-- Item 5 -->
+                            <div class="glass-article-row">
+                                <div class="glass-article-badge">05</div>
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13px; color: #0b1c33;">Estimasi Panen Komoditas Cabai</div>
+                                    <div class="text-muted text-truncate" style="font-size: 11.5px;">Model regresi machine learning</div>
+                                </div>
+                                <i class="fa-solid fa-ellipsis-vertical text-muted" style="font-size: 12px; cursor: pointer;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Card 3: January Date Slider (Dark Navy Glass) -->
+                    <div class="glass-dark-date-bar">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-white" style="font-size: 14.5px;">Januari 2026</h6>
+                            <div class="d-flex gap-1.5">
+                                <button class="btn btn-sm btn-outline-light border-0 p-1" style="opacity: 0.8;"><i class="fa-solid fa-chevron-left" style="font-size: 11px;"></i></button>
+                                <button class="btn btn-sm btn-outline-light border-0 p-1" style="opacity: 0.8;"><i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="dark-date-pill">
+                                <span>Min</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">22</span>
+                            </div>
+                            <div class="dark-date-pill">
+                                <span>Sen</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">23</span>
+                            </div>
+                            <div class="dark-date-pill">
+                                <span>Sel</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">24</span>
+                            </div>
+                            <div class="dark-date-pill active">
+                                <span>Rab</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">25</span>
+                            </div>
+                            <div class="dark-date-pill">
+                                <span>Kam</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">26</span>
+                            </div>
+                            <div class="dark-date-pill">
+                                <span>Jum</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">27</span>
+                            </div>
+                            <div class="dark-date-pill">
+                                <span>Sab</span>
+                                <span class="fw-bold mt-1" style="font-size: 14px;">28</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ================= COLUMN 2: Notes / Agronomy AI Insights & Setting Admin Panel ================= -->
+                <div class="col-xl-4 col-lg-6 col-md-12 d-flex flex-column gap-4">
+
+                    <!-- Card 1: The notes I wrote -->
+                    <div class="glass-card">
+                        <div class="glass-card-header mb-3">
+                            <h5 class="glass-title">Catatan & Rekomendasi</h5>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <button class="btn btn-sm btn-light border-0 p-1.5 text-muted" title="Filter"><i class="fa-solid fa-sliders"></i></button>
+                                <button class="btn btn-sm btn-light border-0 p-1.5 text-muted" title="Menu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Pill Switch -->
+                        <div class="mb-3">
+                            <div class="glass-pill-switch w-100 justify-content-around">
+                                <button class="active flex-grow-1">Catatan Umum</button>
+                                <button class="flex-grow-1">Rekomendasi AI</button>
+                            </div>
+                        </div>
+
+                        <!-- Note Item 1 -->
+                        <div class="glass-note-item">
+                            <h6 class="fw-bold mb-1" style="font-size: 13.5px; color: #0b1c33;">4 Tips Optimalisasi Pemupukan NPK</h6>
+                            <p class="text-muted mb-2.5" style="font-size: 12.5px; line-height: 1.45;">
+                                Berdasarkan telemetri tanah lahan Sumenep, penyesuaian rasio Kalium pada fase generatif meningkatkan bobot panen hingga 14%...
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important; font-size: 12px;">
+                                <a href="#" class="text-decoration-none text-muted d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-share-nodes text-primary"></i> Bagikan
+                                </a>
+                                <a href="#" class="text-decoration-none text-primary fw-semibold d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-book-open"></i> Baca Lengkap
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Note Item 2 -->
+                        <div class="glass-note-item">
+                            <h6 class="fw-bold mb-1" style="font-size: 13.5px; color: #0b1c33;">5 Strategi Irigasi Tetes Berkelanjutan</h6>
+                            <p class="text-muted mb-2.5" style="font-size: 12.5px; line-height: 1.45;">
+                                Efisiensi penggunaan debit air tanah sumur bor dapat ditingkatkan melalui otomasi valve berbasis moisture threshold 45%...
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important; font-size: 12px;">
+                                <a href="#" class="text-decoration-none text-muted d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-share-nodes text-primary"></i> Bagikan
+                                </a>
+                                <a href="#" class="text-decoration-none text-primary fw-semibold d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-book-open"></i> Baca Lengkap
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Note Item 3 -->
+                        <div class="glass-note-item mb-0">
+                            <h6 class="fw-bold mb-1" style="font-size: 13.5px; color: #0b1c33;">Model Prediksi Hama Wereng BPS & AI</h6>
+                            <p class="text-muted mb-2.5" style="font-size: 12.5px; line-height: 1.45;">
+                                Integrasi data kelembaban udara dan suhu lingkungan mendeteksi resiko penyebaran hama 4 hari lebih awal sebelum fase akut...
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important; font-size: 12px;">
+                                <a href="#" class="text-decoration-none text-muted d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-share-nodes text-primary"></i> Bagikan
+                                </a>
+                                <a href="#" class="text-decoration-none text-primary fw-semibold d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-book-open"></i> Baca Lengkap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Setting Admin Panel -->
+                    <div class="glass-card">
+                        <div class="glass-card-header mb-3">
+                            <h5 class="glass-title">Setting Admin</h5>
+                            <button class="btn btn-sm btn-light border-0 text-muted p-1"><i class="fa-solid fa-xmark" style="font-size: 13px;"></i></button>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            <!-- Toggle 1 (Highlighted Master) -->
+                            <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(226, 232, 240, 0.9);">
+                                <div class="d-flex justify-content-between align-items-center mb-1.5">
+                                    <span class="fw-bold" style="font-size: 13px; color: #0b1c33;">Akses Terbuka Anggota Poktan</span>
+                                    <label class="glass-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="glass-slider"></span>
+                                    </label>
+                                </div>
+                                <p class="text-muted mb-0" style="font-size: 11.5px; line-height: 1.4;">
+                                    Memberikan hak baca telemetri sensor dan riwayat pupuk kepada seluruh anggota kelompok tani terdaftar.
+                                </p>
+                            </div>
+
+                            <!-- Toggle 2 -->
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <div>
+                                    <div class="fw-semibold" style="font-size: 13px; color: #334155;">Notifikasi Sensor Realtime</div>
+                                    <div class="text-muted" style="font-size: 11px;">Peringatan ambang batas pH dan kelembaban</div>
+                                </div>
+                                <label class="glass-switch">
+                                    <input type="checkbox">
+                                    <span class="glass-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Toggle 3 -->
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <div>
+                                    <div class="fw-semibold" style="font-size: 13px; color: #334155;">AI Policy Brief Auto-Sync</div>
+                                    <div class="text-muted" style="font-size: 11px;">Otomatisasi resume kebijakan mingguan</div>
+                                </div>
+                                <label class="glass-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="glass-slider green"></span>
+                                </label>
+                            </div>
+
+                            <!-- Toggle 4 -->
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <div>
+                                    <div class="fw-semibold" style="font-size: 13px; color: #334155;">Kirim Laporan via WhatsApp</div>
+                                    <div class="text-muted" style="font-size: 11px;">Ringkasan telemetri ke ketua kelompok</div>
+                                </div>
+                                <label class="glass-switch">
+                                    <input type="checkbox">
+                                    <span class="glass-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Toggle 5 -->
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <div>
+                                    <div class="fw-semibold" style="font-size: 13px; color: #334155;">Lampirkan Dokumen Telemetri</div>
+                                    <div class="text-muted" style="font-size: 11px;">Sertakan file CSV pada unduhan laporan</div>
+                                </div>
+                                <label class="glass-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="glass-slider gold"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ================= COLUMN 3: Calendar, Progress Area Chart, Event Card, Income, Proposal ================= -->
+                <div class="col-xl-4 col-lg-12 col-md-12 d-flex flex-column gap-4">
+
+                    <!-- Card 1: March 2026 Calendar & Schedule -->
+                    <div class="glass-card">
+                        <div class="glass-card-header mb-3">
+                            <h5 class="glass-title">Maret 2026</h5>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <button class="btn btn-sm btn-light border py-1 px-2.5 rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8);"><i class="fa-solid fa-chevron-left" style="font-size: 10px;"></i></button>
+                                <button class="btn btn-sm btn-light border py-1 px-2.5 rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.8);"><i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Calendar Grid -->
+                        <div class="glass-cal-grid mb-3">
+                            <div class="glass-cal-header">Min</div>
+                            <div class="glass-cal-header">Sen</div>
+                            <div class="glass-cal-header">Sel</div>
+                            <div class="glass-cal-header">Rab</div>
+                            <div class="glass-cal-header">Kam</div>
+                            <div class="glass-cal-header">Jum</div>
+                            <div class="glass-cal-header">Sab</div>
+
+                            <div class="glass-cal-date text-muted" style="opacity: 0.4;">27</div>
+                            <div class="glass-cal-date text-muted" style="opacity: 0.4;">28</div>
+                            <div class="glass-cal-date">01</div>
+                            <div class="glass-cal-date">02</div>
+                            <div class="glass-cal-date has-dot">03</div>
+                            <div class="glass-cal-date">04</div>
+                            <div class="glass-cal-date active has-dot">05</div>
+
+                            <div class="glass-cal-date">06</div>
+                            <div class="glass-cal-date">07</div>
+                            <div class="glass-cal-date has-dot">08</div>
+                            <div class="glass-cal-date">09</div>
+                            <div class="glass-cal-date">10</div>
+                            <div class="glass-cal-date">11</div>
+                            <div class="glass-cal-date">12</div>
+                        </div>
+
+                        <!-- Schedule Section -->
+                        <div class="pt-3 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-secondary" style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em;">Jadwal Hari Ini (5 Mar)</span>
+                                <i class="fa-solid fa-arrow-right-arrow-left text-muted" style="font-size: 11px;"></i>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 mb-2" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(226, 232, 240, 0.8);">
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div style="width: 34px; height: 34px; border-radius: 10px; background: #dbeafe; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                                        <i class="fa-solid fa-video"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 12.5px;">Audit Sensor USB</div>
+                                        <div class="text-muted" style="font-size: 11px;">Blok Saronggi A · NPK</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-white text-secondary border px-2.5 py-1.5" style="font-size: 11px; font-weight: 600;">08:30 - 09:30</span>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(226, 232, 240, 0.8);">
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <div style="width: 34px; height: 34px; border-radius: 10px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 12.5px;">Rapat Kelompok Tani</div>
+                                        <div class="text-muted" style="font-size: 11px;">Poktan Tani Maju</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-white text-secondary border px-2.5 py-1.5" style="font-size: 11px; font-weight: 600;">10:00 - 11:30</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Total Progress Wave Line Chart -->
+                    <div class="glass-card">
+                        <div class="glass-card-header">
+                            <div>
+                                <h5 class="glass-title">Total Progress Telemetri</h5>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    <span class="glass-subtitle">Sensor Funnel | 20 Feb - 12 Mar</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5 rounded-pill" style="font-size: 10.5px; font-weight: 600;">+12.5%</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-light border py-1.5 px-3 rounded-pill d-flex align-items-center gap-1.5" style="font-size: 11.5px; font-weight: 600; background: rgba(255,255,255,0.8);" type="button">
+                                Export <i class="fa-solid fa-chevron-down" style="font-size: 9px;"></i>
+                            </button>
+                        </div>
+
+                        <!-- Legends -->
+                        <div class="d-flex align-items-center gap-3 mb-2" style="font-size: 12px;">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--comp-blue);"></span>
+                                <span class="text-secondary fw-medium">Lahan Aktif</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--comp-green);"></span>
+                                <span class="text-secondary fw-medium">Target Panen</span>
+                            </div>
+                        </div>
+
+                        <!-- Wave Area Chart Canvas -->
+                        <div style="height: 180px; position: relative;">
+                            <canvas id="compProgressWaveChart"></canvas>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2.5 mt-2.5 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important;">
+                            <span class="text-muted" style="font-size: 12px;">Peak Telemetry:</span>
+                            <span class="glass-peak-marker">
+                                <i class="fa-solid fa-circle-check text-warning" style="font-size: 12px;"></i>
+                                Mar 2026 : Rp 45.2 Jt
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Event Card & Avatar Stack -->
+                    <div class="glass-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-bold mb-1" style="font-size: 14px; color: #0b1c33;">Audit Lapangan & Kalibrasi Sensor</h6>
+                                <p class="text-muted mb-3" style="font-size: 12px;">Pengujian akurasi sensor NPK & Soil Moisture bersama Tim PENS</p>
+                            </div>
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;">
+                                <i class="fa-solid fa-podcast"></i>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-white text-dark border px-2.5 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5" style="font-size: 11.5px; font-weight: 500;">
+                                <i class="fa-regular fa-calendar text-primary"></i> 10 Sep 2026
+                            </span>
+                            <span class="badge bg-white text-dark border px-2.5 py-1.5 rounded-3 d-inline-flex align-items-center gap-1.5" style="font-size: 11.5px; font-weight: 500;">
+                                <i class="fa-regular fa-clock text-warning"></i> 20:30 WIB
+                            </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: rgba(226, 232, 240, 0.7) !important;">
+                            <div class="glass-avatar-stack">
+                                <div class="glass-avatar-stack-item" style="background: #2563eb;">AR</div>
+                                <div class="glass-avatar-stack-item" style="background: #16a34a;">LC</div>
+                                <div class="glass-avatar-stack-item" style="background: #f59e0b;">RF</div>
+                                <div class="glass-avatar-stack-item" style="background: #0b1c33; font-size: 10px;">+3</div>
+                            </div>
+                            <span class="badge bg-dark text-white rounded-pill px-3 py-1.5" style="font-size: 11px; font-weight: 600;">Medium Priority</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 & 5: Income Stat & Proposal -->
+                    <div class="row g-3">
+                        <!-- Income Stat -->
+                        <div class="col-12">
+                            <div class="glass-card p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="text-muted fw-bold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Estimasi Pendapatan Panen</div>
+                                        <div class="fw-bold mt-1" style="font-size: 24px; color: #0b1c33; letter-spacing: -0.02em;">Rp 398.000.000</div>
+                                        <div class="d-flex align-items-center gap-1.5 mt-1">
+                                            <span class="text-success fw-bold" style="font-size: 12px;">
+                                                <i class="fa-solid fa-arrow-trend-up"></i> +16%
+                                            </span>
+                                            <span class="text-muted" style="font-size: 11px;">vs minggu lalu</span>
+                                        </div>
+                                    </div>
+                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: #eff6ff; border: 3px solid #2563eb; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
+                                        <i class="fa-solid fa-wheat-awn text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team Proposal List -->
+                        <div class="col-12">
+                            <div class="glass-card p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold" style="font-size: 13px; color: #0b1c33;">Tim Pelaksana & Poktan</span>
+                                    <a href="#" class="text-primary text-decoration-none fw-bold" style="font-size: 11.5px;">Lihat Semua</a>
+                                </div>
+
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2.5">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #dbeafe; color: #1d4ed8; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 11.5px;">JK</div>
+                                            <div>
+                                                <div class="fw-semibold text-dark" style="font-size: 12.5px;">Jack Maulana</div>
+                                                <div class="text-muted" style="font-size: 10.5px;">Frontend & Mobile Dev</div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-light border rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 11px;"><i class="fa-solid fa-plus text-muted"></i></button>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2.5">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #fef3c7; color: #b45309; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 11.5px;">LC</div>
+                                            <div>
+                                                <div class="fw-semibold text-dark" style="font-size: 12.5px;">Lynn Chang</div>
+                                                <div class="text-muted" style="font-size: 10.5px;">IoT Systems Engineer</div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-light border rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 11px;"><i class="fa-solid fa-plus text-muted"></i></button>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2.5">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #dcfce7; color: #15803d; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 11.5px;">RF</div>
+                                            <div>
+                                                <div class="fw-semibold text-dark" style="font-size: 12.5px;">Roy Finley</div>
+                                                <div class="text-muted" style="font-size: 10.5px;">Agronomist Specialist</div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-sm btn-light border rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 11px;"><i class="fa-solid fa-plus text-muted"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/_foot_admin.ejs') %>
+
+<!-- Chart Initialization Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activity Stats Dual Bar Chart
+        const actCtx = document.getElementById('compActivityChart');
+        if (actCtx) {
+            new Chart(actCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sab', 'Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum'],
+                    datasets: [
+                        {
+                            label: 'Aktivitas Lahan',
+                            data: [18, 14, 22, 16, 24, 12, 20],
+                            backgroundColor: '#2563eb',
+                            borderRadius: 8,
+                            barThickness: 10,
+                        },
+                        {
+                            label: 'Produksi',
+                            data: [12, 18, 15, 20, 18, 22, 14],
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 8,
+                            barThickness: 10,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0b1c33',
+                            titleFont: { size: 12, weight: 'bold' },
+                            bodyFont: { size: 11 },
+                            cornerRadius: 8,
+                            padding: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11, weight: '500' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                callback: function(value) { return value + ':00'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Progress Wave Line Chart
+        const progCtx = document.getElementById('compProgressWaveChart');
+        if (progCtx) {
+            new Chart(progCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des', 'Jan'],
+                    datasets: [
+                        {
+                            label: 'Lahan Aktif',
+                            data: [35, 62, 45, 88, 54, 76, 42, 65, 82, 48, 70, 92],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                            fill: true,
+                            tension: 0.45,
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#2563eb',
+                        },
+                        {
+                            label: 'Target Panen',
+                            data: [25, 40, 32, 58, 48, 50, 35, 45, 60, 42, 55, 68],
+                            borderColor: '#16a34a',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.45,
+                            borderWidth: 2,
+                            borderDash: [4, 4],
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0b1c33',
+                            titleFont: { size: 12 },
+                            bodyFont: { size: 11 },
+                            cornerRadius: 8,
+                            padding: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
