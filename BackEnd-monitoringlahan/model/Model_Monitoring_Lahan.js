@@ -170,6 +170,31 @@ class Model_Monitoring_Lahan {
         });
     }
 
+    static async StorePenyuluh(Data){
+        return new Promise((resolve, reject) => {
+            connection.query('INSERT INTO monitoring_lahan SET ?', Data, function(err, result) {
+                if (err) {
+                    reject(err);
+                } else {
+                    invalidatePrefix('lahan_');
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    static async getAllPenyuluh(){
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM monitoring_lahan WHERE tipe_penginput = 'penyuluh' OR foto_daun IS NOT NULL ORDER BY id DESC", (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
 }
 
 module.exports = Model_Monitoring_Lahan;
