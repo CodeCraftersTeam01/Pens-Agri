@@ -44,12 +44,33 @@ Pens-Agri/
 
 ---
 
-## 👥 Kontributor & Kolaborator
+## 👥 Kontributor & Tim Pengembang
 
-Proyek ini dikembangkan dan dipelihara oleh:
-
-- **Tim Pengembang CodeCrafters PENS**
-- 🤖 **[Google Gemini](https://github.com/gemini-code-assist)** (*AI Pair Programmer & Code Contributor*) — Optimalisasi arsitektur performa web GIS, AI Policy Brief Engine, dan sinkronisasi sistem.
+<table>
+  <tr>
+    <td align="center" width="160px">
+      <a href="https://github.com/Lanvry">
+        <img src="https://github.com/Lanvry.png" width="80px;" alt="Arjuna Lanang" style="border-radius:50%;"/><br />
+        <sub><b>Arjuna Lanang</b></sub>
+      </a><br />
+      <sub>💻 Fullstack & Web GIS</sub>
+    </td>
+    <td align="center" width="160px">
+      <a href="https://github.com/DavaYudist">
+        <img src="https://github.com/DavaYudist.png" width="80px;" alt="DAVANA YUDIST" style="border-radius:50%;"/><br />
+        <sub><b>DAVANA YUDIST</b></sub>
+      </a><br />
+      <sub>📱 Mobile App (Flutter)</sub>
+    </td>
+    <td align="center" width="160px">
+      <a href="https://deepmind.google/technologies/gemini/">
+        <img src="https://github.com/google.png" width="80px;" alt="Google Gemini" style="border-radius:50%;"/><br />
+        <sub><b>Google Gemini AI</b></sub>
+      </a><br />
+      <sub>🤖 AI Code Contributor</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
