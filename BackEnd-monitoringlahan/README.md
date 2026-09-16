@@ -134,6 +134,13 @@ Aplikasi akan aktif di: **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
+## 👥 Kontributor & Kolaborator
+
+- **Tim Pengembang CodeCrafters PENS**
+- 🤖 **[Google Gemini](https://github.com/gemini-code-assist)** (*AI Pair Programmer & Code Contributor*)
+
+---
+
 ## 📄 Lisensi
 Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
 
