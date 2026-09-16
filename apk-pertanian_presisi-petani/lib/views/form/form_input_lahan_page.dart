@@ -84,7 +84,7 @@ class _FormInputLahanPageState extends State<FormInputLahanPage> {
 
     setState(() => _isLoading = true);
 
-    const String apiUrl = "https://pertanian.pmapowers.com/api/soil/save";
+    const String apiUrl = "https://demo.codingsolver.my.id/api/soil/save";
 
     // Exact JSON payload preserving original backend contract
     final Map<String, dynamic> bodyData = {

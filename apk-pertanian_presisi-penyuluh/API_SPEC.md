@@ -1,7 +1,7 @@
 # Data Contract & API Specifications
 
 ## Target Endpoint
-`POST https://pertanian.pmapowers.com/api/soil/save`
+`POST https://demo.codingsolver.my.id/api/soil/penyuluh/save`
 `Content-Type: multipart/form-data`
 
 ## Payload Fields

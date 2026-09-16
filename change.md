@@ -102,7 +102,7 @@ Sistem pertanian presisi ini dirancang untuk mendeteksi 8 parameter kesuburan ta
 
 ### 4.1. Endpoint Petani (JSON Questionnaire Ingestion)
 
-* **URL:** `POST https://pertanian.pmapowers.com/api/soil/save` *(atau `http://localhost:3000/api/soil/save`)*
+* **URL:** `POST https://demo.codingsolver.my.id/api/soil/save` *(atau `http://localhost:3000/api/soil/save`)*
 * **HTTP Method:** `POST`
 * **Content-Type:** `application/json`
 
@@ -185,7 +185,7 @@ Sistem pertanian presisi ini dirancang untuk mendeteksi 8 parameter kesuburan ta
 
 ### 4.2. Endpoint Penyuluh (Multipart Telemetry & Photo Ingestion)
 
-* **URL:** `POST https://pertanian.pmapowers.com/api/soil/penyuluh/save` *(atau `http://localhost:3000/api/soil/penyuluh/save`)*
+* **URL:** `POST https://demo.codingsolver.my.id/api/soil/penyuluh/save` *(atau `http://localhost:3000/api/soil/penyuluh/save`)*
 * **HTTP Method:** `POST`
 * **Content-Type:** `multipart/form-data`
 
@@ -301,8 +301,8 @@ DESCRIBE `monitoring_lahan`;
 | **Gradle Project Name Isolation** | `rootProject.name` check |  **PASSED** | `apk-pertanian_presisi-penyuluh` = `pertanian_presisi_penyuluh`<br>`apk-pertanian_presisi-petani` = `pertanian_presisi_petani` |
 | **Application ID Isolation** | `applicationId` / `namespace` check |  **PASSED** | `id.ac.pens.pertanian_presisi.penyuluh`<br>`id.ac.pens.pertanian_presisi.petani` |
 | **Launcher Label Isolation** | `android:label` check |  **PASSED** | `AgriSensor Penyuluh`<br>`AgriSensor Petani` |
-| **Penyuluh API Endpoint Alignment** | `saveSoilEndpoint` in `api_service.dart` |  **ALIGNED** | Mengarah ke `$baseUrl/soil/penyuluh/save` |
-| **Petani API Endpoint Alignment** | `apiUrl` in `form_input_lahan_page.dart` |  **ALIGNED** | Mengarah ke `https://pertanian.pmapowers.com/api/soil/save` |
+| **Penyuluh API Endpoint Alignment** | `saveSoilEndpoint` in `api_service.dart` |  **ALIGNED** | Mengarah ke `https://demo.codingsolver.my.id/api/soil/penyuluh/save` |
+| **Petani API Endpoint Alignment** | `apiUrl` in `form_input_lahan_page.dart` |  **ALIGNED** | Mengarah ke `https://demo.codingsolver.my.id/api/soil/save` |
 
 ---
 *Generated autonomously by Full-Stack Systems Architect & Backend Integration Specialist.*

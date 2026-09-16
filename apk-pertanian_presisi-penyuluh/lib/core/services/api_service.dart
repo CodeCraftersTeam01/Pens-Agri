@@ -16,7 +16,7 @@ class ApiResponse {
 }
 
 class ApiService {
-  static const String baseUrl = 'https://pertanian.pmapowers.com/api';
+  static const String baseUrl = 'https://demo.codingsolver.my.id/api';
   static const String saveSoilEndpoint = '$baseUrl/soil/penyuluh/save';
 
   static final ApiService _instance = ApiService._internal();

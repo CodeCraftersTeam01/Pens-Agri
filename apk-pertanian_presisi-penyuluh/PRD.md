@@ -86,4 +86,4 @@ Chemical fertilizer adjustments based on specific N-P-K and pH variances.
 
 Physical soil condition improvements (aeration, drainage, organic matter).
 
-Cloud Synchronization: Final action button sends the entire payload via multipart/form-data to https://pertanian.pmapowers.com/api/soil/save.
+Cloud Synchronization: Final action button sends the entire payload via multipart/form-data to https://demo.codingsolver.my.id/api/soil/penyuluh/save.
