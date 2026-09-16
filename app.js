@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -54,6 +55,9 @@ app.use(helmet({
         "https://unpkg.com",
         "https://cdn.datatables.net",
         "https://code.jquery.com"
+      ],
+      scriptSrcAttr: [
+        "'unsafe-inline'"
       ],
       styleSrc: [
         "'self'",
@@ -134,15 +138,17 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 // Keamanan: Session Management dengan proteksi cookie (HttpOnly, SameSite, Secure maxAge)
 app.use(session({
+  name: 'pens_agri_sid',
   cookie: {
     httpOnly: true, // Mencegah akses cookie via JavaScript (Anti-XSS Session Hijacking)
     sameSite: 'lax', // Proteksi CSRF
     secure: process.env.NODE_ENV === 'production', // HTTPS only di production
-    maxAge: 24 * 60 * 60 * 1000 // 24 jam
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 hari aktif
   },
-  store: new session.MemoryStore,
+  store: new session.MemoryStore(),
   saveUninitialized: false,
   resave: false,
+  rolling: true, // Otomatis memperpanjang masa aktif cookie setiap kali user membuka halaman
   secret: process.env.SESSION_SECRET || 'pens_agri_presisi_ultra_secure_key_2026'
 }));
 

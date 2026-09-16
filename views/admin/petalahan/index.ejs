@@ -1,11 +1,14 @@
 <%- include('../../partials/_head_admin.ejs') %>
 
-<!-- Leaflet CSS -->
+<!-- Leaflet CSS & MarkerCluster CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
 
 <style>
     /* Reset Leaflet Div Icon defaults */
-    .custom-div-icon {
+    .custom-div-icon,
+    .custom-cluster-icon {
         background: transparent !important;
         border: none !important;
     }
@@ -71,7 +74,7 @@
         justify-content: center;
     }
 
-    /* Default Blue Pin Style */
+    /* Default Blue Pin Style (Semua Titik) */
     .pin-default-blue {
         background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
         width: 30px !important;
@@ -86,12 +89,73 @@
         box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
+    /* Google Maps-Style Clean Cluster Badges (Zoom-out Aggregation) */
+    .cluster-bubble {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: #ffffff;
+        font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        border: 2.5px solid #ffffff;
+        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s;
+        cursor: pointer;
+        position: relative;
+    }
+    .cluster-bubble:hover {
+        transform: scale(1.15);
+    }
+
+    /* Small Cluster (<10 items) */
+    .cluster-small {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
+    }
+
+    /* Medium Cluster (10-49 items) */
+    .cluster-medium {
+        width: 44px;
+        height: 44px;
+        font-size: 14px;
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        box-shadow: 0 6px 18px rgba(30, 64, 175, 0.45);
+    }
+
+    /* Large Cluster (>=50 items) */
+    .cluster-large {
+        width: 52px;
+        height: 52px;
+        font-size: 15px;
+        background: linear-gradient(135deg, #1d4ed8, #0b1c33);
+        box-shadow: 0 8px 24px rgba(11, 28, 51, 0.5);
+    }
+
+    .cluster-bubble::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.2);
+        z-index: -1;
+    }
+
     /* Filtered Category Specific Color Gradients */
     .pin-padi { background: linear-gradient(135deg, #16a34a, #15803d) !important; }
     .pin-jagung { background: linear-gradient(135deg, #eab308, #ca8a04) !important; }
     .pin-cabai { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; }
     .pin-tembakau { background: linear-gradient(135deg, #059669, #047857) !important; }
     .pin-kacang { background: linear-gradient(135deg, #d97706, #b45309) !important; }
+    .pin-traktor { background: linear-gradient(135deg, #f97316, #c2410c) !important; }
+    .pin-sapi { background: linear-gradient(135deg, #a16207, #713f12) !important; }
+    .pin-poktan { background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important; }
     .pin-irigasi { background: linear-gradient(135deg, #0284c7, #0369a1) !important; }
     .pin-pompa { background: linear-gradient(135deg, #0d9488, #0f766e) !important; }
     .pin-listrik { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
@@ -125,6 +189,9 @@
         border-color: #0b1c33 !important;
         box-shadow: 0 4px 10px rgba(11, 28, 51, 0.2);
     }
+    .filter-chip-btn.active i {
+        color: #ffffff !important;
+    }
     .dot-indicator {
         width: 8px;
         height: 8px;
@@ -144,7 +211,7 @@
             <div class="d-flex justify-content-between flex-wrap align-items-center mb-3 gap-2">
                 <div>
                     <h1 class="page-header-title mb-1" style="font-size: 22px;">Peta Lahan & Infrastruktur</h1>
-                    <p class="page-header-sub mb-0" style="font-size: 13px;">Filter cepat komoditas pertanian dan jaringan infrastruktur lapangan</p>
+                    <p class="page-header-sub mb-0" style="font-size: 13px;">Filter cepat komoditas pertanian, alat pembajak lahan (traktor & sapi), kelompok tani, dan infrastruktur</p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <a href="/sensor" class="btn-secondary py-1.5" style="font-size: 13px;">
@@ -162,28 +229,37 @@
                             <i class="fa-solid fa-filter me-1 text-primary"></i>Filter:
                         </span>
                         <button type="button" class="filter-chip-btn active" data-filter="all">
-                            <span class="dot-indicator bg-primary"></span> Semua Titik
+                            <i class="fa-solid fa-layer-group" style="color: #2563eb;"></i> Semua Titik
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="padi">
-                            🌾 Padi
+                            <i class="fa-solid fa-wheat-awn" style="color: #16a34a;"></i> Padi
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="jagung">
-                            🌽 Jagung
+                            <i class="fa-solid fa-seedling" style="color: #ca8a04;"></i> Jagung
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="cabai">
-                            🌶️ Cabai
+                            <i class="fa-solid fa-pepper-hot" style="color: #dc2626;"></i> Cabai
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="tembakau">
-                            🍃 Tembakau
+                            <i class="fa-solid fa-leaf" style="color: #059669;"></i> Tembakau
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="traktor">
+                            <i class="fa-solid fa-tractor" style="color: #f97316;"></i> Traktor
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="sapi">
+                            <i class="fa-solid fa-cow" style="color: #a16207;"></i> Sapi
+                        </button>
+                        <button type="button" class="filter-chip-btn" data-filter="poktan">
+                            <i class="fa-solid fa-users" style="color: #8b5cf6;"></i> Poktan
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="irigasi">
-                            💧 Irigasi
+                            <i class="fa-solid fa-droplet" style="color: #0284c7;"></i> Irigasi
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="pompa">
-                            ⚙️ Pompa
+                            <i class="fa-solid fa-gears" style="color: #0d9488;"></i> Pompa Air
                         </button>
                         <button type="button" class="filter-chip-btn" data-filter="listrik">
-                            ⚡ Listrik
+                            <i class="fa-solid fa-bolt" style="color: #d97706;"></i> Listrik
                         </button>
                     </div>
 
@@ -216,8 +292,9 @@
 <!-- Raw Data JSON Safe Storage -->
 <script type="application/json" id="lahan-raw-data"><%- JSON.stringify(data || []) %></script>
 
-<!-- Leaflet JS Library -->
+<!-- Leaflet JS & MarkerCluster JS Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 
 <script>
 (function() {
@@ -278,21 +355,53 @@
         });
     }
 
-    // 4. Layer Group Marker
-    const markerLayerGroup = L.layerGroup().addTo(map);
+    // 4. Inisialisasi Marker Cluster Group (Sistem Google Maps Clustered Pins)
+    const markerClusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        spiderfyOnMaxZoom: true,
+        removeOutsideVisibleBounds: true,
+        maxClusterRadius: 45, // Mengelompokkan titik yang bertumpuk saat zoom out
+        disableClusteringAtZoom: 16, // Saat zoom in lega (level 16+), semua titik tampil utuh
+        animate: true,
+        animateAddingMarkers: false,
+        iconCreateFunction: function(cluster) {
+            const count = cluster.getChildCount();
+            let sizeClass = 'cluster-small';
+            let iconSize = [36, 36];
+            if (count >= 50) {
+                sizeClass = 'cluster-large';
+                iconSize = [52, 52];
+            } else if (count >= 10) {
+                sizeClass = 'cluster-medium';
+                iconSize = [44, 44];
+            }
+
+            return L.divIcon({
+                html: `<div class="cluster-bubble ${sizeClass}"><span>${count}</span></div>`,
+                className: 'custom-cluster-icon',
+                iconSize: iconSize,
+                iconAnchor: [iconSize[0] / 2, iconSize[1] / 2]
+            });
+        }
+    });
+    map.addLayer(markerClusterGroup);
 
     // Filter Mode Global: Default 'all'
     let activeFilterMode = 'all';
 
-    // SVG Icons Map (Sharp Vector Rendering)
+    // SVG & FontAwesome Icons Map (Sharp Vector Rendering)
     const svgIcons = {
         padi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22 12 12"/><path d="M11.3 7.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M6.3 12.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M16.3 7.8a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/><path d="M12.8 16.3a4 4 0 0 1 5.6-5.6 4 4 0 0 1-5.6 5.6Z"/></svg>',
         jagung: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v10a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4Z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h8"/><path d="M12 20v2"/></svg>',
         cabai: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.5 2 2 3.5 2 5 0 5-4 11-7 13-1-3 0-8 2-13 1-2.5 2-4 3-5Z"/><path d="M14 4c2-1 4 0 5 2"/></svg>',
         tembakau: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
         kacang: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><path d="M12 6v12"/></svg>',
+        traktor: '<i class="fa-solid fa-tractor" style="font-size:15px; color:#ffffff;"></i>',
+        sapi: '<i class="fa-solid fa-cow" style="font-size:15px; color:#ffffff;"></i>',
+        poktan: '<i class="fa-solid fa-users" style="font-size:14px; color:#ffffff;"></i>',
         irigasi: '<svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
-        pompa: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+        pompa: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
         listrik: '<svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
     };
 
@@ -321,13 +430,90 @@
     }
 
     /**
-     * Render Markers Berdasarkan Filter Aktif
+     * Template HTML Popup Detail Titik Lahan
      */
-    function renderMarkers() {
-        markerLayerGroup.clearLayers();
+    function buildPopupHtml(lahan) {
+        const bajak = (lahan.pembajak || '').toLowerCase().trim();
+        const pok = (lahan.kelompok_tani || '').toLowerCase().trim();
 
-        let visibleCount = 0;
-        const bounds = [];
+        let labelPembajak = 'Manual';
+        if (bajak.indexOf('sapi') !== -1) {
+            labelPembajak = '🐂 Sapi';
+        } else if (bajak.indexOf('traktor') !== -1 || bajak.indexOf('trktor') !== -1 || bajak.indexOf('traktro') !== -1 || bajak.indexOf('tarktor') !== -1) {
+            labelPembajak = '🚜 Traktor';
+        } else if (lahan.pembajak && lahan.pembajak.trim()) {
+            labelPembajak = lahan.pembajak;
+        }
+
+        const isPoktan = (pok === 'ya' || (pok !== 'tidak' && pok !== 'mandiri' && pok !== '' && pok !== '-'));
+        const labelPoktan = isPoktan ? `👥 TERDAFTAR (${(lahan.kelompok_tani || 'YA').toUpperCase()})` : 'MANDIRI (TIDAK)';
+
+        return `
+            <div style="min-width: 270px; font-family: 'Inter', sans-serif;">
+                <div style="background: #0b1c33; color: #ffffff; padding: 12px 16px; border-radius: 12px 12px 0 0;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em;">Lahan Pertanian Presisi</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 2px;">Desa ${lahan.nama_desa || 'Tidak Terdata'}</div>
+                    <div style="font-size: 12px; color: #cbd5e1;">Poktan: ${lahan.kelompok_tani ? String(lahan.kelompok_tani).toUpperCase() : 'MANDIRI'}</div>
+                </div>
+
+                <div style="padding: 14px 16px;">
+                    <table style="width: 100%; font-size: 12.5px; color: #334155; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-seedling me-1.5 text-success"></i> Komoditas</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #0b1c33;">${(lahan.komoditas || '-').toUpperCase()}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-ruler-combined me-1.5 text-primary"></i> Luas Area</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">${lahan.luas_m2 || 0} m² (${lahan.luas_hektar || 0} Ha)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-tractor me-1.5" style="color:#ea580c;"></i> Pembajak</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #0b1c33;">${labelPembajak}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-users me-1.5" style="color:#7c3aed;"></i> Kelompok Tani</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${isPoktan ? '#7c3aed' : '#64748b'}; font-size: 11.5px;">${labelPoktan}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-droplet me-1.5 text-info"></i> Irigasi Air</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.irigasi === 'ya' ? '#0284c7' : '#dc2626'}; text-transform: uppercase;">
+                                ${lahan.irigasi === 'ya' ? '💧 YA (AKTIF)' : 'TIDAK'}
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-gears me-1.5" style="color:#0d9488;"></i> Pompa Air</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">
+                                ${lahan.pompa_air === 'ya' ? '⚙️ YA' : 'TIDAK'} <small class="text-muted">(${lahan.sumber_energi_pompa || '-'})</small>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-bolt me-1.5 text-warning"></i> Listrik</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.listrik === 'ya' ? '#d97706' : '#64748b'}; text-transform: uppercase;">
+                                ${lahan.listrik === 'ya' ? '⚡ TERHUBUNG' : 'TIDAK ADA'}
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-flask me-1.5 text-secondary"></i> pH Tanah</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 700;">pH ${lahan.ph || '-'} · ${lahan.moisture || '-'}% Lembab</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-vial me-1.5 text-secondary"></i> NPK (mg/kg)</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; font-family: monospace;">N:${lahan.nitrogen || 0} P:${lahan.phosphorus || 0} K:${lahan.potassium || 0}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Render Markers dengan Clustering Google Maps Style
+     */
+    function renderFilteredMarkers(autoFit) {
+        markerClusterGroup.clearLayers();
+        const filteredList = [];
+        const markersToAdd = [];
+        const pinIcon = buildMarkerIcon(activeFilterMode);
 
         lahanData.forEach(function(lahan) {
             if (!lahan.latitude || !lahan.longitude) return;
@@ -336,12 +522,17 @@
             const iri = (lahan.irigasi || '').toLowerCase().trim();
             const pom = (lahan.pompa_air || '').toLowerCase().trim();
             const lis = (lahan.listrik || '').toLowerCase().trim();
+            const bajak = (lahan.pembajak || '').toLowerCase().trim();
+            const pok = (lahan.kelompok_tani || '').toLowerCase().trim();
 
             // Saring titik sesuai filter yang aktif
             if (activeFilterMode === 'padi' && kom.indexOf('padi') === -1) return;
             if (activeFilterMode === 'jagung' && kom.indexOf('jagung') === -1) return;
             if (activeFilterMode === 'cabai' && (kom.indexOf('cabai') === -1 && kom.indexOf('caba') === -1 && kom.indexOf('cabe') === -1)) return;
             if (activeFilterMode === 'tembakau' && kom.indexOf('tembakau') === -1) return;
+            if (activeFilterMode === 'traktor' && (bajak.indexOf('traktor') === -1 && bajak.indexOf('trktor') === -1 && bajak.indexOf('traktro') === -1 && bajak.indexOf('tarktor') === -1)) return;
+            if (activeFilterMode === 'sapi' && bajak.indexOf('sapi') === -1) return;
+            if (activeFilterMode === 'poktan' && (pok === 'tidak' || pok === 'mandiri' || pok === '' || pok === '-')) return;
             if (activeFilterMode === 'irigasi' && iri !== 'ya') return;
             if (activeFilterMode === 'pompa' && pom !== 'ya') return;
             if (activeFilterMode === 'listrik' && lis !== 'ya') return;
@@ -350,74 +541,30 @@
             const lng = parseFloat(lahan.longitude);
             if (isNaN(lat) || isNaN(lng)) return;
 
-            visibleCount++;
-            bounds.push([lat, lng]);
+            filteredList.push(lahan);
 
-            const pinIcon = buildMarkerIcon(activeFilterMode);
             const marker = L.marker([lat, lng], { icon: pinIcon });
-
-            // Popup detail card
-            const popupContent = `
-                <div style="min-width: 260px; font-family: 'Inter', sans-serif;">
-                    <div style="background: #0b1c33; color: #ffffff; padding: 12px 16px; border-radius: 12px 12px 0 0;">
-                        <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em;">Lahan Pertanian Presisi</div>
-                        <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 2px;">Desa ${lahan.nama_desa || 'Tidak Terdata'}</div>
-                        <div style="font-size: 12px; color: #cbd5e1;">Poktan: ${lahan.kelompok_tani ? String(lahan.kelompok_tani).toUpperCase() : 'MANDIRI'}</div>
-                    </div>
-
-                    <div style="padding: 14px 16px;">
-                        <table style="width: 100%; font-size: 12.5px; color: #334155; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-seedling me-1.5 text-success"></i> Komoditas</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #166534; text-transform: capitalize;">${lahan.komoditas || '-'}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-maximize me-1.5 text-primary"></i> Luas & Status</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 600;">${lahan.luas_lahan || '-'} Ha <small class="text-muted">(${lahan.status_lahan || '-'})</small></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-droplet me-1.5 text-info"></i> Irigasi Air</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.irigasi === 'ya' ? '#0284c7' : '#dc2626'}; text-transform: uppercase;">
-                                    ${lahan.irigasi === 'ya' ? '💧 YA (AKTIF)' : 'TIDAK'}
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-gears me-1.5" style="color:#0d9488;"></i> Pompa Air</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 600;">
-                                    ${lahan.pompa_air === 'ya' ? '⚙️ YA' : 'TIDAK'} <small class="text-muted">(${lahan.sumber_energi_pompa || '-'})</small>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-bolt me-1.5 text-warning"></i> Listrik</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.listrik === 'ya' ? '#d97706' : '#64748b'}; text-transform: uppercase;">
-                                    ${lahan.listrik === 'ya' ? '⚡ TERHUBUNG' : 'TIDAK ADA'}
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-flask me-1.5 text-secondary"></i> pH Tanah</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 700;">pH ${lahan.ph || '-'} · ${lahan.moisture || '-'}% Lembab</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-vial me-1.5 text-secondary"></i> NPK (mg/kg)</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: 600; font-family: monospace;">N:${lahan.nitrogen || 0} P:${lahan.phosphorus || 0} K:${lahan.potassium || 0}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            `;
-            
-            marker.bindPopup(popupContent);
-            markerLayerGroup.addLayer(marker);
+            marker.bindPopup(buildPopupHtml(lahan));
+            markersToAdd.push(marker);
         });
 
         // Update counter label
         const statEl = document.getElementById('statFilteredTitik');
         if (statEl) {
-            statEl.innerText = visibleCount + ' Titik';
+            statEl.innerText = filteredList.length + ' Titik';
         }
 
-        // Fit map bounds jika ada titik yang tampil
-        if (bounds.length > 0) {
+        // Batch add markers to cluster group (60 FPS)
+        if (markersToAdd.length > 0) {
+            markerClusterGroup.addLayers(markersToAdd);
+        }
+
+        // Fit map bounds jika diminta
+        if (autoFit && filteredList.length > 0) {
+            const bounds = [];
+            filteredList.forEach(function(item) {
+                bounds.push([parseFloat(item.latitude), parseFloat(item.longitude)]);
+            });
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15, animate: true });
         }
     }
@@ -438,7 +585,7 @@
             }
         });
 
-        renderMarkers();
+        renderFilteredMarkers(true);
     }
 
     // Event Listener untuk Tombol Filter Pills
@@ -462,7 +609,7 @@
     // Inisialisasi peta dan render awal
     setTimeout(function() {
         map.invalidateSize();
-        renderMarkers();
+        renderFilteredMarkers(true);
     }, 150);
 })();
 </script>

@@ -5,10 +5,13 @@ const OpenAI = require('openai');
 
 var router = express.Router();
 
-// Pastikan inisialisasi mengambil key dari process.env yang sudah di-load dotenv
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+function getOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY belum dikonfigurasi di file .env.');
+  }
+  return new OpenAI({ apiKey });
+}
 
 /* 1. GET halaman utama Policy Brief */
 router.get('/', async function(req, res, next) {
@@ -93,6 +96,7 @@ Rekomendasi takaran pupuk dan intervensi pompa/irigasi.
 ## 4. Rencana Aksi Strategis (Action Plan)
 Rencana operasional taktis jangka pendek bagi Dinas Pertanian dan Petani binaan.`;
 
+    const openai = getOpenAIClient();
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini", 
       messages: [
