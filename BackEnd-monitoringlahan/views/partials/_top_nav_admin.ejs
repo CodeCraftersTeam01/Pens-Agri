@@ -29,10 +29,18 @@
                     <div style="font-size:13px; font-weight:600; color: var(--color-text-primary); margin-top: 2px;">
                         <%= typeof email !== 'undefined' ? email : 'admin@pens-agri.ac.id' %>
                     </div>
+                    <% if (typeof userRole !== 'undefined' && Number(userRole) === 1) { %>
+                    <span class="badge" style="background:#0f172a; color:#fff; font-size:10px; font-weight:600; margin-top:4px; padding: 2px 6px; border-radius: 4px;">Super Admin</span>
+                    <% } else { %>
+                    <span class="badge" style="background:#f1f5f9; color:#475569; font-size:10px; font-weight:600; margin-top:4px; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">Petani / User</span>
+                    <% } %>
                 </li>
                 <li><hr class="dropdown-divider my-1"></li>
                 <li><a class="dropdown-item py-1.5" href="/users"><i class="fa-solid fa-gauge me-2 text-slate-600"></i> Dashboard</a></li>
                 <li><a class="dropdown-item py-1.5" href="/policy_brief"><i class="fa-solid fa-brain me-2 text-slate-600"></i> AI Policy Brief</a></li>
+                <% if (typeof userRole !== 'undefined' && Number(userRole) === 1) { %>
+                <li><a class="dropdown-item py-1.5" href="/users_management"><i class="fa-solid fa-users-gear me-2 text-slate-600"></i> Manajemen Akun</a></li>
+                <% } %>
                 <li><hr class="dropdown-divider my-1"></li>
                 <li><a class="dropdown-item text-danger py-1.5" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Keluar</a></li>
             </ul>

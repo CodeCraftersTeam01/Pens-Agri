@@ -1,0 +1,308 @@
+<%- include('../../partials/_head_admin.ejs') %>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<style>
+    .um-badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: ui-monospace, monospace;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .um-badge-super {
+        background: #fffbeb;
+        color: #92400e;
+        border-color: #fef3c7;
+    }
+    .um-badge-user {
+        background: #f1f5f9;
+        color: #334155;
+        border-color: #e2e8f0;
+    }
+    .avatar-role-super {
+        background: #0f172a;
+    }
+    .avatar-role-user {
+        background: #64748b;
+    }
+    .role-select {
+        font-size: 12px !important;
+        padding: 4px 28px 4px 10px !important;
+        border-radius: 5px;
+        border: 1px solid #cbd5e1;
+        background-color: #fff;
+        min-width: 140px !important;
+        width: auto !important;
+        cursor: pointer;
+        line-height: 1.4;
+    }
+    .role-select:focus {
+        border-color: #0284c7;
+        box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+        outline: none;
+    }
+</style>
+
+<div style="display: flex; min-height: 100vh; background: #f8fafc;">
+    <%- include('../../partials/_nav_admin.ejs') %>
+
+    <div class="main-content">
+        <%- include('../../partials/_top_nav_admin.ejs') %>
+
+        <div class="page-content-wrapper" style="padding: 24px 28px;">
+
+            <!-- Flash Message Alerts -->
+            <% if (typeof messages !== 'undefined' && messages.success) { %>
+                <div class="alert alert-success d-flex align-items-center mb-4 py-2.5 px-3 border" style="border-radius: 6px; font-size: 13px; background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <div><%= messages.success %></div>
+                </div>
+            <% } %>
+            <% if (typeof messages !== 'undefined' && messages.error) { %>
+                <div class="alert alert-danger d-flex align-items-center mb-4 py-2.5 px-3 border" style="border-radius: 6px; font-size: 13px; background: #fef2f2; border-color: #fecaca; color: #991b1b;">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    <div><%= messages.error %></div>
+                </div>
+            <% } %>
+
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <span>Master Data</span>
+                        <span>/</span>
+                        <span>Manajemen Akun</span>
+                    </div>
+                    <h1 style="font-size: 20px; font-weight: 700; color: var(--color-text-primary); letter-spacing: -0.02em; margin: 0;">
+                        Kelola Akun & Hak Akses Pengguna
+                    </h1>
+                    <p style="font-size: 13px; color: var(--color-text-secondary); margin: 2px 0 0 0;">
+                        Pengaturan hak akses sistem monitoring pertanian presisi. Pengguna dengan peran Super Admin memiliki hak kontrol penuh termasuk penghapusan data.
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-dark btn-sm d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalAddUser" style="border-radius: 6px; font-size: 12.5px; padding: 6px 14px; font-weight: 500;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Tambah Akun Baru</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overview Metrics Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-4">
+                    <div class="card p-3 border" style="border-radius: 8px; border-color: #e2e8f0; background: #fff;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="font-size: 11.5px; color: var(--color-text-secondary); font-weight: 500;">Total Akun Terdaftar</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--color-text-primary); font-family: ui-monospace, monospace; margin-top: 2px;">
+                                    <%= typeof totalUsers !== 'undefined' ? totalUsers : 0 %>
+                                </div>
+                            </div>
+                            <div style="width: 32px; height: 32px; border-radius: 6px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #475569;">
+                                <i class="fa-solid fa-users" style="font-size: 13px;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-muted" style="font-size: 11px;">Semua pengguna terotentikasi</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-4">
+                    <div class="card p-3 border" style="border-radius: 8px; border-color: #e2e8f0; background: #fff;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="font-size: 11.5px; color: var(--color-text-secondary); font-weight: 500;">Super Administrator</div>
+                                <div style="font-size: 24px; font-weight: 700; color: #d97706; font-family: ui-monospace, monospace; margin-top: 2px;">
+                                    <%= typeof superAdminCount !== 'undefined' ? superAdminCount : 0 %>
+                                </div>
+                            </div>
+                            <div style="width: 32px; height: 32px; border-radius: 6px; background: #fffbeb; border: 1px solid #fef3c7; display: flex; align-items: center; justify-content: center; color: #d97706;">
+                                <i class="fa-solid fa-shield-halved" style="font-size: 13px;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-muted" style="font-size: 11px;">Hak akses penuh & penghapusan</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-4">
+                    <div class="card p-3 border" style="border-radius: 8px; border-color: #e2e8f0; background: #fff;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="font-size: 11.5px; color: var(--color-text-secondary); font-weight: 500;">Petani & User Biasa</div>
+                                <div style="font-size: 24px; font-weight: 700; color: #0f172a; font-family: ui-monospace, monospace; margin-top: 2px;">
+                                    <%= typeof petaniCount !== 'undefined' ? petaniCount : 0 %>
+                                </div>
+                            </div>
+                            <div style="width: 32px; height: 32px; border-radius: 6px; background: #f1f5f9; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; color: #334155;">
+                                <i class="fa-solid fa-seedling" style="font-size: 13px;"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-muted" style="font-size: 11px;">Hanya izin monitoring data</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card border" style="border-radius: 8px; border-color: #e2e8f0; background: #fff; overflow: hidden;">
+                <div class="card-header bg-white border-bottom py-3 px-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold text-dark" style="font-size: 14px;">Daftar Akun Pengguna Terdaftar</div>
+                        <div class="text-secondary" style="font-size: 12px;">Pilih peran untuk mengubah hak otorisasi secara langsung</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive p-3">
+                    <table class="table table-hover align-middle mb-0" id="tableUsers" style="font-size: 12.5px; width: 100%;">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <th>Alamat Email</th>
+                                <th>Hak Akses / Role</th>
+                                <th>Izin Hapus Data</th>
+                                <th>Ubah Hak Akses</th>
+                                <th style="width: 80px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof users !== 'undefined' && users && users.length > 0) { %>
+                                <% for(var u = 0; u < users.length; u++) { %>
+                                    <tr>
+                                        <td class="text-center text-secondary font-monospace">#<%= u + 1 %></td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar <%= Number(users[u].role) === 1 ? 'avatar-role-super' : 'avatar-role-user' %>" style="width: 24px; height: 24px; font-size: 10px;">
+                                                    <i class="fa-solid <%= Number(users[u].role) === 1 ? 'fa-user-shield' : 'fa-user' %>"></i>
+                                                </div>
+                                                <span class="fw-semibold text-dark"><%= users[u].email %></span>
+                                                <% if (users[u].id == currentUserId) { %>
+                                                    <span class="dev-badge" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd;">(Akun Anda)</span>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if (Number(users[u].role) === 1) { %>
+                                                <span class="um-badge um-badge-super">
+                                                    <i class="fa-solid fa-shield-halved"></i> Super Admin
+                                                </span>
+                                            <% } else { %>
+                                                <span class="um-badge um-badge-user">
+                                                    <i class="fa-solid fa-seedling"></i> Petani / User Biasa
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (Number(users[u].role) === 1) { %>
+                                                <span class="text-success fw-medium"><i class="fa-solid fa-check me-1"></i> Penuh (Bisa Hapus)</span>
+                                            <% } else { %>
+                                                <span class="text-muted"><i class="fa-solid fa-ban me-1 text-danger"></i> Dibatasi (Read-Only)</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (users[u].id == currentUserId) { %>
+                                                <span class="text-muted fst-italic" style="font-size: 11px;">Akun aktif (Terkunci)</span>
+                                            <% } else { %>
+                                                <form action="/users_management/update-role/<%= users[u].id %>" method="POST" class="d-inline-flex align-items-center gap-1.5">
+                                                    <select name="role" class="form-select form-select-sm role-select">
+                                                        <option value="1" <%= Number(users[u].role) === 1 ? 'selected' : '' %>>Super Admin</option>
+                                                        <option value="2" <%= Number(users[u].role) === 2 ? 'selected' : '' %>>Petani / User</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px; border-radius: 4px;" title="Simpan Perubahan Role">
+                                                        <i class="fa-solid fa-floppy-disk"></i>
+                                                    </button>
+                                                </form>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-center">
+                                            <% if (users[u].id == currentUserId) { %>
+                                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px; border-radius: 4px;" disabled title="Tidak dapat menghapus diri sendiri">
+                                                    <i class="fa-solid fa-lock"></i>
+                                                </button>
+                                            <% } else { %>
+                                                <a href="/users_management/delete/<%= users[u].id %>" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px; border-radius: 4px;" onclick="return confirm('Apakah Anda yakin ingin menghapus akun pengguna <%= users[u].email %>?')" title="Hapus Pengguna">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </a>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center text-secondary py-4">Belum ada akun pengguna terdaftar.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah User Baru -->
+<div class="modal fade" id="modalAddUser" tabindex="-1" aria-labelledby="modalAddUserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content border" style="border-radius: 8px; border-color: #e2e8f0;">
+            <div class="modal-header border-bottom py-2.5 px-3">
+                <h5 class="modal-title fs-6 fw-semibold text-dark" id="modalAddUserLabel">
+                    <i class="fa-solid fa-user-plus me-1.5 text-primary"></i> Tambah Akun Pengguna Baru
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/users_management/create" method="POST">
+                <div class="modal-body p-3">
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label text-secondary fw-medium" style="font-size: 12px; margin-bottom: 4px;">Alamat Email</label>
+                        <input type="email" class="form-control form-control-sm py-2 px-3" id="inputEmail" name="email" placeholder="contoh: petani1@pens-agri.ac.id" required style="border-radius: 6px; font-size: 13px;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label text-secondary fw-medium" style="font-size: 12px; margin-bottom: 4px;">Kata Sandi (Password)</label>
+                        <input type="password" class="form-control form-control-sm py-2 px-3" id="inputPassword" name="password" placeholder="Minimal 6 karakter" required minlength="4" style="border-radius: 6px; font-size: 13px;">
+                    </div>
+                    <div class="mb-2">
+                        <label for="selectRole" class="form-label text-secondary fw-medium" style="font-size: 12px; margin-bottom: 4px;">Pilih Hak Akses (Role)</label>
+                        <select class="form-select form-select-sm py-2 px-3" id="selectRole" name="role" required style="border-radius: 6px; font-size: 13px;">
+                            <option value="2" selected>Petani / User Biasa (Read-Only Data)</option>
+                            <option value="1">Super Administrator (Hak Akses Penuh & Hapus Data)</option>
+                        </select>
+                        <div class="form-text" style="font-size: 11px; color: #64748b;">Super Admin dapat menghapus data telemetri sensor & mengelola semua akun.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-2 px-3">
+                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" style="font-size: 12.5px; border-radius: 6px;">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-dark" style="font-size: 12.5px; border-radius: 6px;">Simpan Pengguna</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#tableUsers').DataTable({
+            responsive: true,
+            pageLength: 10,
+            language: {
+                search: "Cari pengguna:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ akun",
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "Lanjut",
+                    previous: "Kembali"
+                },
+                emptyTable: "Belum ada data akun",
+                zeroRecords: "Tidak ditemukan akun yang cocok"
+            }
+        });
+    });
+</script>
+
+<%- include('../../partials/_foot_admin.ejs') %>

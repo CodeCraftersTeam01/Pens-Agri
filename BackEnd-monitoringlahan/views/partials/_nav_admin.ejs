@@ -47,7 +47,8 @@
                 currentRoute === '/kelompoktani' ||
                 currentRoute === '/sayur_buah' ||
                 currentRoute === '/biofarmaka' ||
-                currentRoute === '/luas_tanam_perkebunan_rakyat'
+                currentRoute === '/luas_tanam_perkebunan_rakyat' ||
+                currentRoute === '/users_management'
             ));
         %>
 
@@ -58,7 +59,7 @@
            aria-expanded="<%= isMasterActive ? 'true' : 'false' %>">
             <span class="d-flex align-items-center gap-2">
                 <i class="fa-solid fa-database link-icon"></i>
-                Pertanian
+                Master Data
             </span>
             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
         </a>
@@ -77,6 +78,11 @@
                 <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/luas_tanam_perkebunan_rakyat') ? 'active' : '' %>" href="/luas_tanam_perkebunan_rakyat">
                     Luas Perkebunan
                 </a>
+                <% if (typeof userRole !== 'undefined' && Number(userRole) === 1) { %>
+                <a class="sidebar-sublink <%= (typeof currentRoute !== 'undefined' && currentRoute === '/users_management') ? 'active' : '' %>" href="/users_management">
+                    Manajemen Akun
+                </a>
+                <% } %>
             </div>
         </div>
     </div>

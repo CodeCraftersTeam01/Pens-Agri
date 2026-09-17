@@ -13,10 +13,11 @@ router.get('/', async function(req, res, next) {
       res.render('admin/petalahan/index', {
         currentRoute: '/petalahan',
         email: Data[0].email,
+        userRole: Data[0].role,
         data: rows
       });
     }else{
-      res.redirect('/');
+      res.redirect('/login');
     }
   } catch (error) {
     res.status(501).json({error: 'cant access'});

@@ -11,6 +11,7 @@ router.get('/', async function(req, res, next) {
       res.render('admin/master_data/statistik_pertanian/luas_tanam_perkebunan_rakyat', {
         currentRoute: '/luas_tanam_perkebunan_rakyat',
         email: Data[0].email,
+        userRole: Data[0].role,
       });
     }else{
       res.redirect('/');

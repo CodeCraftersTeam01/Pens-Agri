@@ -11,6 +11,7 @@ router.get('/', async function(req, res, next) {
       res.render('admin/master_data/statistik_pertanian/biofarmaka', {
         currentRoute: '/biofarmaka',
         email: Data[0].email,
+        userRole: Data[0].role,
       });
     }else{
       res.redirect('/');
@@ -28,6 +29,7 @@ router.get('/luas_panen', async function(req, res, next) {
       res.render('admin/master_data/statistik_pertanian/luas_panen_biofarmaka', {
         currentRoute: '/luas_panen_biofarmaka',
         email: Data[0].email,
+        userRole: Data[0].role,
       });
     }else{
       res.redirect('/');

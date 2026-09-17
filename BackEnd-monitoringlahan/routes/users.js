@@ -13,10 +13,11 @@ router.get('/', async function(req, res, next) {
     if(Data && Data.length > 0) {
       return res.render('admin/index', {
         currentRoute: '/users',
-        email: Data[0].email
+        email: Data[0].email,
+        userRole: Data[0].role
       });
     }else{
-      return res.redirect('/');
+      return res.redirect('/login');
     }
   } catch (error) {
     console.error(error);

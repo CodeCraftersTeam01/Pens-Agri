@@ -28,6 +28,7 @@ router.get('/', async function(req, res, next) {
     res.render('admin/policy_brief/index', {
       currentRoute: '/policy_brief', 
       email: Data[0].email,
+      userRole: Data[0].role,
       data: rows
     });
   } catch (error) {

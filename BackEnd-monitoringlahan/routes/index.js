@@ -57,10 +57,10 @@ router.post('/login', async (req, res) => {
                     if (err) console.error("Session save error:", err);
 
                     // pengecekan level
-                    if (Data[0].role == 1) {
-                        req.flash('success', 'Berhasil login sebagai Super User');
-                        return res.redirect('/superusers');
-                    } else if (Data[0].role == 2) {
+                    if (Number(Data[0].role) === 1) {
+                        req.flash('success', 'Berhasil login sebagai Super Admin');
+                        return res.redirect('/users');
+                    } else if (Number(Data[0].role) === 2) {
                         req.flash('success', 'Berhasil login sebagai User');
                         return res.redirect('/users');
                     } else {

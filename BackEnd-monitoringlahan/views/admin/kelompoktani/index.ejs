@@ -34,11 +34,13 @@
                     <div class="section-title">Daftar Registrasi Kelompok Tani (KTH)</div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="font-size: 13.5px; width: 100%;">
+                    <table class="table table-hover align-middle mb-0" style="font-size: 13px; width: 100%;">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 5%; text-align: center;">No</th>
-                                <th style="width: 5%; text-align: center;">Aksi</th>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <% if (typeof userRole !== 'undefined' && userRole == 1) { %>
+                                    <th style="width: 60px; text-align: center;">Aksi</th>
+                                <% } %>
                                 <th>Nama Kelompok</th>
                                 <th>No. Register</th>
                                 <th style="text-align: center;">Tanggal Berdiri</th>
@@ -51,19 +53,21 @@
                             <% if (data && data.length > 0) { %>
                                 <% for(var i = 0; i < data.length; i++) { %>
                                     <tr>
-                                        <td class="text-center text-secondary fw-semibold">#<%= (i + 1) %></td>
-                                        <td class="text-center">
-                                            <a href="/kelompoktani/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
-                                        </td>
-                                        <td class="fw-bold"><%= data[i].nama_kelompok %></td>
+                                        <td class="text-center text-secondary fw-semibold font-monospace">#<%= (i + 1) %></td>
+                                        <% if (typeof userRole !== 'undefined' && userRole == 1) { %>
+                                            <td class="text-center">
+                                                <a href="/kelompoktani/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger py-0 px-2" style="border-radius: 4px; font-size: 11px;" onclick="return confirm('Apakah Anda yakin ingin menghapus kelompok tani ini?');">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        <% } %>
+                                        <td class="fw-bold text-dark"><%= data[i].nama_kelompok %></td>
                                         <td><code><%= data[i].no_register %></code></td>
                                         <td class="text-center">
                                             <%= data[i].tanggal_berdiri ? new Date(data[i].tanggal_berdiri).toLocaleDateString('id-ID', { dateStyle: 'medium' }) : '–' %>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-secondary-subtle text-secondary border"><%= data[i].kelas %></span>
+                                            <span class="dev-badge"><%= data[i].kelas %></span>
                                         </td>
                                         <td style="white-space: normal; min-width: 250px;"><%= data[i].alamat %></td>
                                         <td class="fw-semibold"><%= data[i].ketua %></td>
@@ -71,7 +75,7 @@
                                 <% } %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="8" class="text-center text-secondary py-4">
+                                    <td colspan="<%= (typeof userRole !== 'undefined' && userRole == 1) ? 8 : 7 %>" class="text-center text-secondary py-4">
                                         <i class="fa-solid fa-database me-2"></i> Belum ada data kelompok tani di database.
                                     </td>
                                 </tr>

@@ -426,7 +426,9 @@
                         <thead style="background: #f8fafc;">
                             <tr>
                                 <th>No</th>
-                                <th>Aksi</th>
+                                <% if (typeof userRole !== 'undefined' && userRole == 1) { %>
+                                    <th style="width: 50px; text-align: center;">Aksi</th>
+                                <% } %>
                                 <th>Wilayah (Desa)</th>
                                 <th>Koordinat (Lat, Lon)</th>
                                 <th>Komoditas</th>
@@ -456,9 +458,11 @@
                                 <% for(var i = 0; i < data.length; i++) { %>
                                     <tr>
                                         <td class="text-secondary" style="font-family: monospace;">#<%= (i + 1) %></td>
-                                        <td>
-                                            <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger py-0 px-1.5" style="border-radius: 4px; font-size: 11px;" onclick="return confirm('Hapus data log ini?')"><i class="fa fa-trash"></i></a>
-                                        </td>
+                                        <% if (typeof userRole !== 'undefined' && userRole == 1) { %>
+                                            <td class="text-center">
+                                                <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger py-0 px-1.5" style="border-radius: 4px; font-size: 11px;" onclick="return confirm('Hapus data log ini?')"><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        <% } %>
                                         <td class="fw-semibold text-dark"><%= data[i].nama_desa || '-' %></td>
                                         <td>
                                             <small class="text-secondary" style="font-family: monospace; font-size: 11px;">

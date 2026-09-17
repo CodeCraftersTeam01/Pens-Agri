@@ -12,7 +12,7 @@ var rateLimit = require('express-rate-limit');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var superusersRouter = require('./routes/superusers');
+var usersManagementRouter = require('./routes/users_management');
 var parkirRouter = require('./routes/parkir');
 var tarifRouter = require('./routes/tarif');
 
@@ -156,7 +156,8 @@ app.use(flash());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/superusers', superusersRouter);
+app.use('/users_management', usersManagementRouter);
+app.use('/superusers', function(req, res) { res.redirect('/users_management'); });
 app.use('/parkir', parkirRouter);
 app.use('/tarif', tarifRouter);
 
