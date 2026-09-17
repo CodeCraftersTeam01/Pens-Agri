@@ -32,64 +32,46 @@
         --glass-shadow-hover: 0 24px 48px -10px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
     }
 
-    /* Vibrant Ambient Background for Glassmorphism */
+    /* Developer Canvas */
     .glass-canvas {
-        background: #e9eef5;
-        background-image: 
-            radial-gradient(at 10% 10%, rgba(37, 99, 235, 0.12) 0px, transparent 45%),
-            radial-gradient(at 90% 15%, rgba(245, 158, 11, 0.10) 0px, transparent 45%),
-            radial-gradient(at 30% 60%, rgba(22, 163, 74, 0.10) 0px, transparent 50%),
-            radial-gradient(at 85% 85%, rgba(37, 99, 235, 0.14) 0px, transparent 50%),
-            radial-gradient(at 50% 100%, rgba(11, 28, 51, 0.08) 0px, transparent 50%);
+        background: #f8fafc;
         min-height: 100vh;
-        padding: 32px 36px 60px 36px;
+        padding: 24px 28px 48px 28px;
     }
 
-    /* Translucent Glass Card */
+    /* Flat Developer Card */
     .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-blur);
-        -webkit-backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--glass-radius);
-        box-shadow: var(--glass-shadow);
-        padding: 26px 28px;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        padding: 22px 24px;
+        transition: border-color 0.15s ease;
         position: relative;
         overflow: hidden;
     }
 
-    .glass-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
-    }
-
     .glass-card:hover {
-        background: var(--glass-bg-hover);
-        transform: translateY(-3px);
-        box-shadow: var(--glass-shadow-hover);
-        border-color: rgba(255, 255, 255, 0.95);
+        border-color: #cbd5e1;
     }
 
     .glass-card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
     }
 
     .glass-title {
-        font-size: 16.5px;
+        font-size: 15px;
         font-weight: 700;
-        color: var(--comp-navy);
+        color: #0f172a;
         letter-spacing: -0.01em;
         margin: 0;
     }
 
     .glass-subtitle {
-        font-size: 12.5px;
+        font-size: 12px;
         color: #64748b;
         margin-top: 2px;
     }
@@ -317,14 +299,14 @@
         background: #ffffff;
     }
 
-    /* Dark Horizontal Date Slider (Indigo/Navy Glass) */
+    /* Dark Horizontal Date Slider */
     .glass-dark-date-bar {
-        background: linear-gradient(135deg, #071324 0%, #0b1c33 60%, #172554 100%);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: var(--glass-radius);
-        padding: 22px 24px;
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        padding: 18px 20px;
         color: #ffffff;
-        box-shadow: 0 16px 36px -8px rgba(7, 19, 36, 0.4);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .glass-dark-date-bar .dark-date-pill {
@@ -928,29 +910,8 @@
                         </div>
                     </div>
 
-                    <!-- Card 4 & 5: Income Stat & Proposal -->
+                    <!-- Card: Proposal List -->
                     <div class="row g-3">
-                        <!-- Income Stat -->
-                        <div class="col-12">
-                            <div class="glass-card p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="text-muted fw-bold" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Estimasi Pendapatan Panen</div>
-                                        <div class="fw-bold mt-1" style="font-size: 24px; color: #0b1c33; letter-spacing: -0.02em;">Rp 398.000.000</div>
-                                        <div class="d-flex align-items-center gap-1.5 mt-1">
-                                            <span class="text-success fw-bold" style="font-size: 12px;">
-                                                <i class="fa-solid fa-arrow-trend-up"></i> +16%
-                                            </span>
-                                            <span class="text-muted" style="font-size: 11px;">vs minggu lalu</span>
-                                        </div>
-                                    </div>
-                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: #eff6ff; border: 3px solid #2563eb; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);">
-                                        <i class="fa-solid fa-wheat-awn text-warning"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Team Proposal List -->
                         <div class="col-12">
                             <div class="glass-card p-3">

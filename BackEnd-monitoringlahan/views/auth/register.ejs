@@ -23,29 +23,23 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         margin: 0;
         min-height: 100vh;
-        background: #eef2f6;
-        background-image: 
-            radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(22, 163, 74, 0.05) 0px, transparent 50%),
-            radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.03) 0px, transparent 50%);
+        background: #f8fafc;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 24px;
         -webkit-font-smoothing: antialiased;
-        color: #1e293b;
+        color: #0f172a;
     }
 
     .auth-card {
         width: 100%;
-        max-width: 440px;
+        max-width: 420px;
         background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-radius: 24px;
-        box-shadow: 
-            0 12px 36px -4px rgba(11, 28, 51, 0.08),
-            0 4px 12px -2px rgba(11, 28, 51, 0.04);
-        padding: 44px 38px 36px 38px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 36px 32px 30px 32px;
         text-align: center;
         position: relative;
     }
@@ -55,95 +49,80 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 72px;
-        height: 72px;
-        margin-bottom: 20px;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 16px;
         position: relative;
     }
 
     .brand-leaf-icon {
-        font-size: 48px;
-        color: var(--color-brand-gold);
-        filter: drop-shadow(0 4px 14px var(--color-brand-gold-glow));
-        transform: rotate(-10deg);
+        font-size: 36px;
+        color: #d97706;
         display: inline-block;
-        transition: transform 0.3s ease;
-    }
-
-    .auth-card:hover .brand-leaf-icon {
-        transform: rotate(0deg) scale(1.05);
     }
 
     /* Titles */
     .auth-title {
-        font-size: 24px;
-        font-weight: 800;
-        color: var(--color-brand-navy);
-        letter-spacing: 0.02em;
-        margin: 0 0 6px 0;
-        text-transform: uppercase;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px 0;
     }
 
     .auth-subtitle {
-        font-size: 13.5px;
+        font-size: 13px;
         color: #64748b;
-        font-weight: 450;
-        margin: 0 0 32px 0;
+        margin: 0 0 24px 0;
         line-height: 1.4;
     }
 
     /* Form Fields */
     .form-group {
         text-align: left;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     .form-label {
         display: block;
-        font-size: 13.5px;
-        font-weight: 700;
+        font-size: 12.5px;
+        font-weight: 600;
         color: #334155;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .input-group-custom {
         display: flex;
         align-items: stretch;
-        background: var(--color-input-bg);
-        border: 1.5px solid var(--color-border);
-        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
         overflow: hidden;
-        transition: all 0.2s ease;
+        transition: border-color 0.15s ease;
     }
 
     .input-group-custom:focus-within {
-        border-color: var(--color-brand-blue);
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        border-color: #0f172a;
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.08);
     }
 
     .input-icon-box {
-        width: 48px;
-        background: var(--color-icon-box-bg);
-        border-right: 1.5px solid var(--color-border);
+        width: 40px;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--color-brand-blue);
-        font-size: 15px;
+        color: #64748b;
+        font-size: 13px;
         flex-shrink: 0;
-        transition: background 0.2s ease;
-    }
-
-    .input-group-custom:focus-within .input-icon-box {
-        background: #eff6ff;
-        border-right-color: var(--color-brand-blue);
     }
 
     .form-control-custom {
         flex: 1;
         border: none;
-        padding: 13px 16px;
-        font-size: 14px;
+        padding: 10px 14px;
+        font-size: 13.5px;
         color: #0f172a;
         font-family: inherit;
         outline: none;
@@ -157,33 +136,26 @@
     /* Submit Button */
     .btn-register {
         width: 100%;
-        padding: 14px 20px;
-        background: var(--color-brand-navy);
+        padding: 10px 16px;
+        background: #0f172a;
         color: #ffffff;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 700;
+        border: 1px solid #0f172a;
+        border-radius: 6px;
+        font-size: 13.5px;
+        font-weight: 500;
         font-family: inherit;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        transition: all 0.2s ease;
-        margin-top: 26px;
-        box-shadow: 0 4px 14px rgba(11, 28, 51, 0.2);
+        gap: 8px;
+        transition: background 0.15s ease;
+        margin-top: 20px;
     }
 
     .btn-register:hover {
-        background: var(--color-brand-navy-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(11, 28, 51, 0.28);
+        background: #1e293b;
         color: #ffffff;
-    }
-
-    .btn-register:active {
-        transform: translateY(0);
     }
 
     /* Alerts */

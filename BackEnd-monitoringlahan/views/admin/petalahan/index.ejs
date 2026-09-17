@@ -29,43 +29,55 @@
         }
     }
 
-    /* Popup Styling */
+    /* Leaflet Popup Developer Minimal Card */
     .leaflet-popup-content-wrapper {
         background: #ffffff !important;
-        color: #1e293b !important;
-        border: 1px solid var(--color-border);
-        border-radius: 14px;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
         font-family: 'Inter', sans-serif;
-        box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
         padding: 0 !important;
         overflow: hidden;
     }
     .leaflet-popup-content {
         margin: 0 !important;
         line-height: 1.5;
+        background: #ffffff !important;
     }
     .leaflet-popup-tip {
         background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06) !important;
+    }
+    .leaflet-container a.leaflet-popup-close-button {
+        color: #94a3b8 !important;
+        padding: 8px 12px 0 0 !important;
+        font-size: 16px !important;
+        z-index: 30;
+    }
+    .leaflet-container a.leaflet-popup-close-button:hover {
+        color: #0f172a !important;
     }
 
-    /* Modern Pin Marker Base */
+    /* Flat Marker Pin Base */
     .custom-marker-pin {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         border: 2px solid #ffffff;
-        transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.15s ease;
         cursor: pointer;
     }
     .custom-marker-pin:hover {
-        transform: rotate(-45deg) scale(1.25);
+        transform: rotate(-45deg) scale(1.2);
         z-index: 9999 !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
     .custom-marker-pin .pin-inner-icon {
         transform: rotate(45deg);
@@ -76,127 +88,121 @@
 
     /* Default Blue Pin Style (Semua Titik) */
     .pin-default-blue {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-        width: 30px !important;
-        height: 30px !important;
+        background: #2563eb !important;
+        width: 28px !important;
+        height: 28px !important;
     }
     .pin-default-blue .dot-center {
-        width: 9px;
-        height: 9px;
+        width: 8px;
+        height: 8px;
         background: #ffffff;
         border-radius: 50%;
         transform: rotate(45deg);
-        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
-    /* Google Maps-Style Clean Cluster Badges (Zoom-out Aggregation) */
+    /* Clean Developer Cluster Badges */
     .cluster-bubble {
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         color: #ffffff;
-        font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-weight: 700;
-        letter-spacing: -0.2px;
-        border: 2.5px solid #ffffff;
-        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s;
+        font-size: 12px;
+        border: 2px solid #ffffff;
         cursor: pointer;
-        position: relative;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+        transition: transform 0.15s ease;
     }
     .cluster-bubble:hover {
-        transform: scale(1.15);
+        transform: scale(1.1);
     }
 
-    /* Small Cluster (<10 items) */
     .cluster-small {
-        width: 36px;
-        height: 36px;
-        font-size: 13px;
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
+        width: 32px;
+        height: 32px;
+        background: #334155;
     }
-
-    /* Medium Cluster (10-49 items) */
     .cluster-medium {
+        width: 38px;
+        height: 38px;
+        background: #1e293b;
+    }
+    .cluster-large {
         width: 44px;
         height: 44px;
-        font-size: 14px;
-        background: linear-gradient(135deg, #2563eb, #1e40af);
-        box-shadow: 0 6px 18px rgba(30, 64, 175, 0.45);
+        background: #0f172a;
     }
 
-    /* Large Cluster (>=50 items) */
-    .cluster-large {
-        width: 52px;
-        height: 52px;
-        font-size: 15px;
-        background: linear-gradient(135deg, #1d4ed8, #0b1c33);
-        box-shadow: 0 8px 24px rgba(11, 28, 51, 0.5);
-    }
+    /* Solid Category Colors (Zero Gradients) */
+    .pin-padi { background: #16a34a !important; }
+    .pin-jagung { background: #ca8a04 !important; }
+    .pin-cabai { background: #dc2626 !important; }
+    .pin-tembakau { background: #059669 !important; }
+    .pin-kacang { background: #d97706 !important; }
+    .pin-traktor { background: #ea580c !important; }
+    .pin-sapi { background: #854d0e !important; }
+    .pin-poktan { background: #7c3aed !important; }
+    .pin-irigasi { background: #0284c7 !important; }
+    .pin-pompa { background: #0d9488 !important; }
+    .pin-listrik { background: #eab308 !important; }
 
-    .cluster-bubble::after {
-        content: '';
-        position: absolute;
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        border-radius: 50%;
-        background: rgba(37, 99, 235, 0.2);
-        z-index: -1;
-    }
-
-    /* Filtered Category Specific Color Gradients */
-    .pin-padi { background: linear-gradient(135deg, #16a34a, #15803d) !important; }
-    .pin-jagung { background: linear-gradient(135deg, #eab308, #ca8a04) !important; }
-    .pin-cabai { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; }
-    .pin-tembakau { background: linear-gradient(135deg, #059669, #047857) !important; }
-    .pin-kacang { background: linear-gradient(135deg, #d97706, #b45309) !important; }
-    .pin-traktor { background: linear-gradient(135deg, #f97316, #c2410c) !important; }
-    .pin-sapi { background: linear-gradient(135deg, #a16207, #713f12) !important; }
-    .pin-poktan { background: linear-gradient(135deg, #8b5cf6, #6d28d9) !important; }
-    .pin-irigasi { background: linear-gradient(135deg, #0284c7, #0369a1) !important; }
-    .pin-pompa { background: linear-gradient(135deg, #0d9488, #0f766e) !important; }
-    .pin-listrik { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
-
-    /* Simplified Filter Toolbar */
+    /* Developer Minimal Filter Chips */
     .filter-chip-btn {
-        font-size: 13px;
-        font-weight: 600;
-        padding: 7px 15px;
-        border-radius: 99px;
-        border: 1px solid var(--color-border);
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 11px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
         background: #ffffff;
-        color: var(--color-text-secondary);
+        color: #475569;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
         cursor: pointer;
         user-select: none;
         white-space: nowrap;
     }
     .filter-chip-btn:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: #eff6ff;
-        transform: translateY(-1px);
+        border-color: #cbd5e1;
+        color: #0f172a;
+        background: #f8fafc;
     }
     .filter-chip-btn.active {
-        background: #0b1c33 !important;
+        background: #0f172a !important;
         color: #ffffff !important;
-        border-color: #0b1c33 !important;
-        box-shadow: 0 4px 10px rgba(11, 28, 51, 0.2);
+        border-color: #0f172a !important;
     }
     .filter-chip-btn.active i {
         color: #ffffff !important;
     }
     .dot-indicator {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         display: inline-block;
+    }
+    .popup-gmaps-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 7px 12px;
+        background: #0f172a;
+        color: #ffffff !important;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none !important;
+        border-radius: 6px;
+        border: 1px solid #0f172a;
+        transition: background 0.15s ease;
+    }
+    .popup-gmaps-btn:hover {
+        background: #1e293b;
+        color: #ffffff !important;
     }
 </style>
 
@@ -449,58 +455,70 @@
         const labelPoktan = isPoktan ? `👥 TERDAFTAR (${(lahan.kelompok_tani || 'YA').toUpperCase()})` : 'MANDIRI (TIDAK)';
 
         return `
-            <div style="min-width: 270px; font-family: 'Inter', sans-serif;">
-                <div style="background: #0b1c33; color: #ffffff; padding: 12px 16px; border-radius: 12px 12px 0 0;">
-                    <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em;">Lahan Pertanian Presisi</div>
+            <div style="min-width: 270px; font-family: 'Inter', sans-serif; background: #ffffff;">
+                <!-- Header Developer Flat -->
+                <div style="background: #0f172a; color: #ffffff; padding: 12px 16px; border-bottom: 1px solid #1e293b;">
+                    <div style="font-size: 10.5px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.05em;">Lahan Pertanian Presisi</div>
                     <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 2px;">Desa ${lahan.nama_desa || 'Tidak Terdata'}</div>
-                    <div style="font-size: 12px; color: #cbd5e1;">Poktan: ${lahan.kelompok_tani ? String(lahan.kelompok_tani).toUpperCase() : 'MANDIRI'}</div>
+                    <div style="font-size: 11.5px; color: #cbd5e1; font-family: ui-monospace, monospace;">Poktan: ${lahan.kelompok_tani ? String(lahan.kelompok_tani).toUpperCase() : 'MANDIRI'}</div>
                 </div>
 
-                <div style="padding: 14px 16px;">
-                    <table style="width: 100%; font-size: 12.5px; color: #334155; border-collapse: collapse;">
+                <!-- Body Minimalist Flat -->
+                <div style="padding: 12px 16px; background: #ffffff;">
+                    <table style="width: 100%; font-size: 12px; color: #0f172a; border-collapse: collapse;">
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-seedling me-1.5 text-success"></i> Komoditas</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #0b1c33;">${(lahan.komoditas || '-').toUpperCase()}</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Komoditas</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">${(lahan.komoditas || '-').toUpperCase()}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-ruler-combined me-1.5 text-primary"></i> Luas Area</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">${lahan.luas_m2 || 0} m² (${lahan.luas_hektar || 0} Ha)</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Luas Area</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a; font-family: ui-monospace, monospace;">${lahan.luas_m2 || 0} m² (${lahan.luas_hektar || 0} Ha)</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-tractor me-1.5" style="color:#ea580c;"></i> Pembajak</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: #0b1c33;">${labelPembajak}</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Pembajak</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">${labelPembajak}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-users me-1.5" style="color:#7c3aed;"></i> Kelompok Tani</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${isPoktan ? '#7c3aed' : '#64748b'}; font-size: 11.5px;">${labelPoktan}</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Kelompok Tani</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: ${isPoktan ? '#166534' : '#64748b'}; font-size: 11px;">${labelPoktan}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-droplet me-1.5 text-info"></i> Irigasi Air</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.irigasi === 'ya' ? '#0284c7' : '#dc2626'}; text-transform: uppercase;">
-                                ${lahan.irigasi === 'ya' ? '💧 YA (AKTIF)' : 'TIDAK'}
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Irigasi Air</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: ${lahan.irigasi === 'ya' ? '#0369a1' : '#dc2626'};">
+                                ${lahan.irigasi === 'ya' ? 'YA (AKTIF)' : 'TIDAK'}
                             </td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-gears me-1.5" style="color:#0d9488;"></i> Pompa Air</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 600;">
-                                ${lahan.pompa_air === 'ya' ? '⚙️ YA' : 'TIDAK'} <small class="text-muted">(${lahan.sumber_energi_pompa || '-'})</small>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Pompa Air</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a;">
+                                ${lahan.pompa_air === 'ya' ? 'YA' : 'TIDAK'} <small class="text-secondary">(${lahan.sumber_energi_pompa || '-'})</small>
                             </td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-bolt me-1.5 text-warning"></i> Listrik</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700; color: ${lahan.listrik === 'ya' ? '#d97706' : '#64748b'}; text-transform: uppercase;">
-                                ${lahan.listrik === 'ya' ? '⚡ TERHUBUNG' : 'TIDAK ADA'}
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">Listrik</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: ${lahan.listrik === 'ya' ? '#d97706' : '#64748b'};">
+                                ${lahan.listrik === 'ya' ? 'TERHUBUNG' : 'TIDAK ADA'}
                             </td>
                         </tr>
                         <tr style="border-bottom: 1px solid #f1f5f9;">
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-flask me-1.5 text-secondary"></i> pH Tanah</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 700;">pH ${lahan.ph || '-'} · ${lahan.moisture || '-'}% Lembab</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">pH & Lembab</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #0f172a; font-family: ui-monospace, monospace;">pH ${lahan.ph || '-'} · ${lahan.moisture || '-'}%</td>
                         </tr>
                         <tr>
-                            <td style="padding: 5px 0; color: #64748b;"><i class="fa-solid fa-vial me-1.5 text-secondary"></i> NPK (mg/kg)</td>
-                            <td style="padding: 5px 0; text-align: right; font-weight: 600; font-family: monospace;">N:${lahan.nitrogen || 0} P:${lahan.phosphorus || 0} K:${lahan.potassium || 0}</td>
+                            <td style="padding: 5px 0; color: #64748b; font-weight: 500;">NPK (mg/kg)</td>
+                            <td style="padding: 5px 0; text-align: right; font-weight: 600; font-family: ui-monospace, monospace; color: #0f172a;">N:${lahan.nitrogen || 0} P:${lahan.phosphorus || 0} K:${lahan.potassium || 0}</td>
                         </tr>
                     </table>
+
+                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+                        <a href="${(lahan.latitude && lahan.longitude) ? 'https://www.google.com/maps?q=' + lahan.latitude + ',' + lahan.longitude : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Desa ' + (lahan.nama_desa || '') + ' Sumenep')}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="popup-gmaps-btn">
+                            <i class="fa-solid fa-map-location-dot"></i> Buka Google Maps
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; opacity: 0.8;"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         `;

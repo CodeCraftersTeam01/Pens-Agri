@@ -15,39 +15,41 @@
 
     <style>
         /* ============================================
-           PENS AGRI — Design System v2.0
-           Inspired by: Linear, Vercel, Stripe
-           Philosophy: Clean, intentional, professional
+           PENS AGRI — Developer-Tool Minimal Design System
+           Philosophy: Flat, minimal colors, zero gradients, 
+           high legibility, comfortable for prolonged viewing
         ============================================ */
 
         :root {
-            /* Colors */
-            --color-bg:          #f9fafb;
-            --color-surface:     #ffffff;
-            --color-border:      #e5e7eb;
-            --color-border-subtle: #f3f4f6;
+            /* Neutral Slate Palette */
+            --color-bg:            #f8fafc;
+            --color-surface:       #ffffff;
+            --color-border:        #e2e8f0;
+            --color-border-subtle: #f1f5f9;
 
-            --color-text-primary:   #111827;
-            --color-text-secondary: #6b7280;
-            --color-text-tertiary:  #9ca3af;
+            --color-text-primary:   #0f172a;
+            --color-text-secondary: #475569;
+            --color-text-tertiary:  #94a3b8;
 
-            --color-accent:         #16a34a;   /* Green — agriculture */
-            --color-accent-light:   #dcfce7;
-            --color-accent-muted:   #f0fdf4;
+            /* Accent Colors (Solid, muted) */
+            --color-accent:         #16a34a;
+            --color-accent-light:   #f0fdf4;
+            --color-accent-muted:   #dcfce7;
 
-            --color-brand-navy:     #0b1c33;
-            --color-brand-gold:     #f59e0b;
+            --color-brand-navy:     #0f172a;
+            --color-brand-gold:     #d97706;
 
-            --color-sidebar-bg:     #0b1c33;
-            --color-sidebar-border: rgba(255,255,255,0.08);
+            /* Sidebar */
+            --color-sidebar-bg:     #0f172a;
+            --color-sidebar-border: #1e293b;
             --color-sidebar-text:   #94a3b8;
-            --color-sidebar-hover:  rgba(255,255,255,0.08);
-            --color-sidebar-active: rgba(255,255,255,0.14);
+            --color-sidebar-hover:  #1e293b;
+            --color-sidebar-active: #334155;
 
             --color-blue:    #2563eb;
-            --color-amber:   #f59e0b;
-            --color-red:     #ef4444;
-            --color-cyan:    #06b6d4;
+            --color-amber:   #d97706;
+            --color-red:     #dc2626;
+            --color-cyan:    #0891b2;
 
             /* Spacing */
             --sp-1: 4px;
@@ -59,40 +61,40 @@
             --sp-8: 32px;
 
             /* Radius */
-            --radius-sm:  6px;
-            --radius-md:  10px;
-            --radius-lg:  14px;
-            --radius-xl:  18px;
+            --radius-sm:  4px;
+            --radius-md:  6px;
+            --radius-lg:  8px;
+            --radius-xl:  10px;
 
-            /* Shadows */
-            --shadow-xs:  0 1px 2px 0 rgba(0,0,0,0.05);
-            --shadow-sm:  0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.05);
-            --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
-            --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05);
+            /* Crisp Flat Shadows */
+            --shadow-xs:  0 1px 2px 0 rgba(0,0,0,0.03);
+            --shadow-sm:  0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px -1px rgba(0,0,0,0.03);
+            --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
+            --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.06);
 
             /* Sidebar */
-            --sidebar-width: 260px;
+            --sidebar-width: 250px;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: var(--color-bg);
             color: var(--color-text-primary);
             min-height: 100vh;
-            font-size: 15px;
-            line-height: 1.6;
+            font-size: 14px;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
 
         /* ---- Scrollbar ---- */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 99px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* ============================================
            SIDEBAR
@@ -115,24 +117,23 @@
         .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 22px 20px;
+            gap: 10px;
+            padding: 18px 18px;
             border-bottom: 1px solid var(--color-sidebar-border);
             text-decoration: none;
         }
 
         .sidebar-brand-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--color-brand-gold);
+            width: 32px;
+            height: 32px;
+            background: #d97706;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0b1c33;
-            font-size: 17px;
+            color: #ffffff;
+            font-size: 14px;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
         }
 
         .sidebar-brand-text {
@@ -334,55 +335,55 @@
         .card, .card-surface {
             background: var(--color-surface) !important;
             border: 1px solid var(--color-border) !important;
-            border-radius: 16px !important;
-            box-shadow: var(--shadow-sm) !important;
+            border-radius: 8px !important;
+            box-shadow: var(--shadow-xs) !important;
         }
 
         /* ============================================
-           BUTTONS
+           BUTTONS (Minimal Flat Developer Style)
         ============================================ */
         .btn-primary-accent {
-            background: var(--color-accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 9px 18px;
-            font-size: 13.5px;
-            font-weight: 600;
+            background: #0f172a;
+            color: #ffffff;
+            border: 1px solid #0f172a;
+            border-radius: 6px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             cursor: pointer;
-            transition: filter 0.15s, transform 0.1s;
+            transition: background 0.15s ease, border-color 0.15s ease;
             text-decoration: none;
         }
 
         .btn-primary-accent:hover {
-            filter: brightness(1.1);
-            color: white;
-            transform: translateY(-1px);
+            background: #1e293b;
+            border-color: #1e293b;
+            color: #ffffff;
         }
 
         .btn-secondary {
-            background: var(--color-surface);
-            color: var(--color-text-primary);
+            background: #ffffff;
+            color: #334155;
             border: 1px solid var(--color-border);
-            border-radius: 10px;
-            padding: 9px 18px;
-            font-size: 13.5px;
-            font-weight: 600;
+            border-radius: 6px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             cursor: pointer;
-            transition: background 0.15s, color 0.15s, transform 0.1s;
+            transition: background 0.15s, border-color 0.15s;
             text-decoration: none;
         }
 
         .btn-secondary:hover {
-            background: var(--color-bg);
-            color: var(--color-text-primary);
-            transform: translateY(-1px);
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #0f172a;
         }
 
         /* ============================================
@@ -391,72 +392,80 @@
         .stat-card {
             background: var(--color-surface);
             border: 1px solid var(--color-border);
-            border-radius: 16px;
-            padding: 22px 24px;
-            transition: box-shadow 0.2s, transform 0.2s;
+            border-radius: 8px;
+            padding: 16px 18px;
+            transition: border-color 0.15s;
         }
 
         .stat-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+            border-color: #cbd5e1;
         }
 
         .stat-label {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 600;
             color: var(--color-text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
         }
 
         .stat-value {
-            font-size: 32px;
-            font-weight: 800;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 24px;
+            font-weight: 700;
             color: var(--color-text-primary);
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
         }
 
         .stat-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            font-family: ui-monospace, monospace;
         }
 
         .stat-badge.green {
-            background: var(--color-accent-light);
-            color: #15803d;
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
         }
 
         .stat-badge.amber {
-            background: #fef3c7;
+            background: #fffbeb;
             color: #92400e;
+            border-color: #fef3c7;
         }
 
         .stat-badge.blue {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #bfdbfe;
         }
 
         .stat-badge.red {
-            background: #fee2e2;
-            color: #b91c1c;
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
         }
 
         .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 15px;
+            border: 1px solid #e2e8f0;
         }
 
         /* ============================================
@@ -590,9 +599,9 @@
         .avatar {
             width: 28px;
             height: 28px;
-            border-radius: 99px;
-            background: linear-gradient(135deg, #16a34a, #065f46);
-            color: white;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #ffffff;
             font-size: 11px;
             font-weight: 600;
             display: flex;

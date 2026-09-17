@@ -131,35 +131,23 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Income & Commodity Doughnut -->
-                <div class="col-xl-4 col-lg-5 d-flex flex-column gap-4">
-                    <!-- Income Stat Card -->
-                    <div class="card p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="stat-label mb-1">Estimasi Pendapatan Panen</div>
-                                <div class="fw-bold" style="font-size: 24px; color: #0b1c33; letter-spacing: -0.02em;">Rp 398.000.000</div>
-                                <div class="d-flex align-items-center gap-1.5 mt-1">
-                                    <span class="text-success fw-bold" style="font-size: 12.5px;">
-                                        <i class="fa-solid fa-arrow-trend-up"></i> +16%
-                                    </span>
-                                    <span class="text-muted" style="font-size: 12px;">vs musim sebelumnya</span>
-                                </div>
-                            </div>
-                            <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; color: #2563eb; font-size: 20px;">
-                                <i class="fa-solid fa-wheat-awn text-warning"></i>
-                            </div>
-                        </div>
-                    </div>
-
+                <!-- Right Column: Commodity Doughnut -->
+                <div class="col-xl-4 col-lg-5">
                     <!-- Commodity Distribution Doughnut -->
-                    <div class="card p-3 flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="section-title">Distribusi Komoditas</div>
+                    <div class="card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="section-title">Distribusi Komoditas</div>
+                                <div class="section-sub">Proporsi luasan komoditas lahan</div>
+                            </div>
                             <span class="pill gray">Proporsi Wilayah</span>
                         </div>
-                        <div style="height: 160px; position: relative;">
+                        <div style="height: 250px; position: relative;">
                             <canvas id="commodityPieChart"></canvas>
+                        </div>
+                        <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted" style="font-size: 13px;">
+                            <span>Dominasi utama: <strong class="text-dark">Padi (45%)</strong></span>
+                            <span class="badge bg-light text-secondary border">4 Komoditas</span>
                         </div>
                     </div>
                 </div>

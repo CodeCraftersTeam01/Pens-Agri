@@ -8,91 +8,422 @@
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
 
-<div style="display: flex; min-height: 100vh;">
+<style>
+    /* Developer-Tool Minimalist Design System */
+    .dev-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .dev-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .sensor-metric-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: border-color 0.15s ease;
+    }
+    .sensor-metric-card:hover {
+        border-color: #94a3b8;
+    }
+    .metric-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+    .metric-value {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .metric-unit {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748b;
+        margin-left: 2px;
+    }
+    .metric-sub {
+        font-size: 11.5px;
+        color: #64748b;
+    }
+    .dev-badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        font-family: ui-monospace, monospace;
+    }
+    .dev-badge-success {
+        background: #f0fdf4;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+    .dev-badge-warning {
+        background: #fffbeb;
+        color: #92400e;
+        border: 1px solid #fef3c7;
+    }
+    .dev-badge-danger {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+    .dev-badge-info {
+        background: #f0f9ff;
+        color: #075985;
+        border: 1px solid #bae6fd;
+    }
+    .table-rekap-desa th {
+        background: #f8fafc !important;
+        color: #475569 !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        border-color: #e2e8f0 !important;
+        padding: 10px 12px !important;
+    }
+    .table-rekap-desa td {
+        padding: 8px 12px !important;
+        border-color: #f1f5f9 !important;
+        vertical-align: middle !important;
+    }
+    .table-rekap-desa tr {
+        cursor: pointer;
+        transition: background-color 0.1s ease;
+    }
+    .table-rekap-desa tr:hover {
+        background-color: #f8fafc !important;
+    }
+    .table-rekap-desa tr.selected-desa-row {
+        background-color: #f1f5f9 !important;
+        font-weight: 600;
+    }
+
+    /* Clean Developer DataTables Controls */
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 4px 10px !important;
+        font-size: 12px !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        outline: none !important;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: #0f172a !important;
+    }
+    .dataTables_wrapper .dataTables_info {
+        font-size: 12px !important;
+        color: #64748b !important;
+        padding-top: 8px !important;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        font-size: 12px !important;
+        padding-top: 8px !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 4px !important;
+        border: 1px solid transparent !important;
+        padding: 3px 8px !important;
+        margin: 0 2px !important;
+        color: #475569 !important;
+        background: transparent !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #0f172a !important;
+        border-color: #0f172a !important;
+        color: #ffffff !important;
+    }
+</style>
+
+<div style="display: flex; min-height: 100vh; background: #f8fafc;">
     <%- include('../../partials/_nav_admin.ejs') %>
 
     <div class="main-content">
         <%- include('../../partials/_top_nav_admin.ejs') %>
 
-        <div class="page-content-wrapper">
-            <!-- Page Header -->
+        <div class="page-content-wrapper" style="padding: 24px 28px;">
+            <!-- Page Header (Minimal Clean) -->
             <div class="d-flex justify-content-between flex-wrap align-items-center mb-4 gap-3">
                 <div>
-                    <div class="page-header-eyebrow">
-                        <i class="fa-solid fa-microchip"></i>
-                        Sensor Tanah Portable USB Dongle & Data Lahan
+                    <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <i class="fa-solid fa-microchip text-slate-500"></i> Sensor Telemetry & Soil Analytics
                     </div>
-                    <h1 class="page-header-title">Data Sensor Lapangan</h1>
-                    <p class="page-header-sub">Log uji tanah NPK, kelembaban, pH dan profil infrastruktur lahan Kabupaten Sumenep via sensor USB HP</p>
+                    <h1 class="page-header-title mb-1" style="font-size: 20px; font-weight: 700; color: #0f172a; letter-spacing: -0.02em;">Data Sensor Lapangan</h1>
+                    <p class="mb-0" style="font-size: 13px; color: #64748b;">Rata-rata 8 parameter unsur hara tanah NPK, pH, kelembaban, dan profil lahan Kabupaten Sumenep per desa</p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn-primary-accent" onclick="window.location.reload();">
-                        <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+                    <button class="btn btn-sm btn-dark px-3 py-2" onclick="window.location.reload();" style="border-radius: 6px; font-size: 12.5px; font-weight: 500; background: #0f172a; border: 1px solid #0f172a;">
+                        <i class="fa-solid fa-rotate me-1.5"></i> Refresh Data
                     </button>
                 </div>
             </div>
 
-            <!-- Stat Summary Cards Row -->
+            <!-- Filter Wilayah / Desa Toolbar (Developer Minimalist) -->
+            <div class="dev-card p-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 500px;">
+                        <label for="desaFilterSelect" class="mb-0 text-nowrap" style="font-size: 13px; font-weight: 600; color: #334155;">
+                            Wilayah / Desa:
+                        </label>
+                        <select id="desaFilterSelect" class="form-select form-select-sm" style="border-radius: 6px; border: 1px solid #cbd5e1; padding: 6px 12px; font-size: 13px; color: #0f172a; font-weight: 500; background-color: #ffffff;">
+                            <option value="">Semua Wilayah / Desa (Semua Data)</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                        <span class="dev-badge px-3 py-1.5" id="filterStatusBadge" style="font-size: 12px;">
+                            Filter: <strong class="text-dark" id="currentSelectedDesaLabel">Semua Desa</strong> (<span id="currentRecordCount">0</span> Titik)
+                        </span>
+                        <button type="button" class="btn btn-sm btn-light border px-3 py-1.5" id="btnResetFilter" style="border-radius: 6px; font-size: 12px; font-weight: 500; background: #ffffff; color: #475569; border-color: #e2e8f0;">
+                            <i class="fa-solid fa-arrow-rotate-left me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Title: 8 Unsur Tanah -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 style="font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px;">
+                        Rata-Rata 8 Parameter Unsur Tanah
+                    </h2>
+                    <span style="font-size: 12px; color: #64748b;">Kalkulasi agregat live berdasarkan filter wilayah</span>
+                </div>
+                <span class="dev-badge dev-badge-success">
+                    8 Unsur Aktif
+                </span>
+            </div>
+
+            <!-- 8 Parameter Grid Row (Clean Flat Cards) -->
             <div class="row g-3 mb-4">
-                <div class="col-xl-3 col-md-6">
-                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label mb-1">Total Data Masuk</div>
-                            <div class="fw-bold fs-4 text-dark"><%= data ? data.length : 0 %> Record</div>
+                <!-- 1. Suhu -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">1. Suhu Tanah</span>
+                            <i class="fa-solid fa-temperature-half" style="color: #94a3b8; font-size: 14px;"></i>
                         </div>
-                        <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
-                            <i class="fa-solid fa-database"></i>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgTemp">--</span>
+                            <span class="metric-unit">°C</span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label mb-1">Rata-Rata pH Lapangan</div>
-                            <div class="fw-bold fs-4 text-warning">7.04 Netral</div>
-                        </div>
-                        <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
-                            <i class="fa-solid fa-flask"></i>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Target: 25-32 °C</span>
+                            <span id="badgeAvgTemp" class="dev-badge">--</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label mb-1">Status Irigasi</div>
-                            <div class="fw-bold fs-4 text-success">85% Berfungsi</div>
+                <!-- 2. Kelembapan -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">2. Kelembapan</span>
+                            <i class="fa-solid fa-droplet" style="color: #94a3b8; font-size: 14px;"></i>
                         </div>
-                        <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
-                            <i class="fa-solid fa-droplet"></i>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgMoisture">--</span>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Target: 20-60%</span>
+                            <span id="badgeAvgMoisture" class="dev-badge">--</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card p-3 d-flex flex-row align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label mb-1">Metode Sampling</div>
-                            <div class="fw-bold fs-4 text-success">USB OTG Dongle</div>
+                <!-- 3. pH Tanah -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">3. pH Tanah</span>
+                            <i class="fa-solid fa-flask" style="color: #94a3b8; font-size: 14px;"></i>
                         </div>
-                        <div class="stat-icon" style="background: #f0fdf4; color: #16a34a;">
-                            <i class="fa-solid fa-microchip"></i>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgPh">--</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Ideal: 6.0-7.5</span>
+                            <span id="badgeAvgPh" class="dev-badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Konduktivitas EC -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">4. EC (Konduktivitas)</span>
+                            <i class="fa-solid fa-bolt" style="color: #94a3b8; font-size: 14px;"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgEC">--</span>
+                            <span class="metric-unit">µS/cm</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Salinitas Tanah</span>
+                            <span id="badgeAvgEC" class="dev-badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Nitrogen (N) -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">5. Nitrogen (N)</span>
+                            <i class="fa-solid fa-seedling" style="color: #94a3b8; font-size: 14px;"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgN">--</span>
+                            <span class="metric-unit">mg/kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Pertumbuhan Daun</span>
+                            <span id="badgeAvgN" class="dev-badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Fosfor (P) -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">6. Fosfor (P)</span>
+                            <i class="fa-solid fa-vial" style="color: #94a3b8; font-size: 14px;"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgP">--</span>
+                            <span class="metric-unit">mg/kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Akar & Bunga</span>
+                            <span id="badgeAvgP" class="dev-badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Kalium (K) -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">7. Kalium (K)</span>
+                            <i class="fa-solid fa-cubes" style="color: #94a3b8; font-size: 14px;"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgK">--</span>
+                            <span class="metric-unit">mg/kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Ketahanan & Buah</span>
+                            <span id="badgeAvgK" class="dev-badge">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Kesuburan (Fertility) -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                    <div class="sensor-metric-card">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="metric-label">8. Kesuburan (Fertility)</span>
+                            <i class="fa-solid fa-leaf" style="color: #94a3b8; font-size: 14px;"></i>
+                        </div>
+                        <div class="my-2">
+                            <span class="metric-value" id="statAvgFertility">--</span>
+                            <span class="metric-unit">mg/kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
+                            <span class="metric-sub">Indeks Hara</span>
+                            <span id="badgeAvgFertility" class="dev-badge">--</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Table Card -->
-            <div class="card p-4">
+            <!-- Tabel Rekapitulasi Rata-Rata per Desa (Kategori Desa) -->
+            <div class="dev-card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <div>
+                        <h2 style="font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px;">
+                            Rekapitulasi Rata-Rata 8 Unsur Tanah per Desa
+                        </h2>
+                        <span style="font-size: 12px; color: #64748b;">Pilih salah satu desa pada tabel untuk memfilter seluruh data telemetri</span>
+                    </div>
+                    <span class="dev-badge" id="totalDesaCountPill">0 Desa</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-rekap-desa mb-0" id="tableRekapDesa" style="font-size: 12.5px; border-collapse: separate; border-spacing: 0;">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">No</th>
+                                <th style="text-align: left;">Nama Desa</th>
+                                <th style="text-align: center;">Sampel</th>
+                                <th style="text-align: right;">Suhu (°C)</th>
+                                <th style="text-align: right;">Lembap (%)</th>
+                                <th style="text-align: right;">pH</th>
+                                <th style="text-align: right;">EC (µS/cm)</th>
+                                <th style="text-align: right;">N (mg/kg)</th>
+                                <th style="text-align: right;">P (mg/kg)</th>
+                                <th style="text-align: right;">K (mg/kg)</th>
+                                <th style="text-align: right;">Fertility</th>
+                                <th style="width: 80px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekapDesaTableBody">
+                            <!-- Populated via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table Card: Log Detail Monitoring Lahan -->
+            <div class="dev-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="section-title">Log Monitoring Lahan Lengkap</div>
-                    <span class="pill blue">Export Available</span>
+                    <div>
+                        <h2 style="font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px;">
+                            Log Telemetri Sensor Lapangan
+                        </h2>
+                        <span style="font-size: 12px; color: #64748b;">Data mentah log sensor per titik lahan</span>
+                    </div>
+                    <span class="dev-badge">CSV / Excel Available</span>
                 </div>
                 
                 <div class="table-responsive">
-                    <table id="monitoringTable" class="table table-hover align-middle mb-0" style="font-size: 13px; width: 100%;">
-                        <thead class="table-light">
+                    <table id="monitoringTable" class="table table-hover align-middle mb-0" style="font-size: 12.5px; width: 100%;">
+                        <thead style="background: #f8fafc;">
                             <tr>
                                 <th>No</th>
                                 <th>Aksi</th>
@@ -124,66 +455,65 @@
                             <% if (data && data.length > 0) { %>
                                 <% for(var i = 0; i < data.length; i++) { %>
                                     <tr>
-                                        <td>#<%= (i + 1) %></td>
+                                        <td class="text-secondary" style="font-family: monospace;">#<%= (i + 1) %></td>
                                         <td>
-                                            <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus data log ini?')"><i class="fa fa-trash"></i></a>
+                                            <a href="/sensor/delete/<%= data[i].id %>" class="btn btn-sm btn-outline-danger py-0 px-1.5" style="border-radius: 4px; font-size: 11px;" onclick="return confirm('Hapus data log ini?')"><i class="fa fa-trash"></i></a>
                                         </td>
-                                        <td class="fw-bold"><%= data[i].nama_desa %></td>
+                                        <td class="fw-semibold text-dark"><%= data[i].nama_desa || '-' %></td>
                                         <td>
-                                            <small class="font-monospace text-secondary">
-                                                <%= data[i].latitude %>,<br><%= data[i].longitude %>
+                                            <small class="text-secondary" style="font-family: monospace; font-size: 11px;">
+                                                <%= data[i].latitude %>, <%= data[i].longitude %>
                                             </small>
                                         </td>
-                                        <td><span class="badge-soft-success"><%= data[i].komoditas %></span></td>
+                                        <td><span class="dev-badge"><%= data[i].komoditas %></span></td>
                                         <td>
-                                            <span class="fw-semibold"><%= data[i].luas_lahan %> Ha</span><br>
-                                            <small class="text-secondary">(<%= data[i].status_lahan %>)</small>
+                                            <span style="font-family: monospace;"><%= data[i].luas_lahan %> Ha</span> <small class="text-secondary">(<%= data[i].status_lahan %>)</small>
                                         </td>
                                         <td>
-                                            <span class="<%= data[i].irigasi === 'ya' ? 'badge-soft-success' : 'badge-soft-danger' %>">
+                                            <span class="dev-badge <%= data[i].irigasi === 'ya' ? 'dev-badge-success' : 'dev-badge-danger' %>">
                                                 <%= data[i].irigasi ? data[i].irigasi.toUpperCase() : '-' %>
                                             </span>
                                         </td>
                                         <td><span class="text-secondary"><%= data[i].tadahan_hujan %></span></td>
                                         <td>
-                                            <span class="<%= data[i].listrik === 'ya' ? 'badge-soft-info' : 'badge-soft-secondary' %>">
+                                            <span class="dev-badge <%= data[i].listrik === 'ya' ? 'dev-badge-info' : '' %>">
                                                 <%= data[i].listrik %>
                                             </span>
                                         </td>
                                         <td>
                                             <span><%= data[i].pompa_air %></span>
                                             <% if(data[i].pompa_air === 'ya' && data[i].sumber_energi_pompa !== 'tida') { %>
-                                                <br><small class="text-warning">(<%= data[i].sumber_energi_pompa %>)</small>
+                                                <small class="text-secondary">(<%= data[i].sumber_energi_pompa %>)</small>
                                             <% } %>
                                         </td>
                                         <td><span><%= data[i].sumber_air %></span></td>
                                         <td>
-                                            <span class="<%= data[i].kondisi_air === 'Sulit' ? 'badge-soft-danger' : 'badge-soft-success' %>">
+                                            <span class="dev-badge <%= data[i].kondisi_air === 'Sulit' ? 'dev-badge-danger' : 'dev-badge-success' %>">
                                                 <%= data[i].kondisi_air %>
                                             </span>
                                         </td>
                                         <td><span class="text-secondary"><%= data[i].pembajak %></span></td>
                                         <td>
-                                            <span class="<%= data[i].kelompok_tani === 'ya' ? 'badge-soft-info' : 'badge-soft-secondary' %>">
+                                            <span class="dev-badge <%= data[i].kelompok_tani === 'ya' ? 'dev-badge-info' : '' %>">
                                                 <%= data[i].kelompok_tani %>
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="<%= data[i].gagal_panen === 'ya' ? 'badge-soft-danger' : 'badge-soft-success' %>">
+                                            <span class="dev-badge <%= data[i].gagal_panen === 'ya' ? 'dev-badge-danger' : 'dev-badge-success' %>">
                                                 <%= data[i].gagal_panen %>
                                             </span>
                                         </td>
-                                        <td class="text-warning fw-bold"><%= data[i].temp %></td>
-                                        <td class="text-info fw-bold"><%= data[i].moisture %></td>
-                                        <td class="fw-bold <%= data[i].ph < 6.0 ? 'text-danger' : 'text-success' %>"><%= data[i].ph %></td>
-                                        <td class="font-monospace text-muted"><%= data[i].conductivity %></td>
-                                        <td class="font-monospace text-success fw-bold"><%= data[i].nitrogen %></td>
-                                        <td class="font-monospace text-danger fw-bold"><%= data[i].phosphorus %></td>
-                                        <td class="font-monospace text-info fw-bold"><%= data[i].potassium %></td>
-                                        <td class="font-monospace text-secondary fw-bold"><%= data[i].fertility %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].temp %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].moisture %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].ph %></td>
+                                        <td style="font-family: monospace; color: #64748b;"><%= data[i].conductivity %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].nitrogen %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].phosphorus %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].potassium %></td>
+                                        <td style="font-family: monospace; font-weight: 600;"><%= data[i].fertility %></td>
                                         <td>
-                                            <small class="text-secondary">
-                                                <%= new Date(data[i].created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) %> WIB
+                                            <small class="text-secondary" style="font-family: monospace; font-size: 11px;">
+                                                <%= new Date(data[i].created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) %>
                                             </small>
                                         </td>
                                     </tr>
@@ -191,7 +521,7 @@
                             <% } else { %>
                                 <tr>
                                     <td colspan="24" class="text-center text-secondary py-4">
-                                        <i class="fa-solid fa-database me-2"></i> Belum ada data log kuesioner & sensor dari lapangan.
+                                        Belum ada data log kuesioner & sensor dari lapangan.
                                     </td>
                                 </tr>
                             <% } %>
@@ -204,9 +534,15 @@
     </div>
 </div>
 
+<script id="sensorDataRaw" type="application/json"><%- JSON.stringify(data || []) %></script>
+
 <script>
+  // Parsing data mentah dari backend
+  const allSensorRows = JSON.parse(document.getElementById('sensorDataRaw').textContent || '[]');
+
   $(document).ready(function() {
-    $('#monitoringTable').DataTable({
+    // 1. Inisialisasi DataTable
+    const monitoringDataTable = $('#monitoringTable').DataTable({
       select: true,
       dom: 'Bfrtip',
       buttons: [
@@ -227,6 +563,297 @@
         }
       }
     });
+
+    // 2. Agregasi Data per Desa
+    const desaGroupMap = {};
+    allSensorRows.forEach(row => {
+      const desaName = (row.nama_desa || 'Tidak Terdata').trim();
+      if (!desaGroupMap[desaName]) {
+        desaGroupMap[desaName] = {
+          nama: desaName,
+          count: 0,
+          sumTemp: 0, countTemp: 0,
+          sumMoisture: 0, countMoisture: 0,
+          sumPh: 0, countPh: 0,
+          sumEC: 0, countEC: 0,
+          sumN: 0, countN: 0,
+          sumP: 0, countP: 0,
+          sumK: 0, countK: 0,
+          sumFertility: 0, countFertility: 0
+        };
+      }
+
+      const item = desaGroupMap[desaName];
+      item.count++;
+
+      const tempVal = parseFloat(row.temp);
+      if (!isNaN(tempVal)) { item.sumTemp += tempVal; item.countTemp++; }
+
+      const moisVal = parseFloat(row.moisture);
+      if (!isNaN(moisVal)) { item.sumMoisture += moisVal; item.countMoisture++; }
+
+      const phVal = parseFloat(row.ph);
+      if (!isNaN(phVal)) { item.sumPh += phVal; item.countPh++; }
+
+      const ecVal = parseFloat(row.conductivity);
+      if (!isNaN(ecVal)) { item.sumEC += ecVal; item.countEC++; }
+
+      const nVal = parseFloat(row.nitrogen);
+      if (!isNaN(nVal)) { item.sumN += nVal; item.countN++; }
+
+      const pVal = parseFloat(row.phosphorus);
+      if (!isNaN(pVal)) { item.sumP += pVal; item.countP++; }
+
+      const kVal = parseFloat(row.potassium);
+      if (!isNaN(kVal)) { item.sumK += kVal; item.countK++; }
+
+      const fertVal = parseFloat(row.fertility);
+      if (!isNaN(fertVal)) { item.sumFertility += fertVal; item.countFertility++; }
+    });
+
+    const desaList = Object.keys(desaGroupMap).sort();
+
+    // 3. Render Dropdown Desa
+    const selectEl = $('#desaFilterSelect');
+    $('#totalDesaCountPill').text(desaList.length + ' Desa Terdata');
+
+    desaList.forEach(desa => {
+      const dataDesa = desaGroupMap[desa];
+      selectEl.append(`<option value="${desa}">${desa} (${dataDesa.count} Sampel)</option>`);
+    });
+
+    // 4. Render Tabel Rekapitulasi per Desa & Inisialisasi Pagination DataTable
+    const rekapTbody = $('#rekapDesaTableBody');
+    if (desaList.length === 0) {
+      rekapTbody.append('<tr><td colspan="12" class="text-center text-muted py-3">Tidak ada data desa</td></tr>');
+    } else {
+      desaList.forEach((desa, idx) => {
+        const d = desaGroupMap[desa];
+        const avgT = d.countTemp ? (d.sumTemp / d.countTemp).toFixed(1) : '-';
+        const avgM = d.countMoisture ? (d.sumMoisture / d.countMoisture).toFixed(1) : '-';
+        const avgPh = d.countPh ? (d.sumPh / d.countPh).toFixed(2) : '-';
+        const avgEC = d.countEC ? (d.sumEC / d.countEC).toFixed(0) : '-';
+        const avgN = d.countN ? (d.sumN / d.countN).toFixed(1) : '-';
+        const avgP = d.countP ? (d.sumP / d.countP).toFixed(1) : '-';
+        const avgK = d.countK ? (d.sumK / d.countK).toFixed(1) : '-';
+        const avgFert = d.countFertility ? (d.sumFertility / d.countFertility).toFixed(0) : '-';
+
+        const rowHtml = `
+          <tr data-desa="${desa}" class="rekap-row">
+            <td class="text-center text-secondary" style="font-family: monospace;">${idx + 1}</td>
+            <td class="fw-semibold text-dark"><i class="fa-solid fa-location-dot me-1 text-slate-400" style="font-size: 11px;"></i> ${desa}</td>
+            <td class="text-center"><span class="dev-badge">${d.count} Titik</span></td>
+            <td class="text-end font-monospace">${avgT}</td>
+            <td class="text-end font-monospace">${avgM}</td>
+            <td class="text-end font-monospace fw-semibold">${avgPh}</td>
+            <td class="text-end font-monospace text-secondary">${avgEC}</td>
+            <td class="text-end font-monospace">${avgN}</td>
+            <td class="text-end font-monospace">${avgP}</td>
+            <td class="text-end font-monospace">${avgK}</td>
+            <td class="text-end font-monospace">${avgFert}</td>
+            <td class="text-center">
+              <button type="button" class="btn btn-sm btn-light border py-0 px-2 btn-pilih-desa" data-desa="${desa}" style="font-size: 11px; border-radius: 4px;">
+                Filter
+              </button>
+            </td>
+          </tr>
+        `;
+        rekapTbody.append(rowHtml);
+      });
+
+      // Inisialisasi DataTable untuk Tabel Rekapitulasi Desa dengan Pagination
+      $('#tableRekapDesa').DataTable({
+        pageLength: 5,
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, "Semua"]],
+        responsive: true,
+        ordering: true,
+        language: {
+          search: "_INPUT_",
+          searchPlaceholder: "Cari nama desa...",
+          lengthMenu: "Tampilkan _MENU_ desa",
+          info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ desa",
+          infoEmpty: "Menampilkan 0 dari 0 desa",
+          infoFiltered: "(disaring dari _MAX_ total desa)",
+          paginate: {
+            first: '<i class="fa-solid fa-angles-left"></i>',
+            last: '<i class="fa-solid fa-angles-right"></i>',
+            next: '<i class="fa-solid fa-chevron-right"></i>',
+            previous: '<i class="fa-solid fa-chevron-left"></i>'
+          },
+          emptyTable: "Tidak ada data rekapitulasi desa"
+        }
+      });
+    }
+
+    // 5. Fungsi Update Kartu 8 Unsur Tanah
+    function update8SoilCards(selectedDesa) {
+      let filteredRows = allSensorRows;
+      if (selectedDesa) {
+        filteredRows = allSensorRows.filter(r => (r.nama_desa || '').trim() === selectedDesa);
+      }
+
+      const totalRecords = filteredRows.length;
+      $('#currentRecordCount').text(totalRecords);
+      $('#currentSelectedDesaLabel').text(selectedDesa || 'Semua Desa');
+
+      let sumT = 0, countT = 0;
+      let sumM = 0, countM = 0;
+      let sumPh = 0, countPh = 0;
+      let sumEC = 0, countEC = 0;
+      let sumN = 0, countN = 0;
+      let sumP = 0, countP = 0;
+      let sumK = 0, countK = 0;
+      let sumFert = 0, countFert = 0;
+
+      filteredRows.forEach(r => {
+        const t = parseFloat(r.temp); if (!isNaN(t)) { sumT += t; countT++; }
+        const m = parseFloat(r.moisture); if (!isNaN(m)) { sumM += m; countM++; }
+        const ph = parseFloat(r.ph); if (!isNaN(ph)) { sumPh += ph; countPh++; }
+        const ec = parseFloat(r.conductivity); if (!isNaN(ec)) { sumEC += ec; countEC++; }
+        const n = parseFloat(r.nitrogen); if (!isNaN(n)) { sumN += n; countN++; }
+        const p = parseFloat(r.phosphorus); if (!isNaN(p)) { sumP += p; countP++; }
+        const k = parseFloat(r.potassium); if (!isNaN(k)) { sumK += k; countK++; }
+        const fert = parseFloat(r.fertility); if (!isNaN(fert)) { sumFert += fert; countFert++; }
+      });
+
+      // Rata-rata
+      const avgT = countT ? (sumT / countT).toFixed(1) : 0;
+      const avgM = countM ? (sumM / countM).toFixed(1) : 0;
+      const avgPh = countPh ? (sumPh / countPh).toFixed(2) : 0;
+      const avgEC = countEC ? (sumEC / countEC).toFixed(0) : 0;
+      const avgN = countN ? (sumN / countN).toFixed(1) : 0;
+      const avgP = countP ? (sumP / countP).toFixed(1) : 0;
+      const avgK = countK ? (sumK / countK).toFixed(1) : 0;
+      const avgFert = countFert ? (sumFert / countFert).toFixed(0) : 0;
+
+      // Update Teks Nilai
+      $('#statAvgTemp').text(avgT);
+      $('#statAvgMoisture').text(avgM);
+      $('#statAvgPh').text(avgPh);
+      $('#statAvgEC').text(avgEC);
+      $('#statAvgN').text(avgN);
+      $('#statAvgP').text(avgP);
+      $('#statAvgK').text(avgK);
+      $('#statAvgFertility').text(avgFert);
+
+      // Update Badges / Status Indikator
+      // Suhu
+      const numT = parseFloat(avgT);
+      if (numT >= 24 && numT <= 32) {
+        $('#badgeAvgTemp').attr('class', 'dev-badge dev-badge-success').text('Optimal');
+      } else if (numT < 24) {
+        $('#badgeAvgTemp').attr('class', 'dev-badge dev-badge-info').text('Sejuk');
+      } else {
+        $('#badgeAvgTemp').attr('class', 'dev-badge dev-badge-warning').text('Hangat');
+      }
+
+      // Kelembapan
+      const numM = parseFloat(avgM);
+      if (numM >= 20 && numM <= 60) {
+        $('#badgeAvgMoisture').attr('class', 'dev-badge dev-badge-success').text('Optimal');
+      } else if (numM < 20) {
+        $('#badgeAvgMoisture').attr('class', 'dev-badge dev-badge-danger').text('Kering');
+      } else {
+        $('#badgeAvgMoisture').attr('class', 'dev-badge dev-badge-info').text('Lembap');
+      }
+
+      // pH
+      const numPh = parseFloat(avgPh);
+      if (numPh >= 6.0 && numPh <= 7.5) {
+        $('#badgeAvgPh').attr('class', 'dev-badge dev-badge-success').text('Netral');
+      } else if (numPh < 6.0) {
+        $('#badgeAvgPh').attr('class', 'dev-badge dev-badge-danger').text('Asam');
+      } else {
+        $('#badgeAvgPh').attr('class', 'dev-badge dev-badge-warning').text('Basa');
+      }
+
+      // EC
+      const numEC = parseFloat(avgEC);
+      if (numEC <= 2000) {
+        $('#badgeAvgEC').attr('class', 'dev-badge dev-badge-success').text('Normal');
+      } else {
+        $('#badgeAvgEC').attr('class', 'dev-badge dev-badge-warning').text('Tinggi');
+      }
+
+      // N
+      const numN = parseFloat(avgN);
+      if (numN >= 50) {
+        $('#badgeAvgN').attr('class', 'dev-badge dev-badge-success').text('Cukup');
+      } else {
+        $('#badgeAvgN').attr('class', 'dev-badge dev-badge-warning').text('Rendah');
+      }
+
+      // P
+      const numP = parseFloat(avgP);
+      if (numP >= 20) {
+        $('#badgeAvgP').attr('class', 'dev-badge dev-badge-success').text('Cukup');
+      } else {
+        $('#badgeAvgP').attr('class', 'dev-badge dev-badge-warning').text('Kurang');
+      }
+
+      // K
+      const numK = parseFloat(avgK);
+      if (numK >= 50) {
+        $('#badgeAvgK').attr('class', 'dev-badge dev-badge-success').text('Optimal');
+      } else {
+        $('#badgeAvgK').attr('class', 'dev-badge dev-badge-warning').text('Rendah');
+      }
+
+      // Fertility
+      const numFert = parseFloat(avgFert);
+      if (numFert >= 500) {
+        $('#badgeAvgFertility').attr('class', 'dev-badge dev-badge-success').text('Subur');
+      } else {
+        $('#badgeAvgFertility').attr('class', 'dev-badge').text('Standar');
+      }
+    }
+
+    // 6. Handler Filter Desa Terpadu
+    function applyDesaFilter(selectedDesa) {
+      // Sinkronisasi Select Dropdown
+      $('#desaFilterSelect').val(selectedDesa);
+
+      // Sinkronisasi Highlight Baris Tabel Rekap
+      $('.rekap-row').removeClass('selected-desa-row');
+      if (selectedDesa) {
+        $(`.rekap-row[data-desa="${selectedDesa}"]`).addClass('selected-desa-row');
+      }
+
+      // Update Kartu 8 Unsur
+      update8SoilCards(selectedDesa);
+
+      // Filter DataTables (Kolom ke-2 adalah Wilayah Desa)
+      if (selectedDesa) {
+        monitoringDataTable.column(2).search('^' + $.fn.dataTable.util.escapeRegex(selectedDesa) + '$', true, false).draw();
+      } else {
+        monitoringDataTable.column(2).search('').draw();
+      }
+    }
+
+    // Event Listeners
+    $('#desaFilterSelect').on('change', function() {
+      applyDesaFilter($(this).val());
+    });
+
+    $(document).on('click', '.btn-pilih-desa', function(e) {
+      e.stopPropagation();
+      const desa = $(this).attr('data-desa');
+      applyDesaFilter(desa);
+      // Scroll halus ke kartu parameter
+      $('html, body').animate({ scrollTop: $('#desaFilterSelect').offset().top - 80 }, 300);
+    });
+
+    $(document).on('click', '.rekap-row', function() {
+      const desa = $(this).attr('data-desa');
+      applyDesaFilter(desa);
+    });
+
+    $('#btnResetFilter').on('click', function() {
+      applyDesaFilter('');
+    });
+
+    // Inisialisasi awal kalkulasi semua desa
+    update8SoilCards('');
   });
 </script>
 <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
