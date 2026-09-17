@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../core/constants/colors.dart';
+import '../../core/services/api_service.dart';
 import '../../core/services/location_service.dart';
+import '../widgets/sumenep_location_picker_dialog.dart';
 
 class FormInputLahanPage extends StatefulWidget {
   final Map<String, dynamic> sensorData;
@@ -84,7 +86,7 @@ class _FormInputLahanPageState extends State<FormInputLahanPage> {
 
     setState(() => _isLoading = true);
 
-    const String apiUrl = "https://demo.codingsolver.my.id/api/soil/save";
+    final String apiUrl = "${ApiService.baseUrl}/api/soil/save";
 
     // Exact JSON payload preserving original backend contract
     final Map<String, dynamic> bodyData = {
@@ -120,13 +122,20 @@ class _FormInputLahanPageState extends State<FormInputLahanPage> {
         Uri.parse(apiUrl),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(bodyData),
-      );
-
-      final responseJson = jsonDecode(response.body);
+      ).timeout(const Duration(seconds: 10));
 
       if (!mounted) return;
 
-      if (response.statusCode == 200 && responseJson['status'] == true) {
+      dynamic responseJson;
+      try {
+        if (!response.body.trim().startsWith('<')) {
+          responseJson = jsonDecode(response.body);
+        }
+      } catch (_) {
+        responseJson = null;
+      }
+
+      if ((response.statusCode == 200 || response.statusCode == 201) && responseJson is Map && responseJson['status'] == true) {
         _showSnackBar(
           "Sukses: ${responseJson['message'] ?? 'Data tersimpan ke server cloud'}",
           AppColors.primary,
@@ -134,13 +143,13 @@ class _FormInputLahanPageState extends State<FormInputLahanPage> {
         Navigator.pop(context);
       } else {
         _showSnackBar(
-          "Gagal: ${responseJson['message'] ?? 'Respons Error Server'}",
+          "Gagal: ${responseJson is Map ? responseJson['message'] : 'Server merespons status ${response.statusCode}'}",
           AppColors.errorAlert,
         );
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar("Koneksi gagal ke server cloud: $e", AppColors.errorAlert);
+        _showSnackBar("Koneksi gagal ke server: $e", AppColors.errorAlert);
       }
     } finally {
       if (mounted) {
@@ -238,10 +247,46 @@ class _FormInputLahanPageState extends State<FormInputLahanPage> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      _buildTextField(
-                        controller: _desaController,
-                        label: "Nama Desa / Kelurahan",
-                        icon: Icons.location_city,
+                      InkWell(
+                        onTap: () {
+                          SumenepLocationPickerDialog.show(
+                            context,
+                            initialDesa: _desaController.text,
+                            onSelected: (selectedDesa, penyuluh) {
+                              setState(() {
+                                _desaController.text = '${selectedDesa.desa}, Kec. ${selectedDesa.kecamatan}';
+                              });
+                            },
+                          );
+                        },
+                        child: IgnorePointer(
+                          child: _buildTextField(
+                            controller: _desaController,
+                            label: "Desa / Kelurahan (Kabupaten Sumenep)",
+                            icon: Icons.location_city,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            SumenepLocationPickerDialog.show(
+                              context,
+                              initialDesa: _desaController.text,
+                              onSelected: (selectedDesa, penyuluh) {
+                                setState(() {
+                                  _desaController.text = '${selectedDesa.desa}, Kec. ${selectedDesa.kecamatan}';
+                                });
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.search, size: 16, color: AppColors.primary),
+                          label: const Text(
+                            'Pilih dari Daftar Wilayah Sumenep',
+                            style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ],
                   ),

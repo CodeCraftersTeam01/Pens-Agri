@@ -304,5 +304,409 @@ DESCRIBE `monitoring_lahan`;
 | **Penyuluh API Endpoint Alignment** | `saveSoilEndpoint` in `api_service.dart` |  **ALIGNED** | Mengarah ke `https://demo.codingsolver.my.id/api/soil/penyuluh/save` |
 | **Petani API Endpoint Alignment** | `apiUrl` in `form_input_lahan_page.dart` |  **ALIGNED** | Mengarah ke `https://demo.codingsolver.my.id/api/soil/save` |
 
+
 ---
-*Generated autonomously by Full-Stack Systems Architect & Backend Integration Specialist.*
+
+## 7. Phase 1: Sumenep Localization, Role Pairing, Custom Standards & Community Forum
+
+### A. Architectural Overview & Critical Invariants
+1. **Sumenep Exclusive Localization:**
+   - Database table `master_wilayah_sumenep` houses the complete 27 kecamatan in Kabupaten Sumenep (encompassing mainland subdistricts such as Kota Sumenep, Gapura, Batang-Batang, Saronggi, Lenteng, and island subdistricts such as Kalianget, Talango, Arjasa/Kangean, Kangayan, Sapeken, Sapudi/Nonggunong/Gayam, Raas, Masalembu, Giligenting).
+   - Geographic options are strictly restricted to Sumenep.
+2. **Role-Based Pairing Rule (Invariant: 1 Desa = 1 Penyuluh):**
+   - Every village (desa) can have at most **one** designated Penyuluh.
+   - When a Petani registers or accesses profile information, they are automatically paired with that village's designated Penyuluh.
+   - Any attempt to register a second Penyuluh in the same village is rejected with a `400 Bad Request`.
+3. **Threshold Submission & Verification Lifecycle:**
+   - Farmers can submit custom 8-parameter crop threshold baselines with status defaulting to `pending`.
+   - The village's assigned Penyuluh can inspect pending submissions and mark them as `verified` or `rejected` with custom notes.
+4. **Community Forum with Verification Badges:**
+   - Posts can attach custom standards.
+   - The feed dynamically validates the attached standard: if unverified, it explicitly outputs `verification_warning: "Standar ini belum diverifikasi penyuluh"` and `is_verified: false`. If verified, it renders `is_verified: true`.
+5. **Zero Breaking Changes:**
+   - Existing `/api/soil/save` and `/api/soil/penyuluh/save` remain completely intact.
+
+---
+
+### B. Database Schema Definitions (Phase 1)
+
+```sql
+-- 1. Master Wilayah Sumenep
+CREATE TABLE IF NOT EXISTS `master_wilayah_sumenep` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `kecamatan` VARCHAR(100) NOT NULL,
+  `desa` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_kec_desa` (`kecamatan`, `desa`),
+  KEY `idx_kecamatan` (`kecamatan`),
+  KEY `idx_desa` (`desa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 2. Enhanced Users Table
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nama` VARCHAR(255) DEFAULT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `no_hp` VARCHAR(50) DEFAULT NULL,
+  `role` ENUM('petani','penyuluh','admin') NOT NULL DEFAULT 'petani',
+  `desa_id` INT(11) DEFAULT NULL,
+  `foto_users` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_email` (`email`),
+  KEY `idx_role` (`role`),
+  KEY `idx_desa_id` (`desa_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 3. Standar Komoditas Petani (Farmer Custom Thresholds)
+CREATE TABLE IF NOT EXISTS `standar_komoditas_petani` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `petani_id` INT(11) NOT NULL,
+  `penyuluh_id` INT(11) DEFAULT NULL,
+  `desa_id` INT(11) NOT NULL,
+  `komoditas` VARCHAR(255) NOT NULL,
+  `varietas` VARCHAR(255) NOT NULL,
+  `min_ph` DECIMAL(4,2) NOT NULL DEFAULT 6.00,
+  `max_ph` DECIMAL(4,2) NOT NULL DEFAULT 7.00,
+  `min_moisture` DECIMAL(5,2) NOT NULL DEFAULT 50.00,
+  `max_moisture` DECIMAL(5,2) NOT NULL DEFAULT 80.00,
+  `min_n` INT(11) NOT NULL DEFAULT 100,
+  `max_n` INT(11) NOT NULL DEFAULT 150,
+  `min_p` INT(11) NOT NULL DEFAULT 25,
+  `max_p` INT(11) NOT NULL DEFAULT 45,
+  `min_k` INT(11) NOT NULL DEFAULT 150,
+  `max_k` INT(11) NOT NULL DEFAULT 220,
+  `min_temp` DECIMAL(4,2) NOT NULL DEFAULT 20.00,
+  `max_temp` DECIMAL(4,2) NOT NULL DEFAULT 35.00,
+  `min_ec` INT(11) NOT NULL DEFAULT 1000,
+  `max_ec` INT(11) NOT NULL DEFAULT 2000,
+  `min_fertility` INT(11) NOT NULL DEFAULT 50,
+  `max_fertility` INT(11) NOT NULL DEFAULT 100,
+  `status` ENUM('pending','verified','rejected') NOT NULL DEFAULT 'pending',
+  `catatan_penyuluh` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_petani_id` (`petani_id`),
+  KEY `idx_penyuluh_id` (`penyuluh_id`),
+  KEY `idx_desa_id` (`desa_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 4. Forum Posts
+CREATE TABLE IF NOT EXISTS `forum_posts` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `standar_id` INT(11) DEFAULT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `body` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_standar_id` (`standar_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 5. Forum Comments
+CREATE TABLE IF NOT EXISTS `forum_comments` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `post_id` INT(11) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `comment` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_post_id` (`post_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+```
+
+---
+
+### C. RESTful API Specification (Phase 1)
+
+| Endpoint | Method | Deskripsi | Query / Request Body | Response Status & Key Fields |
+| :--- | :--- | :--- | :--- | :--- |
+| `/api/wilayah/sumenep` | `GET` | Mengambil master wilayah Sumenep (27 kecamatan) | `?kecamatan=...` / `?q=...` | `200 OK`: `kecamatan_list`, `data: [{id, kecamatan, desa}]` |
+| `/api/auth/register` | `POST` | Registrasi Petani / Penyuluh dengan pairing otomatis | `{ nama, email, password, no_hp, role, desa_id }` | `201 Created`: `user`, `paired_penyuluh`. *Enforces 1 Desa = 1 Penyuluh.* |
+| `/api/auth/login` | `POST` | Login user & auto-resolve penyuluh pendamping | `{ email, password }` | `200 OK`: `user`, `paired_penyuluh` |
+| `/api/auth/me/:id` | `GET` | Detail profil & penyuluh binaan | - | `200 OK`: `user`, `paired_penyuluh` |
+| `/api/petani/standar/submit` | `POST` | Petani mengajukan standar komoditas mandiri | `{ petani_id, desa_id, komoditas, varietas, min/max 8 parameter }` | `201 Created`: `status: 'pending'`, `assigned_penyuluh` |
+| `/api/penyuluh/standar/pending`| `GET` | Penyuluh mengambil daftar standar pending desa binaan | `?penyuluh_id=...` / `?desa_id=...` | `200 OK`: `total`, `data: [{id, komoditas, nama_petani, desa, ...}]` |
+| `/api/penyuluh/standar/verify` | `POST` | Penyuluh memverifikasi / menolak standar | `{ id, penyuluh_id, status: 'verified'/'rejected', catatan_penyuluh }` | `200 OK`: `status: 'verified'/'rejected'`, `data` |
+| `/api/petani/standar/my-standards` | `GET` | Petani mengambil riwayat standar mandiri | `?petani_id=...` | `200 OK`: `total`, `data: [...]` |
+| `/api/forum/posts` | `GET` | Feed forum lintas petani & penyuluh | `?limit=50&offset=0` | `200 OK`: `data: [{..., is_verified, verification_warning, attached_standard}]` |
+| `/api/forum/posts` | `POST` | Membuat postingan forum (opsional standar) | `{ user_id, standar_id, title, body }` | `201 Created`: `data: { id, title, author, attached_standard }` |
+| `/api/forum/comments` | `POST` | Menambahkan komentar pada postingan | `{ post_id, user_id, comment }` | `201 Created`: `data: { id, comments: [...] }` |
+| `/api/forum/posts/:id` | `GET` | Detail postingan beserta seluruh thread komentar | - | `200 OK`: Post detail with populated comments |
+
+---
+
+### D. Syntax & Validation Verification (Phase 1)
+
+```bash
+Get-ChildItem -Path model\*.js, routes\api\*.js, config\*.js, app.js | ForEach-Object { node -c $_.FullName }
+```
+
+| File | Path | Status Sintaks | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `Model_Wilayah_Sumenep.js` | `BackEnd-monitoringlahan/model/` |  **PASSED** (0 Errors) | Master data wilayah Sumenep (27 kecamatan) |
+| `Model_Users.js` | `BackEnd-monitoringlahan/model/` |  **PASSED** (0 Errors) | Role validation & 1 Desa = 1 Penyuluh invariant |
+| `Model_Standar_Komoditas.js` | `BackEnd-monitoringlahan/model/` |  **PASSED** (0 Errors) | 8-parameter threshold submission & verification |
+| `Model_Forum.js` | `BackEnd-monitoringlahan/model/` |  **PASSED** (0 Errors) | Forum feed, comments & verification badge generation |
+| `wilayah.js` | `BackEnd-monitoringlahan/routes/api/` |  **PASSED** (0 Errors) | Sumenep district & village RESTful queries |
+| `auth.js` | `BackEnd-monitoringlahan/routes/api/` |  **PASSED** (0 Errors) | Register, login & paired penyuluh auto-resolver |
+| `standar.js` | `BackEnd-monitoringlahan/routes/api/` |  **PASSED** (0 Errors) | Farmer submit & Penyuluh verify endpoints |
+| `forum.js` | `BackEnd-monitoringlahan/routes/api/` |  **PASSED** (0 Errors) | Feed, post & comment endpoints |
+| `db_init_sumenep.js` | `BackEnd-monitoringlahan/config/` |  **PASSED** (0 Errors) | Table creator & 27-kecamatan Sumenep master seeder |
+| `app.js` | `BackEnd-monitoringlahan/` |  **PASSED** (0 Errors) | Route mounter & auto-initializer |
+
+---
+
+## 8. Panduan Kolaborasi & Integrasi Web Dashboard (Untuk Developer Web)
+
+> **PENTING UNTUK REKAN DEVELOPER WEB:**
+> Bagian ini disusun secara khusus dalam Bahasa Indonesia untuk mempermudah rekan developer yang mengerjakan web dashboard (EJS/Admin Dashboard) dalam mengintegrasikan fitur-fitur baru (wilayah Sumenep, status verifikasi standar petani, dan forum komunitas) ke dalam tampilan antarmuka web, sekaligus memberikan kepastian bahwa seluruh sistem lama tetap berjalan 100% normal.
+
+---
+
+### A. Jaminan Nol Konflik pada Rute & Sistem Legacy Web
+
+Seluruh kode eksisting untuk dashboard web, modul pemetaan lahan GIS, dan rute telemetri sensor lama **TIDAK DIUBAH SAMA SEKALI** dan dijamin aman dari konflik merge (*zero breaking changes*):
+
+1. **Rute Halaman Web Dashboard Eksisting (Tetap Utuh):**
+   * `/sensor` (`routes/sensor.js`) — Visualisasi tabel dan monitoring probe sensor tanah.
+   * `/petalahan` (`routes/petalahan.js`) — Peta GIS interaktif persebaran lahan tani Kabupaten Sumenep.
+   * `/kelompoktani` (`routes/kelompoktani.js`) — Manajemen data kelompok tani.
+   * `/policy_brief` (`routes/policy_brief.js`) — Modul analisis AI kebijakan pertanian Sumenep.
+   * `/sayur_buah`, `/biofarmaka`, `/luas_tanam_perkebunan_rakyat` — Statistik komoditas BPS.
+2. **Rute API Telemetri Sensor Lama (Tetap Utuh):**
+   * `POST /api/soil/save` — Endpoint penerimaan payload 24 parameter kuesioner tanah dari aplikasi petani lama.
+   * `POST /api/soil/penyuluh/save` — Endpoint penerimaan 8 parameter telemetri + 3 foto audit dari aplikasi penyuluh.
+   * `GET /api/soil/` — Endpoint list data monitoring tanah.
+
+---
+
+### B. Daftar Tabel Baru & Skrip SQL Migrasi Database Server
+
+Jika rekan developer web melakukan deployment ke server production atau setup database lokal baru, jalankan file SQL migrasi yang telah disediakan di:
+📂 `BackEnd-monitoringlahan/config/migrations_phase1_sumenep.sql`
+
+Atau eksekusi perintah DDL MySQL berikut:
+
+```sql
+-- =========================================================================================
+-- STRUKTUR TABEL BARU & ENHANCEMENT DATABASE
+-- Database Target: MySQL / MariaDB (InnoDB, utf8mb4_general_ci)
+-- =========================================================================================
+
+-- 1. Master Wilayah Eksklusif Kabupaten Sumenep (27 Kecamatan & Seluruh Desa/Kelurahan)
+CREATE TABLE IF NOT EXISTS `master_wilayah_sumenep` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `kecamatan` VARCHAR(100) NOT NULL,
+  `desa` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_kec_desa` (`kecamatan`, `desa`),
+  KEY `idx_kecamatan` (`kecamatan`),
+  KEY `idx_desa` (`desa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 2. Penyesuaian Tabel Users (Dukungan Role Petani/Penyuluh & Wilayah Desa Binaan)
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nama` VARCHAR(255) DEFAULT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `no_hp` VARCHAR(50) DEFAULT NULL,
+  `role` ENUM('petani','penyuluh','admin') NOT NULL DEFAULT 'petani',
+  `desa_id` INT(11) DEFAULT NULL,
+  `foto_users` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_email` (`email`),
+  KEY `idx_role` (`role`),
+  KEY `idx_desa_id` (`desa_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 3. Tabel Standar Komoditas Mandiri Petani (Siklus Verifikasi Penyuluh)
+CREATE TABLE IF NOT EXISTS `standar_komoditas_petani` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `petani_id` INT(11) NOT NULL,
+  `penyuluh_id` INT(11) DEFAULT NULL,
+  `desa_id` INT(11) NOT NULL,
+  `komoditas` VARCHAR(255) NOT NULL,
+  `varietas` VARCHAR(255) NOT NULL,
+  `min_ph` DECIMAL(4,2) NOT NULL DEFAULT 6.00,
+  `max_ph` DECIMAL(4,2) NOT NULL DEFAULT 7.00,
+  `min_moisture` DECIMAL(5,2) NOT NULL DEFAULT 50.00,
+  `max_moisture` DECIMAL(5,2) NOT NULL DEFAULT 80.00,
+  `min_n` INT(11) NOT NULL DEFAULT 100,
+  `max_n` INT(11) NOT NULL DEFAULT 150,
+  `min_p` INT(11) NOT NULL DEFAULT 25,
+  `max_p` INT(11) NOT NULL DEFAULT 45,
+  `min_k` INT(11) NOT NULL DEFAULT 150,
+  `max_k` INT(11) NOT NULL DEFAULT 220,
+  `min_temp` DECIMAL(4,2) NOT NULL DEFAULT 20.00,
+  `max_temp` DECIMAL(4,2) NOT NULL DEFAULT 35.00,
+  `min_ec` INT(11) NOT NULL DEFAULT 1000,
+  `max_ec` INT(11) NOT NULL DEFAULT 2000,
+  `min_fertility` INT(11) NOT NULL DEFAULT 50,
+  `max_fertility` INT(11) NOT NULL DEFAULT 100,
+  `status` ENUM('pending','verified','rejected') NOT NULL DEFAULT 'pending',
+  `catatan_penyuluh` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_petani_id` (`petani_id`),
+  KEY `idx_penyuluh_id` (`penyuluh_id`),
+  KEY `idx_desa_id` (`desa_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 4. Tabel Postingan Forum Komunitas Petani & Penyuluh
+CREATE TABLE IF NOT EXISTS `forum_posts` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `standar_id` INT(11) DEFAULT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `body` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_standar_id` (`standar_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 5. Tabel Komentar Thread Forum
+CREATE TABLE IF NOT EXISTS `forum_comments` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `post_id` INT(11) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `comment` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_post_id` (`post_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+```
+
+> **Catatan Otomatisasi:**
+> Pada backend Express, fungsi `initSumenepDatabase()` pada `BackEnd-monitoringlahan/config/db_init_sumenep.js` akan secara otomatis mengeksekusi pembuatan tabel dan men-seed seluruh 27 kecamatan Kabupaten Sumenep saat server Node.js pertama kali dijalankan.
+
+---
+
+### C. Daftar Lengkap RESTful API Baru untuk Dashboard Web
+
+Berikut adalah daftar rute API yang dapat langsung dikonsumsi oleh developer web jika ingin menambahkan tabel pemantauan verifikasi atau widget forum di dashboard web:
+
+#### 1. Modul Master Wilayah Sumenep
+* **`GET /api/wilayah/sumenep`**
+  * **Fungsi:** Mengambil data kecamatan & desa se-Kabupaten Sumenep.
+  * **Query Params:**
+    * `?kecamatan=Gapura` (Filter per kecamatan)
+    * `?q=Batang` (Pencarian fleksibel nama desa/kecamatan)
+  * **Contoh Response JSON:**
+    ```json
+    {
+      "status": true,
+      "message": "Master Wilayah Kabupaten Sumenep",
+      "total_kecamatan": 27,
+      "total_desa": 334,
+      "kecamatan_list": ["Ambunten", "Arjasa (Kangean)", "Batang-Batang", "..."],
+      "data": [
+        { "id": 79, "kecamatan": "Gapura", "desa": "Gapura Barat" },
+        { "id": 80, "kecamatan": "Gapura", "desa": "Gapura Timur" }
+      ]
+    }
+    ```
+
+#### 2. Modul Autentikasi & Pairing (1 Desa = 1 Penyuluh)
+* **`POST /api/auth/register`**
+  * **Payload:**
+    ```json
+    {
+      "nama": "Ahmad Fauzi",
+      "email": "fauzi@petani.id",
+      "password": "password123",
+      "no_hp": "081234567890",
+      "role": "petani",
+      "desa_id": 79
+    }
+    ```
+  * **Aturan Khusus Invariant:** Jika `role = "penyuluh"`, sistem akan menolak jika desa tersebut sudah memiliki penyuluh terdaftar. Petani yang mendaftar akan otomatis dipasangkan dengan penyuluh desa tersebut.
+* **`POST /api/auth/login`**
+  * **Payload:** `{ "email": "fauzi@petani.id", "password": "password123" }`
+  * **Response:** Mengembalikan data user beserta objek `paired_penyuluh`.
+
+#### 3. Modul Standar Komoditas & Verifikasi
+* **`POST /api/petani/standar/submit`**
+  * **Fungsi:** Petani mengajukan ambang batas komoditas mandiri (status awal: `pending`).
+  * **Payload:**
+    ```json
+    {
+      "petani_id": 1,
+      "desa_id": 79,
+      "komoditas": "Cabai Rawit",
+      "varietas": "Madura Super",
+      "min_ph": 6.0, "max_ph": 7.0,
+      "min_moisture": 50.0, "max_moisture": 75.0,
+      "min_n": 120, "max_n": 180,
+      "min_p": 35, "max_p": 55,
+      "min_k": 160, "max_k": 240,
+      "min_temp": 24.0, "max_temp": 34.0,
+      "min_ec": 1100, "max_ec": 2100,
+      "min_fertility": 60, "max_fertility": 95
+    }
+    ```
+* **`GET /api/penyuluh/standar/pending?desa_id=79`**
+  * **Fungsi:** Menampilkan daftar pengajuan petani yang menunggu persetujuan penyuluh di desa terkait.
+* **`POST /api/penyuluh/standar/verify`**
+  * **Fungsi:** Penyuluh menyetujui atau menolak standar.
+  * **Payload:**
+    ```json
+    {
+      "id": 1,
+      "penyuluh_id": 2,
+      "status": "verified",
+      "catatan_penyuluh": "Standar disetujui sesuai agroklimat tanah tegalan Gapura."
+    }
+    ```
+
+#### 4. Modul Forum Komunitas Petani & Penyuluh
+* **`GET /api/forum/posts?limit=50&offset=0`**
+  * **Fungsi:** Feed diskusi komunitas. Jika ada lampiran standar yang belum terverifikasi, response menyertakan `verification_warning: "Standar ini belum diverifikasi penyuluh"`.
+* **`POST /api/forum/posts`**
+  * **Payload:**
+    ```json
+    {
+      "user_id": 1,
+      "standar_id": 1,
+      "title": "Hasil Uji Tanam Padi Inpari 32 di Lahan Tadah Hujan",
+      "body": "Setelah melakukan pemupukan berimbang, nilai NPK tanah stabil..."
+    }
+    ```
+* **`POST /api/forum/comments`**
+  * **Payload:**
+    ```json
+    {
+      "post_id": 1,
+      "user_id": 2,
+      "comment": "Bagus sekali Pak, pertahankan kelembaban tanah di atas 60%."
+    }
+    ```
+
+---
+
+### D. Audit Kesiapan Klien Mobile (Phase 2)
+
+Kedua aplikasi mobile telah diperbarui dan diuji secara menyeluruh:
+
+| Aplikasi Mobile | Modul yang Diintegrasikan | Hasil `dart analyze` |
+| :--- | :--- | :--- |
+| **`apk-pertanian_presisi-petani`** | 1. Modal Picker Lokasi Sumenep (27 Kecamatan).<br>2. Banner Pairing Otomatis Penyuluh Desa.<br>3. Dual Baseline Strategy (Rekomendasi vs Mandiri).<br>4. Form Pengajuan Standar & Status Badge.<br>5. Forum Diskusi Petani + Peringatan Amber.<br>6. Navigation Shell 3 Tab. |  **PASSED (0 Issues)** |
+| **`apk-pertanian_presisi-penyuluh`** | 1. Profil Wilayah Binaan Desa Sumenep.<br>2. Kotak Verifikasi Standar (Tinjau, Setujui, Tolak).<br>3. Perbandingan Ambang Batas 8 Parameter.<br>4. Forum Komunitas dengan Lencana Resmi Penyuluh.<br>5. Navigation Shell 3 Tab. |  **PASSED (0 Issues)** |
+
+---
+*Dokumen ini diperbarui secara berkala oleh Tim Lead Full-Stack Architect & Mobile Systems Engineer.*

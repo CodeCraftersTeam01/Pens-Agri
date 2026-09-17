@@ -2,20 +2,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/colors.dart';
-import 'views/home/commodity_selection_page.dart';
+import 'core/services/user_session_service.dart';
+import 'views/auth/login_page.dart';
+import 'views/home/penyuluh_main_shell.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Protect against GoogleFonts network failure on cold boot
-  GoogleFonts.config.allowRuntimeFetching = true;
-
-  // Flutter error boundary to prevent UI thread crashes
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-  };
-
+void main() {
   runZonedGuarded(() {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Protect against GoogleFonts network failure on cold boot
+    GoogleFonts.config.allowRuntimeFetching = true;
+
+    // Flutter error boundary to prevent UI thread crashes
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FlutterError.presentError(details);
+    };
+
     runApp(const AgriPrecisionApp());
   }, (error, stack) {
     debugPrint('Uncaught Zone Error: $error\n$stack');
@@ -52,7 +54,32 @@ class AgriPrecisionApp extends StatelessWidget {
           scrolledUnderElevation: 1,
         ),
       ),
-      home: const CommoditySelectionPage(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: UserSessionService.isLoggedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: AppColors.background,
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+          );
+        }
+        if (snapshot.data == true) {
+          return const PenyuluhMainShell();
+        }
+        return const LoginPage();
+      },
     );
   }
 }

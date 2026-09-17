@@ -1,33 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../models/forum_model.dart';
-import '../../models/soil_sample_model.dart';
 import '../../models/standar_komoditas_model.dart';
 import '../../models/wilayah_model.dart';
 import '../constants/sumenep_master_data.dart';
 
-class ApiResponse {
-  final bool isSuccess;
-  final String message;
-  final dynamic data;
-
-  const ApiResponse({
-    required this.isSuccess,
-    required this.message,
-    this.data,
-  });
-}
-
 class ApiService {
   // Configurable base URL with live and fallback alternatives
-  static String baseUrl = 'https://demo.codingsolver.my.id/api';
-  static String get saveSoilEndpoint => '$baseUrl/soil/penyuluh/save';
-
-  static final ApiService _instance = ApiService._internal();
-  factory ApiService() => _instance;
-  ApiService._internal();
+  static String baseUrl = 'https://demo.codingsolver.my.id';
 
   /// Safe JSON decoding that strictly validates HTTP status and content-type
   /// Prevents crashes from Cloudflare HTML (e.g. error 1033) or invalid responses
@@ -61,7 +42,7 @@ class ApiService {
           : '${identifier.replaceAll(RegExp(r'[^0-9]'), '')}@pertanian.sumenep.go.id';
 
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
+        Uri.parse('$baseUrl/api/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'email': emailParam,
@@ -97,7 +78,7 @@ class ApiService {
           : (phone.contains('@') ? phone : '${phone.replaceAll(RegExp(r'[^0-9]'), '')}@pertanian.sumenep.go.id');
 
       final response = await http.post(
-        Uri.parse('$baseUrl/auth/register'),
+        Uri.parse('$baseUrl/api/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'nama': nama,
@@ -122,81 +103,10 @@ class ApiService {
     }
   }
 
-  /// Synchronizes the complete soil sample record (metadata + 3 binary photos) to the backend.
-  Future<ApiResponse> saveSoilSample(SoilSampleModel sample) async {
-    try {
-      final Uri uri = Uri.parse(saveSoilEndpoint);
-      final http.MultipartRequest request = http.MultipartRequest('POST', uri);
-
-      // 1. Add all textual & numerical telemetry fields
-      request.fields.addAll(sample.toFormFieldMap());
-
-      // 2. Attach the 3 mandatory binary image files if available
-      if (sample.fotoDaunPath != null && sample.fotoDaunPath!.isNotEmpty) {
-        final File file = File(sample.fotoDaunPath!);
-        if (await file.exists()) {
-          request.files.add(
-            await http.MultipartFile.fromPath('foto_daun', sample.fotoDaunPath!),
-          );
-        }
-      }
-
-      if (sample.fotoPohonPath != null && sample.fotoPohonPath!.isNotEmpty) {
-        final File file = File(sample.fotoPohonPath!);
-        if (await file.exists()) {
-          request.files.add(
-            await http.MultipartFile.fromPath('foto_pohon', sample.fotoPohonPath!),
-          );
-        }
-      }
-
-      if (sample.fotoTanahPath != null && sample.fotoTanahPath!.isNotEmpty) {
-        final File file = File(sample.fotoTanahPath!);
-        if (await file.exists()) {
-          request.files.add(
-            await http.MultipartFile.fromPath('foto_tanah', sample.fotoTanahPath!),
-          );
-        }
-      }
-
-      // 3. Send the Multipart Request
-      final http.StreamedResponse streamedResponse = await request.send();
-      final http.Response response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final dynamic json = _safeJsonDecode(response);
-        final bool status = json is Map && json['status'] == true;
-        final String msg = (json is Map && json['message'] != null)
-            ? json['message'].toString()
-            : 'Data berhasil disimpan ke cloud!';
-        return ApiResponse(
-          isSuccess: status || response.statusCode == 200,
-          message: msg,
-          data: json,
-        );
-      } else {
-        return ApiResponse(
-          isSuccess: false,
-          message: 'Server menolak data (Kode: ${response.statusCode}).',
-        );
-      }
-    } on SocketException {
-      return const ApiResponse(
-        isSuccess: false,
-        message: 'Koneksi internet bermasalah. Pastikan perangkat online.',
-      );
-    } catch (e) {
-      return ApiResponse(
-        isSuccess: false,
-        message: 'Gagal sinkronisasi data ke cloud: $e',
-      );
-    }
-  }
-
   // 1. Fetch Sumenep Wilayah with Instant Offline Fallback
   static Future<List<DesaModel>> getSumenepWilayah({String? kecamatan, String? query}) async {
     try {
-      final uri = Uri.parse('$baseUrl/wilayah/sumenep').replace(
+      final uri = Uri.parse('$baseUrl/api/wilayah/sumenep').replace(
         queryParameters: {
           if (kecamatan != null && kecamatan.isNotEmpty) 'kecamatan': kecamatan,
           if (query != null && query.isNotEmpty) 'q': query,
@@ -214,7 +124,7 @@ class ApiService {
         }
       }
     } catch (e) {
-      debugPrint('[ApiService] Wilayah API offline ($e), using embedded Sumenep master dataset.');
+      debugPrint('[ApiService] Wilayah API offline/failed ($e), using embedded Sumenep master dataset.');
     }
 
     // Offline Fallback from 27 Kecamatan Dataset
@@ -233,17 +143,105 @@ class ApiService {
     return offlineList;
   }
 
-  // 2. Fetch Pending Standards for Penyuluh's assigned Village
-  static Future<List<StandarKomoditasModel>> getPendingStandards({int? penyuluhId, int? desaId}) async {
+  // 2. Fetch Paired Penyuluh for a Desa
+  static Future<PairedPenyuluhModel?> getPairedPenyuluh(int desaId) async {
     try {
-      final uri = Uri.parse('$baseUrl/penyuluh/standar/pending').replace(
-        queryParameters: {
-          if (penyuluhId != null) 'penyuluh_id': penyuluhId.toString(),
-          if (desaId != null) 'desa_id': desaId.toString(),
-        },
-      );
+      final response = await http
+          .get(Uri.parse('$baseUrl/api/auth/me/$desaId'))
+          .timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200) {
+        final data = _safeJsonDecode(response);
+        if (data != null && data['data']?['paired_penyuluh'] != null) {
+          return PairedPenyuluhModel.fromJson(
+            data['data']['paired_penyuluh'] as Map<String, dynamic>,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching paired penyuluh: $e');
+    }
+    return null;
+  }
 
-      final response = await http.get(uri).timeout(const Duration(seconds: 6));
+  // 3. Submit Custom Crop Standard (Farmer)
+  static Future<Map<String, dynamic>> submitStandarPetani({
+    required int petaniId,
+    required int desaId,
+    required String komoditas,
+    required String varietas,
+    required double minPh,
+    required double maxPh,
+    required double minMoisture,
+    required double maxMoisture,
+    required int minN,
+    required int maxN,
+    required int minP,
+    required int maxP,
+    required int minK,
+    required int maxK,
+    required double minTemp,
+    required double maxTemp,
+    required int minEc,
+    required int maxEc,
+    required int minFertility,
+    required int maxFertility,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/petani/standar/submit'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'petani_id': petaniId,
+          'desa_id': desaId,
+          'komoditas': komoditas,
+          'varietas': varietas,
+          'min_ph': minPh,
+          'max_ph': maxPh,
+          'min_moisture': minMoisture,
+          'max_moisture': maxMoisture,
+          'min_n': minN,
+          'max_n': maxN,
+          'min_p': minP,
+          'max_p': maxP,
+          'min_k': minK,
+          'max_k': maxK,
+          'min_temp': minTemp,
+          'max_temp': maxTemp,
+          'min_ec': minEc,
+          'max_ec': maxEc,
+          'min_fertility': minFertility,
+          'max_fertility': maxFertility,
+        }),
+      ).timeout(const Duration(seconds: 8));
+
+      final data = _safeJsonDecode(response);
+      if (data != null && (response.statusCode == 200 || response.statusCode == 201)) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Berhasil mengajukan standar komoditas',
+          'data': data['data'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data?['message'] ?? 'Server offline atau mengembalikan status ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Koneksi ke server gagal: $e',
+      };
+    }
+  }
+
+  // 4. Fetch Submitted Standards for Farmer
+  static Future<List<StandarKomoditasModel>> getMyStandards(int petaniId) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$baseUrl/api/petani/standar/my-standards?petani_id=$petaniId'))
+          .timeout(const Duration(seconds: 6));
+
       if (response.statusCode == 200) {
         final data = _safeJsonDecode(response);
         if (data != null && data['data'] is List) {
@@ -253,56 +251,16 @@ class ApiService {
         }
       }
     } catch (e) {
-      debugPrint('Error fetching pending standards: $e');
+      debugPrint('Error fetching farmer standards: $e');
     }
     return [];
   }
 
-  // 3. Verify or Reject Standard
-  static Future<Map<String, dynamic>> verifyStandard({
-    required int id,
-    required int penyuluhId,
-    required String status, // 'verified' or 'rejected'
-    String? catatanPenyuluh,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/penyuluh/standar/verify'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'id': id,
-          'penyuluh_id': penyuluhId,
-          'status': status,
-          'catatan_penyuluh': catatanPenyuluh,
-        }),
-      ).timeout(const Duration(seconds: 8));
-
-      final data = _safeJsonDecode(response);
-      if (data != null && (response.statusCode == 200 || response.statusCode == 201)) {
-        return {
-          'success': true,
-          'message': data['message'] ?? 'Verifikasi berhasil disimpan',
-          'data': data['data'],
-        };
-      } else {
-        return {
-          'success': false,
-          'message': data?['message'] ?? 'Gagal memproses verifikasi (Kode: ${response.statusCode})',
-        };
-      }
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'Gagal memproses verifikasi: $e',
-      };
-    }
-  }
-
-  // 4. Fetch Forum Feed
+  // 5. Fetch Community Forum Posts
   static Future<List<ForumPostModel>> getForumPosts({int limit = 50, int offset = 0}) async {
     try {
       final response = await http
-          .get(Uri.parse('$baseUrl/forum/posts?limit=$limit&offset=$offset'))
+          .get(Uri.parse('$baseUrl/api/forum/posts?limit=$limit&offset=$offset'))
           .timeout(const Duration(seconds: 6));
 
       if (response.statusCode == 200) {
@@ -319,7 +277,7 @@ class ApiService {
     return [];
   }
 
-  // 5. Create Forum Post (Penyuluh)
+  // 6. Create Forum Post
   static Future<Map<String, dynamic>> createForumPost({
     required int userId,
     int? standarId,
@@ -328,7 +286,7 @@ class ApiService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/forum/posts'),
+        Uri.parse('$baseUrl/api/forum/posts'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'user_id': userId,
@@ -342,7 +300,7 @@ class ApiService {
       if (data != null && (response.statusCode == 200 || response.statusCode == 201)) {
         return {
           'success': true,
-          'message': data['message'] ?? 'Postingan penyuluh berhasil dibagikan',
+          'message': data['message'] ?? 'Postingan berhasil dibuat',
           'data': data['data'],
         };
       } else {
@@ -359,7 +317,7 @@ class ApiService {
     }
   }
 
-  // 6. Add Comment to Forum Post
+  // 7. Add Comment to Forum Post
   static Future<Map<String, dynamic>> addForumComment({
     required int postId,
     required int userId,
@@ -367,7 +325,7 @@ class ApiService {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/forum/comments'),
+        Uri.parse('$baseUrl/api/forum/comments'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'post_id': postId,
@@ -397,11 +355,11 @@ class ApiService {
     }
   }
 
-  // 7. Get Post Details with Comments
+  // 8. Get Post Details with Comments
   static Future<ForumPostModel?> getForumPostDetail(int postId) async {
     try {
       final response = await http
-          .get(Uri.parse('$baseUrl/forum/posts/$postId'))
+          .get(Uri.parse('$baseUrl/api/forum/posts/$postId'))
           .timeout(const Duration(seconds: 6));
 
       if (response.statusCode == 200) {

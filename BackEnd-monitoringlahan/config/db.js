@@ -1,5 +1,9 @@
-let mysql = require('mysql2');
-let connection = mysql.createPool({
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+const mysql = require('mysql2');
+
+const connection = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
@@ -7,7 +11,8 @@ let connection = mysql.createPool({
   port: parseInt(process.env.DB_PORT || '3306', 10),
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  multipleStatements: true,
 });
 
 connection.query('SELECT 1', (err) => {
@@ -17,6 +22,5 @@ connection.query('SELECT 1', (err) => {
     console.log('Connection Success');
   }
 });
-
 
 module.exports = connection;

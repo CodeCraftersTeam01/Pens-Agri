@@ -17,6 +17,10 @@ var parkirRouter = require('./routes/parkir');
 var tarifRouter = require('./routes/tarif');
 
 var monitoring_lahanRouter = require('./routes/api/monitoring_lahan');
+var wilayahRouter = require('./routes/api/wilayah');
+var authRouter = require('./routes/api/auth');
+var standarRouter = require('./routes/api/standar');
+var forumRouter = require('./routes/api/forum');
 var sensorRouter = require('./routes/sensor');
 var kelompoktaniRouter = require('./routes/kelompoktani');
 var petalahanRouter = require('./routes/petalahan');
@@ -24,6 +28,11 @@ var sayur_buahRouter = require('./routes/master_data/sayur_buah');
 var biofarmakaRouter = require('./routes/master_data/biofarmaka');
 var luastanamperkebunanrakyatRouter = require('./routes/master_data/luas_tanam_perkebunan_rakyat');
 var policybriefRouter = require('./routes/policy_brief');
+
+const { initSumenepDatabase } = require('./config/db_init_sumenep');
+
+// Inisialisasi otomatis tabel & master data Kabupaten Sumenep
+initSumenepDatabase().catch(err => console.error('Warning Init DB Sumenep:', err));
 
 var app = express();
 
@@ -161,6 +170,11 @@ app.use('/parkir', parkirRouter);
 app.use('/tarif', tarifRouter);
 
 app.use('/api/soil', monitoring_lahanRouter);
+app.use('/api/wilayah', wilayahRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/forum', forumRouter);
+app.use('/api/standar', standarRouter);
+app.use('/api', standarRouter); // Supports /api/petani/standar/... & /api/penyuluh/standar/...
 app.use('/sensor', sensorRouter);
 app.use('/kelompoktani', kelompoktaniRouter);
 app.use('/petalahan', petalahanRouter);
